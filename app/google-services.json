@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "835478961620",
+    "firebase_url": "https://bicker-quicker.firebaseio.com",
+    "project_id": "bicker-quicker",
+    "storage_bucket": "bicker-quicker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:835478961620:android:63d8bc06a028efa5",
+        "android_client_info": {
+          "package_name": "purdue.edu.bicker_quicker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "835478961620-dqld0u2nsle6otd38f47tbbac1j0cvjj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD032K60A5q6LUVJjqVOYwOleqyVudeHzY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "835478961620-dqld0u2nsle6otd38f47tbbac1j0cvjj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
