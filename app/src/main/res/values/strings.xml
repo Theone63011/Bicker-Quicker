@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">Bicker-Quicker</string>
+
     <string name="signOutButton">Button</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_bicker">BickerActivity</string>
     <string name="sign_out">Sign out</string>
+    <string name="facebook_app_id">2154435281522898</string>
+    <string name="fb_login_protocol_scheme">fb2154435281522898</string>
+
 </resources>
