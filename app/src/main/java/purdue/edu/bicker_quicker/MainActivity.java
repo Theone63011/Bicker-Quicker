@@ -1,14 +1,14 @@
 package purdue.edu.bicker_quicker;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -19,6 +19,8 @@ import com.facebook.login.widget.LoginButton;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
+
+    Dialog myDialog;
 
     private static final String EMAIL = "email";
 
@@ -34,6 +36,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        myDialog = new Dialog(this);
+
+        Button popupButton = (Button) findViewById(R.id.btnShowSamplePopup);
+        popupButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                ShowPopup();
+            }
+        });
+
+
         mCallbackManager = CallbackManager.Factory.create();
 
         LoginButton mLoginButton = findViewById(R.id.login_button);
@@ -48,9 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 // If successful, the loginResult is the AccessToken
                 // ADD CODE HERE
 
-                View myPopupButtonView = View.getContentView();
-                View.
-                onButtonShowPopupWindowClick(View v);
+               ShowPopup();
 
             }
 
@@ -66,29 +77,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void onButtonShowPopupWindowClick(View view) {
-
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.simple_popup_window, null);
-
-        // create the sample popup window
-        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true; // lets touches outside the popup to dismiss the window
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window token
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-        // dismiss the popup window when touched
-        popupView.setOnTouchListener(new View.OnTouchListener() {
+    public void ShowPopup() {
+        TextView txtclose;
+        Button btnFollow;
+        myDialog.setContentView(R.layout.simple_popup_window);
+        txtclose =(TextView) myDialog.findViewById(R.id.txtclose);
+        txtclose.setText("X");
+        btnFollow = (Button) myDialog.findViewById(R.id.btnfollow);
+        txtclose.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                popupWindow.dismiss();
-                return true;
+            public void onClick(View v) {
+                myDialog.dismiss();
             }
         });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
     }
 
 }

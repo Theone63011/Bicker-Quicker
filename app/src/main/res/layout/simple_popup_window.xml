@@ -1,46 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="350dp"
+    android:layout_height="475dp"
+    android:background="@color/blueAccent1"
+    android:padding="5dp"
+    android:layout_gravity="center">
+    <TextView
+        android:id="@+id/txtclose"
+        android:text="X"
+        android:textColor="#0A0A0A"
+        android:textSize="16sp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:textStyle="bold"
+        android:layout_gravity="end"
+        android:gravity="center"
+        android:background="@drawable/rounded_circle"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="0"
+        />
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="60dp"
-        android:layout_marginRight="60dp"
-        android:layout_marginBottom="60dp"
-        android:background="#62def8"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
+        android:orientation="vertical">
+        <ImageView
+            android:id="@+id/imageView1"
+            android:contentDescription="@string/app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher_foreground"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_marginStart="30dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginBottom="30dp"
-            android:text="Sample Popup Window"
-            android:textSize="22sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            android:text="Bicker Quicker"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Designed by Purdue Students"
+            android:textColor="@color/white"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:background="@color/orange"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="100dp">
 
-    </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OPTION"
+                android:textSize="18sp"
+                android:textColor="@color/white"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="#1"
+                android:textSize="18sp"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+        <LinearLayout
+            android:background="@color/green"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="100dp">
 
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OPTION"
+                android:textSize="18sp"
+                android:textColor="@color/white"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="#2"
+                android:textSize="18sp"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+        <LinearLayout
+            android:background="@color/blueAccent2"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="100dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OPTION"
+                android:textSize="18sp"
+                android:textColor="@color/white"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="#3"
+                android:textSize="18sp"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnfollow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="20dp" />
+        android:text="Follow Me"
+        android:layout_marginTop="25dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/standard_button"
+        android:textColor="@color/white"/>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
