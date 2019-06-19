@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,7 +28,6 @@ public class BickerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bicker);
         Button signOut = findViewById(R.id.signOutButton);
         FloatingActionButton createBicker = findViewById(R.id.createNewBickerButton);
-
 
         createBicker.setOnClickListener(new View.OnClickListener() {
             @Override

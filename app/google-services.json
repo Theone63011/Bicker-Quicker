@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "835478961620-oi6amsutpebsekev8jrfqs0bul846eqn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "purdue.edu.bicker_quicker",
+            "certificate_hash": "18bd18835114d3a0766ec0b0cf0ac010ba36b6e4"
+          }
+        },
+        {
           "client_id": "835478961620-dqld0u2nsle6otd38f47tbbac1j0cvjj.apps.googleusercontent.com",
           "client_type": 3
         }

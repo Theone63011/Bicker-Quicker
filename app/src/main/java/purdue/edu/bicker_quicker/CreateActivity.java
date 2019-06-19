@@ -21,7 +21,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
 public class CreateActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, CodeDialog.CodeDialogListener {
@@ -46,6 +53,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
 
+
         // Instantiate Scene Items
         bickerTitle = findViewById(R.id.textViewTitle);
         bickerCategory = findViewById(R.id.textViewCategory);
@@ -64,24 +72,26 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             }
         });
 
-        title.setOnClickListener(new View.OnClickListener() {
+        title.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View v) {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
                 resetColor(bickerTitle, "#777777");
             }
         });
 
-
-        description.setOnClickListener(new View.OnClickListener() {
+        description.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View v) {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
                 resetColor(bickerDescription, "#777777");
             }
         });
 
-        side.setOnClickListener(new View.OnClickListener() {
+        side.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View v) {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
                 resetColor(yourSide, "#777777");
             }
         });
@@ -158,6 +168,29 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         codeDialog.setArguments(codeBundle);
         codeDialog.setCancelable(false);
         codeDialog.show(getSupportFragmentManager(), "code dialog"); // Create dialog
+
+        Bicker bicker = new Bicker();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("Bicker");
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+
+        // Initialize the new bicker for the DB
+        bicker.setCode(c);
+        bicker.setCreate_date(date);
+        bicker.setDescription(bickDesc.trim());
+        bicker.setLeft_side(bickSide);
+        bicker.setRight_side("None");
+        bicker.setLeft_votes(0);
+        bicker.setRight_votes(0);
+        bicker.setTitle(bickTitle.trim());
+        bicker.setCategory(bickCat.trim());
+        bicker.setSenderID("TempSender");
+        bicker.setReceiverID("Unknown");
+        ref.push().setValue(bicker);
+        Toast.makeText(CreateActivity.this,"Bicker Sent", Toast.LENGTH_LONG).show();
     }
 
 
