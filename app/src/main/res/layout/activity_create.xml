@@ -17,7 +17,7 @@
     -->
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbarProfile"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
@@ -34,9 +34,13 @@
         android:layout_height="53dp"
         android:layout_marginStart="45dp"
         android:layout_marginEnd="46dp"
+        android:layout_marginRight="46dp"
+        android:layout_marginLeft="46dp"
         android:layout_marginBottom="16dp"
         android:text="Submit Bicker and Generate Share Code"
+        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/standard_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -49,7 +53,7 @@
         android:textColor="#777777"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@+id/categorySpinner"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbarProfile" />
 
     <TextView
         android:id="@+id/textViewCategory"
@@ -94,6 +98,7 @@
         android:layout_width="327dp"
         android:layout_height="70dp"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:gravity="start|top"
@@ -134,6 +139,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:text="Your Side"
         android:textSize="18sp"
@@ -146,6 +152,7 @@
         android:layout_width="323dp"
         android:layout_height="247dp"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="20dp"
         android:ems="10"
