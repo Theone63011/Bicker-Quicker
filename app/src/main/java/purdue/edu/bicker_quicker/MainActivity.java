@@ -16,6 +16,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.firebase.ui.auth.AuthUI;
@@ -59,14 +60,13 @@ public class MainActivity extends AppCompatActivity {
         if(isLoggedInToFacebook) {
             // TODO
             String message = "User is Logged into Facebook";
-            //ShowPopup(message);
-            // Set the 'FacebookLoginActivity' to the next activity
-            //Intent loginIntent = new Intent(MainActivity.this, FacebookLoginActivity.class);
-            //startActivity(loginIntent);
+            Log.d(TAG, message);
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            startActivity(new Intent(MainActivity.this, BickerActivity.class));
         }
         else {
             String message = "User is NOT Logged into Facebook";
-            //ShowPopup(message);
+            Log.d(TAG, message);
         }
 
         mCallbackManager = CallbackManager.Factory.create();
@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set initial permissions to request from the user while logging in
         mLoginButton.setPermissions(Arrays.asList(EMAIL));
+        mLoginButton.setPermissions(Arrays.asList("email", "public_profile"));
 
         // To Login Outside of the login button:
         //LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
@@ -84,29 +85,51 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 // If successful, the loginResult is the AccessToken
-                // ADD CODE HERE
                 Log.d(TAG, "Facebook Login Successful");
                 setResult(RESULT_OK);
-                //ShowPopup("Login Successful");
             }
 
             @Override
             public void onCancel() {
-                // ADD CODE HERE
                 Log.d(TAG, "Facebook Login Canceled");
                 setResult(RESULT_CANCELED);
-                //ShowPopup("Canceled");
             }
 
             @Override
             public void onError(FacebookException exception) {
-                // ADD CODE HERE
                 Log.d(TAG, "Login Error");
                 Log.d(TAG, exception.toString());
                 ShowPopup("Login Error");
                 finish();
             }
         });
+
+        LoginManager.getInstance().registerCallback(mCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        // App code
+                        // If successful, the loginResult is the AccessToken
+                        Log.d(TAG, "Facebook Login Successful");
+                        setResult(RESULT_OK);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // App code
+                        Log.d(TAG, "Facebook Login Canceled");
+                        setResult(RESULT_CANCELED);
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        // App code
+                        Log.d(TAG, "Login Error");
+                        Log.d(TAG, exception.toString());
+                        ShowPopup("Login Error");
+                        finish();
+                    }
+                });
 
         // To Logout of Facebook, do this:
         //LoginManager.getInstance().logOut();
@@ -129,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "requestCode == " + requestCode);
         Log.d(TAG, "resultCode == " + resultCode);
 
-        if (requestCode == 100) {
+        if (requestCode == 100 || requestCode == 64206) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             if (resultCode == RESULT_OK) {
