@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -44,6 +45,7 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
     private EnterCodeDialogListener listener;
     final Bicker bick = new Bicker();
 
+    boolean allowTalkingToSelf = false;
 
     @Override
     public void onAttach(Context context) {
@@ -73,11 +75,12 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
         codeInput = view.findViewById(R.id.enterCodeHere);
         enterBelow = view.findViewById(R.id.enterCodeBelow);
 
-        codeInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        codeInput.setOnKeyListener(new View.OnKeyListener() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
-                    enterBelow.setTextColor(Color.parseColor("#777777"));
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                enterBelow.setTextColor(Color.parseColor("#777777"));
+                enterBelow.setText("Enter the Code Given to You Below");
+                return false;
             }
         });
 
@@ -85,6 +88,11 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
             @Override
             public void onClick(View v) {
                 String code = codeInput.getText().toString().toUpperCase().trim();
+                if (code.length() != 5) {
+                    enterBelow.setText("Invalid Code: Code should be 5 letters");
+                    enterBelow.setTextColor(Color.parseColor("#FF758C"));
+                    return;
+                }
                 String bickerID = null;
                 try {
                     bickerID = queryDatabase(code);
@@ -150,7 +158,14 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
             enterBelow.setTextColor(Color.parseColor("#FF758C"));
             submitButton.setText("Get Bicker");
             return;
-        } else {
+        }
+
+        else if (allowTalkingToSelf == false && bick.getSenderID().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // Check if the person is talking with themselves
+            enterBelow.setText("Stop Talking to Yourself");
+            enterBelow.setTextColor(Color.parseColor("#FF758C"));
+            submitButton.setText("Get Bicker");
+        }
+        else {
             listener.receiveCode(bick);
             dismiss();
         }

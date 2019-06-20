@@ -13,7 +13,7 @@ public class Bicker {
     private String code;
     private String category;
     private String senderID;
-    private String receiverID;
+    private String receiverID; // This is used temporarily to store bickerID from db in callback()
 
     public String getCategory() {
         return category;
