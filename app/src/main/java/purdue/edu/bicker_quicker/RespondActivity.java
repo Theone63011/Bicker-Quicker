@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
-public class RespondActivity extends AppCompatActivity {
+public class RespondActivity extends AppCompatActivity implements EnterCodeDialog.EnterCodeDialogListener {
 
     TextView title_code;
     TextView title_title;
@@ -57,8 +57,21 @@ public class RespondActivity extends AppCompatActivity {
                 leave();
             }
         });
+
+        openDialog();
     }
 
+    @Override
+    public void receiveCode(Bicker code) {
+        code_here.setText(code.getCode().toUpperCase());
+        title_here.setText(code.getTitle());
+        description_here.setText(code.getDescription());
+    }
+
+    public void openDialog() {
+        EnterCodeDialog enterCode = new EnterCodeDialog();
+        enterCode.show(getSupportFragmentManager(), "enter code dialog");
+    }
 
     public void leave() {
         Intent intent = new Intent(this, ProfileActivity.class);
