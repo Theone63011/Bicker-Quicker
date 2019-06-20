@@ -47,7 +47,7 @@ public class BickerActivity extends AppCompatActivity {
     public void signOut(){
 
         // To Sign Out of Facebook, do this:
-        LoginManager.getInstance().logOut();
+        MainActivity.signOut();
 
         AuthUI.getInstance()
                 .signOut(this)

@@ -44,21 +44,21 @@
         android:id="@+id/textViewTitle"
         android:layout_width="301dp"
         android:layout_height="25dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="12dp"
         android:text="Bicker Title"
         android:textColor="#777777"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="@+id/categorySpinner"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        tools:layout_editor_absoluteX="42dp" />
 
     <TextView
         android:id="@+id/textViewCategory"
         android:layout_width="304dp"
         android:layout_height="26dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="44dp"
         android:text="Bicker Category"
-        android:textSize="18sp"
         android:textColor="#777777"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@+id/editTitle"
         app:layout_constraintTop_toBottomOf="@+id/editTitle" />
 
@@ -66,7 +66,7 @@
         android:id="@+id/editTitle"
         android:layout_width="301dp"
         android:layout_height="39dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="40dp"
         android:autofillHints=""
         android:ems="10"
         android:inputType="textPersonName"
@@ -99,7 +99,7 @@
         android:gravity="start|top"
         android:inputType="textMultiLine"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.46"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewDesc" />
 
@@ -107,10 +107,10 @@
         android:id="@+id/textViewDesc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="40dp"
         android:text="Bicker Description"
-        android:textSize="18sp"
         android:textColor="#777777"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@+id/categorySpinner"
         app:layout_constraintTop_toBottomOf="@+id/categorySpinner" />
 
@@ -118,14 +118,13 @@
         android:id="@+id/textViewHint"
         android:layout_width="375dp"
         android:layout_height="33dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="8dp"
         android:text="give a short description so the other bickerer is sure what you are bickering about"
         android:textAlignment="center"
-        android:textSize="12sp"
         android:textColor="#888888"
+        android:textSize="12sp"
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextDesc" />
 
@@ -133,18 +132,19 @@
         android:id="@+id/textViewSide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="16dp"
         android:text="Your Side"
-        android:textSize="18sp"
         android:textColor="#777777"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@+id/textViewDesc"
         app:layout_constraintTop_toBottomOf="@+id/textViewHint" />
 
     <EditText
         android:id="@+id/editTextSide"
         android:layout_width="323dp"
-        android:layout_height="247dp"
+        android:layout_height="140dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="20dp"
@@ -153,9 +153,10 @@
         android:inputType="textMultiLine"
         app:layout_constraintBottom_toTopOf="@+id/submitBicker"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.475"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSide" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewSide"
+        app:layout_constraintVertical_bias="1.0" />
 
 
 </android.support.constraint.ConstraintLayout>
