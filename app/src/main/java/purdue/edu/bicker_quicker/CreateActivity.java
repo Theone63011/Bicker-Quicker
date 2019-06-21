@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -190,7 +191,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setRight_votes(0);
         bicker.setTitle(bickTitle.trim());
         bicker.setCategory(bickCat.trim());
-        bicker.setSenderID("TempSender");
+        bicker.setSenderID(FirebaseAuth.getInstance().getCurrentUser().getUid());
         bicker.setReceiverID("Unknown");
         ref.push().setValue(bicker);
         Toast.makeText(CreateActivity.this,"Bicker Sent", Toast.LENGTH_LONG).show();

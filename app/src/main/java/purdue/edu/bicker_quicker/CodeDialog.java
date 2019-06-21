@@ -4,15 +4,12 @@ package purdue.edu.bicker_quicker;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-
-import java.util.Random;
 
 public class CodeDialog extends AppCompatDialogFragment {
 
@@ -48,7 +45,7 @@ public class CodeDialog extends AppCompatDialogFragment {
                 });
 
         String newCode = getArguments().getString("code"); // Get code from bundle
-        code = view.findViewById(R.id.textCode);
+        code = view.findViewById(R.id.enterCodeHere);
         code.setText(newCode);
 
         return builder.create();
