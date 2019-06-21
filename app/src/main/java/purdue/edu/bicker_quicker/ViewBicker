@@ -23,30 +23,34 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 public class ViewBicker extends AppCompatActivity {
+    Button leftVote;
+    Button rightVote;
+    Button noVote;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("Bicker");
         setContentView(R.layout.view_bicker); //add view_bicker to R.layout?
-        //Button signOut = findViewById(R.id.signOutButton);
-        FloatingActionButton voteOnBicker = findViewById(R.id.voteBickerButton); //add R.id.voteBickerButton
+        leftVote = findViewById(R.id.left);
+        rightVote = findViewById(R.id.right);
+        noVote = findViewById(R.id.abstain);
+        Button exit = findViewById(R.id.exit);
 
-        voteOnBicker.setOnClickListener(new View.OnClickListener() {
+        //set listeners for voting buttons
+        leftVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 vote(1);
             }
         });
-
-        voteOnBicker.setOnClickListener(new View.OnClickListener() {
+        rightVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 vote(2);
             }
         });
-
-        voteOnBicker.setOnClickListener(new View.OnClickListener() {
+        noVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewVotes();
@@ -78,7 +82,10 @@ public class ViewBicker extends AppCompatActivity {
 
     public void viewVotes() {
         //disable voting buttons, show results
-        //Toast.makeText(CreateActivity.this,"Bicker Sent", Toast.LENGTH_LONG).show();
+        leftVote.setEnabled(false);
+        rightVote.setEnabled(false);
+        noVote.setEnabled(false);
+
 
     }
 }

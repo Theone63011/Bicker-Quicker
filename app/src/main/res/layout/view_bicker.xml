@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Left"
-        tools:layout_editor_absoluteX="82dp"
+        tools:layout_editor_absoluteX="46dp"
         tools:layout_editor_absoluteY="521dp" />
 
     <Button
@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Right"
-        tools:layout_editor_absoluteX="241dp"
+        tools:layout_editor_absoluteX="275dp"
         tools:layout_editor_absoluteY="521dp" />
 
     <Button
@@ -27,5 +27,13 @@
         android:layout_height="wrap_content"
         android:text="Abstain"
         tools:layout_editor_absoluteX="161dp"
-        tools:layout_editor_absoluteY="597dp" />
+        tools:layout_editor_absoluteY="521dp" />
+
+    <Button
+        android:id="@+id/exit"
+        android:layout_width="134dp"
+        android:layout_height="44dp"
+        android:text="Exit"
+        tools:layout_editor_absoluteX="134dp"
+        tools:layout_editor_absoluteY="598dp" />
 </android.support.constraint.ConstraintLayout>
