@@ -6,8 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ScaleDrawable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -23,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -98,7 +97,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
 
         // Change toolbar to a new toolbar (
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbarProfile);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Create Bicker");
         toolbar.setSubtitle("Enter Your Bicker Details Below");
@@ -106,9 +105,14 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         // Scale and draw back button icon in top left of toolbar
         Drawable drawable= getResources().getDrawable(R.drawable.backicon);
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-        Drawable newdrawable = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 40, 40, true));
+        Drawable newdrawable = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 30, 30, true));
         toolbar.setNavigationIcon(newdrawable);
-
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                leave();
+            }
+        });
         // Set up category spinner
         catSpin = findViewById(R.id.categorySpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.categories, R.layout.support_simple_spinner_dropdown_item);
@@ -187,7 +191,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setRight_votes(0);
         bicker.setTitle(bickTitle.trim());
         bicker.setCategory(bickCat.trim());
-        bicker.setSenderID("TempSender");
+        bicker.setSenderID(FirebaseAuth.getInstance().getCurrentUser().getUid());
         bicker.setReceiverID("Unknown");
         ref.push().setValue(bicker);
         Toast.makeText(CreateActivity.this,"Bicker Sent", Toast.LENGTH_LONG).show();
