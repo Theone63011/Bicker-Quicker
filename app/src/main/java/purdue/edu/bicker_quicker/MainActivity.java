@@ -44,8 +44,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     TextView text;
     SignInButton btn_login;
-    Button btn_logout;
-    GoogleSignInClient mGoogleSignInClient;
+    static GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btn_login = findViewById(R.id.google_sign_in_button);
-        btn_logout = findViewById(R.id.signoutbtn);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -66,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 
         btn_login.setOnClickListener(v -> SignInGoogle());
-        btn_logout.setOnClickListener(v -> Logout());
 
         if (mAuth.getCurrentUser() != null) {
             FirebaseUser user = mAuth.getCurrentUser();
@@ -107,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         Log.d("TAG", "signin success");
 
+                        Intent intent = new Intent(this, BickerActivity.class);
+                        startActivity(intent);
+
                         FirebaseUser user = mAuth.getCurrentUser();
                     } else {
                         Log.w("TAG", "signin failure");
@@ -128,13 +128,5 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.w("TAG", "user is null in updateUI");
         }
-    }
-
-    void Logout() {
-        FirebaseAuth.getInstance().signOut();
-        mGoogleSignInClient.signOut()
-                .addOnCompleteListener(this, task -> {
-
-                });
     }
 }

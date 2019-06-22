@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +20,12 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class BickerActivity extends AppCompatActivity {
+
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,12 @@ public class BickerActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.signOutButton).setOnClickListener(v -> GoogleLogout());
+
+        mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() != null) {
+            Log.d("TAG", "user id: " + mAuth.getCurrentUser().getUid());
+        }
     }
 
     // Change scene to the create bicker page
@@ -62,4 +73,12 @@ public class BickerActivity extends AppCompatActivity {
                 });
     }
 
+    void GoogleLogout() {
+        FirebaseAuth.getInstance().signOut();
+        MainActivity.mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, task -> {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                });
+    }
 }
