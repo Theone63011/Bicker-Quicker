@@ -196,12 +196,10 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-
         google_btn_login.setOnClickListener(v -> SignInGoogle());
 
         if (mAuth.getCurrentUser() != null) {
             FirebaseUser user = mAuth.getCurrentUser();
-            updateUI(user);
         }
     }
 
@@ -210,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(signIntent, GOOGLE_SIGN);
     }
 
+    //try google sign in if google sign in button was pressed
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
@@ -217,7 +216,6 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == GOOGLE_SIGN) {
             Task<GoogleSignInAccount> task = GoogleSignIn
                     .getSignedInAccountFromIntent(data);
-
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 if (account != null) {
@@ -252,9 +250,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //create credentials of firebase user after authenticating google account
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
-        Log.d("TAG", "firebaseAuthWithGoogle: " + account.getId());
-
         AuthCredential credential = GoogleAuthProvider
                 .getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -271,21 +268,6 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(this, "Signin failed", Toast.LENGTH_SHORT);
                     }
                 });
-    }
-
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-            Log.w("TAG", "user is not null in updateUI");
-            String name = user.getDisplayName();
-            String email = user.getEmail();
-            String photo = String.valueOf(user.getPhotoUrl());
-
-            text.append("Info : \n");
-            text.append(name + "\n");
-            text.append(email);
-        } else {
-            Log.w("TAG", "user is null in updateUI");
-        }
     }
 
     public void signIn() {
@@ -351,33 +333,11 @@ public class MainActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
             }
         });
-
-               /*.addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isCompleted()) {
-                            // Sign in success
-                            Log.d(TAG, "Facebook signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            //updateUI(user);
-                        } else {
-                            // If sign in fails
-                            Log.w(TAG, "Facebook signInWithCredential:failure", task.getException());
-                            Toast.makeText(MainActivity.this, "Facebook Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
-                        }
-
-                        // ...
-                    }
-                });*/
     }
 
+    //signs out of facebook
     public static void signOut() {
         mAuth.signOut();
         LoginManager.getInstance().logOut();
-
-        //updateUI(null);
     }
-
 }
