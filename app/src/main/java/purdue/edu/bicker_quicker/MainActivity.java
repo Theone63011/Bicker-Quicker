@@ -220,6 +220,12 @@ public class MainActivity extends AppCompatActivity {
         if (mAuth.getCurrentUser() != null) {
             FirebaseUser user = mAuth.getCurrentUser();
         }
+
+        //check if a user is already logged in and by pass login page
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Intent intent = new Intent(this, BickerActivity.class);
+            startActivity(intent);
+        }
     }
 
     void SignInGoogle() {
@@ -278,6 +284,7 @@ public class MainActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         Log.d("TAG", "signin success");
 
+                        Log.d("TAG", "user id: " + mAuth.getCurrentUser().getUid());
                         Intent intent = new Intent(this, BickerActivity.class);
                         startActivity(intent);
 
