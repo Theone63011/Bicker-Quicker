@@ -69,20 +69,28 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private AlertDialog.Builder message;
 
+
+    private SignInButton mGoogleBtn;
+    private static final int RC_SIGN_IN = 1;
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
     static final int GOOGLE_SIGN = 1;
     TextView text;
     SignInButton google_btn_login;
-    static GoogleSignInClient mGoogleSignInClient;
+    public static GoogleSignInClient mGoogleSignInClient;
 
     Dialog myDialog;
-
-    private static FirebaseAuth mAuth;
-
-    private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String EMAIL = "email";
 
     private CallbackManager mCallbackManager;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 
     @Override
     public void onStart() {
@@ -100,6 +108,17 @@ public class MainActivity extends AppCompatActivity {
         google_btn_login = findViewById(R.id.google_sign_in_button);
 
         myDialog = new Dialog(this);
+
+        final Button signIn = findViewById(R.id.signInButton);
+        signIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signIn();
+            }
+        });
+
+        //mGoogleBtn = (SignInButton) findViewById(R.id.google_sign_in_button);
+        //this.mAuth = FirebaseAuth.getInstance();
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();

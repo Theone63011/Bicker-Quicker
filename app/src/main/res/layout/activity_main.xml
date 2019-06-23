@@ -39,7 +39,6 @@
         android:layout_height="40dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="8dp"
-        android:background="@drawable/standard_button"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
         android:textSize="20sp"
