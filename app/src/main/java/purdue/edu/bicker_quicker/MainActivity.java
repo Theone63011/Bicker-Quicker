@@ -94,6 +94,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onResume() {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Intent intent = new Intent(this, BickerActivity.class);
+            startActivity(intent);
+        }
         super.onResume();
     }
 
@@ -107,6 +111,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Intent intent = new Intent(this, BickerActivity.class);
+            startActivity(intent);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
