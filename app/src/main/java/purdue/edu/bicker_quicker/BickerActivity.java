@@ -47,6 +47,7 @@ public class BickerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bicker);
         Button signOut = findViewById(R.id.signOutButton);
+        Button voting = findViewById(R.id.voting);
         FloatingActionButton createBicker = findViewById(R.id.createNewBickerButton);
         Toolbar toolbar = findViewById(R.id.toolbarProfile);
         setSupportActionBar(toolbar);
@@ -60,6 +61,13 @@ public class BickerActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(newdrawable);
 
         */
+
+        voting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openVoting();
+            }
+        });
 
         createBicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +83,11 @@ public class BickerActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void openVoting() {
+        Intent intent = new Intent(this, ViewVoting.class);
+        startActivity(intent);
     }
 
     // Change scene to the create bicker page

@@ -102,4 +102,20 @@ public class Bicker {
     public void setReceiverID(String receiverID) {
         this.receiverID = receiverID;
     }
+
+    public String toString() {
+        String res = "";
+        res += "Title: " + title;
+        res += "\nDescription: " + description;
+        res += "\nleft_side: " + left_side;
+        res += "\nright_side: " + right_side;
+        res += "\ncreate_date: " + create_date;
+        res += "\nleft_votes: " + left_votes;
+        res += "\nright_votes: " + right_votes;
+        res += "\nCode: " + code;
+        res += "\nCategory: " + category;
+        res += "\nSenderID: " + senderID;
+        res += "\nReceiverID: " + receiverID;
+        return res;
+    }
 }
