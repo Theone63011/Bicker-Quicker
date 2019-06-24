@@ -79,7 +79,11 @@ public class MainActivity extends AppCompatActivity {
     static final int GOOGLE_SIGN = 1;
     TextView text;
     SignInButton google_btn_login;
+    public static View custom_google_login_button;
     public static GoogleSignInClient mGoogleSignInClient;
+
+    public static LoginButton mLoginButton;
+    public static View custom_facebook_login_button;
 
     Dialog myDialog;
 
@@ -106,6 +110,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         google_btn_login = findViewById(R.id.google_sign_in_button);
+        custom_google_login_button = (Button)findViewById(R.id.custom_google_login_button);
+        custom_google_login_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickCustomGoogleButton(v);
+            }
+        });
 
         myDialog = new Dialog(this);
 
@@ -141,7 +152,14 @@ public class MainActivity extends AppCompatActivity {
 
         mCallbackManager = CallbackManager.Factory.create();
 
-        LoginButton mLoginButton = findViewById(R.id.login_button);
+        mLoginButton = findViewById(R.id.facebook_login_button);
+        custom_facebook_login_button = (Button)findViewById(R.id.custom_facebook_login_button);
+        custom_facebook_login_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickCustomFacebookButton(v);
+            }
+        });
 
         // Set initial permissions to request from the user while logging in
         mLoginButton.setPermissions(Arrays.asList(EMAIL));
@@ -215,7 +233,13 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-        google_btn_login.setOnClickListener(v -> SignInGoogle());
+        //google_btn_login.setOnClickListener(v -> SignInGoogle());
+        google_btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SignInGoogle();
+            }
+        });
 
         if (mAuth.getCurrentUser() != null) {
             FirebaseUser user = mAuth.getCurrentUser();
@@ -223,8 +247,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void SignInGoogle() {
+        Toast.makeText(this, "In SignInGoogle()", Toast.LENGTH_SHORT);
         Intent signIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signIntent, GOOGLE_SIGN);
+    }
+
+    public void onClickCustomFacebookButton(View view){
+        if(view == custom_facebook_login_button) {
+            mLoginButton.performClick();
+        }
+    }
+
+    public void onClickCustomGoogleButton(View view) {
+        if(view == custom_google_login_button) {
+            //google_btn_login.performClick();
+            Toast.makeText(this, "In SignInGoogle()", Toast.LENGTH_SHORT);
+            SignInGoogle();
+        }
     }
 
     //try google sign in if google sign in button was pressed
