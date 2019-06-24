@@ -61,6 +61,11 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -93,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onResume() {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Intent intent = new Intent(this, BickerActivity.class);
+            startActivity(intent);
+        }
         super.onResume();
     }
 
@@ -106,6 +115,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Intent intent = new Intent(this, BickerActivity.class);
+            startActivity(intent);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -293,7 +306,14 @@ public class MainActivity extends AppCompatActivity {
 
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
+                boolean newUser = response.isNewUser();
+
+                if(newUser == true){
+                    FirebaseDatabase db = FirebaseDatabase.getInstance();
+
+                }
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
                 startActivity(new Intent(MainActivity.this, BickerActivity.class));
                 // ...
             } else {

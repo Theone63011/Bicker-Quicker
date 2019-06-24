@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,7 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class BickerActivity extends AppCompatActivity {
-
+    private AlertDialog.Builder message;
     FirebaseAuth mAuth;
 
     @Override
@@ -49,6 +50,7 @@ public class BickerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         setTheme(R.style.AppTheme_NoActionBar); // Need this so we can program our toolbar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bicker);
