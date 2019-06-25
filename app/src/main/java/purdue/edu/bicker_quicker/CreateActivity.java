@@ -6,9 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,14 +32,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
-
-import android.app.Activity;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
 public class CreateActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, CodeDialog.CodeDialogListener {
     // Declare scene items
@@ -313,21 +307,25 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         if (bickTitle.trim().equals("")) {
             failed = true;
             bickerTitle.setTextColor(Color.parseColor("#FF758C"));
+            Toast.makeText(CreateActivity.this, "Input values missing.", Toast.LENGTH_SHORT).show();
         }
 
         if (bickDesc.trim().equals("")) {
             failed = true;
             bickerDescription.setTextColor(Color.parseColor("#FF758C"));
+            Toast.makeText(CreateActivity.this, "Input values missing.", Toast.LENGTH_SHORT).show();
         }
 
         if (bickCat.trim().equals("")) {
             failed = true;
             bickerCategory.setTextColor(Color.parseColor("#FF758C"));
+            Toast.makeText(CreateActivity.this, "Input values missing.", Toast.LENGTH_SHORT).show();
         }
 
         if (bickSide.trim().equals("")) {
             failed = true;
             yourSide.setTextColor(Color.parseColor("#FF758C"));
+            Toast.makeText(CreateActivity.this, "Input values missing.", Toast.LENGTH_SHORT).show();
         }
 
         if (failed) return; // Improper data input. Show bad fields
