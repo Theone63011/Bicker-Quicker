@@ -27,6 +27,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.data.remote.FacebookSignInHandler;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -41,6 +42,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthSettings;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
@@ -188,13 +190,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        LoginManager.getInstance().registerCallback(mCallbackManager,
+       LoginManager.getInstance().registerCallback(mCallbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         // App code
                         // If successful, the loginResult is the AccessToken
-                        Log.d(TAG, "Facebook Login Successful");
+                        Log.d(TAG, "2 Facebook Login Successful");
+
                         handleFacebookAccessToken(loginResult.getAccessToken());
                         setResult(RESULT_OK);
                     }
@@ -244,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
+
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == GOOGLE_SIGN) {
             Task<GoogleSignInAccount> task = GoogleSignIn
@@ -262,15 +266,30 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "requestCode == " + requestCode);
         Log.d(TAG, "resultCode == " + resultCode);
 
-        if (requestCode == 100 || requestCode == 64206) {
+        if (requestCode == 100) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
-                boolean newUser = response.isNewUser();
+                boolean newUser = false;
+                if(response != null) {
+                    newUser = response.isNewUser();
+                }
 
-                if(newUser == true){
-                    FirebaseDatabase db = FirebaseDatabase.getInstance();
+                if(newUser == true && requestCode == 100){
+                    User user = new User();
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference ref = database.getReference("User");
+
+                    user.setEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                    user.setUsername(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                    user.setUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    user.setModerator(false);
+                    user.setBickerId("test1");
+                    user.setBickerId("test2");
+                    user.setVotedBickerIds("test3");
+                    user.setVotedBickerIds("test4");
+                    ref.push().setValue(user);
 
                 }
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -298,10 +317,30 @@ public class MainActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         Log.d("TAG", "signin success");
 
+                        boolean newUser = task.getResult().getAdditionalUserInfo().isNewUser();
+
+                        if(newUser == true){
+                            User user = new User();
+                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            DatabaseReference ref = database.getReference("User");
+
+                            user.setEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                            user.setUsername(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                            user.setUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            user.setModerator(false);
+                            user.setBickerId("test1");
+                            user.setBickerId("test2");
+                            user.setVotedBickerIds("test3");
+                            user.setVotedBickerIds("test4");
+                            ref.push().setValue(user);
+
+                        }
                         Intent intent = new Intent(this, BickerActivity.class);
                         startActivity(intent);
 
                         FirebaseUser user = mAuth.getCurrentUser();
+
+
                     } else {
                         Log.w("TAG", "signin failure");
                         Toast.makeText(this, "Signin failed", Toast.LENGTH_SHORT);
@@ -349,29 +388,59 @@ public class MainActivity extends AppCompatActivity {
         // the getCurrentUser method to get the user's account data.
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        mAuth.signInWithCredential(credential).addOnSuccessListener(this, new OnSuccessListener<AuthResult>() {
-            @Override
-            public void onSuccess(AuthResult authResult) {
-                // Sign in success
-                String username = authResult.getAdditionalUserInfo().getUsername();
-                String email = authResult.getUser().getEmail();
-                Log.d(TAG, "Facebook signInWithCredential: Success");
-                Log.d(TAG, "authResult username: " + username);
-                Log.d(TAG, "authResult email: " + email);
-                FirebaseUser user = mAuth.getCurrentUser();
-                email = user.getEmail();
-                String uid = user.getUid();
-                Log.d(TAG, "user.getEmail(): " + email);
-                Log.d(TAG, "user.getUid(): " + uid);
-            }
-        }).addOnFailureListener(this, new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "Facebook signInWithCredential: FAIL");
-                Toast.makeText(MainActivity.this, "Facebook Authentication failed.",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            AuthResult authResult = task.getResult();
+                            boolean newUser = authResult.getAdditionalUserInfo().isNewUser();
+
+                            if(newUser == true){
+                                User user = new User();
+                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                DatabaseReference ref = database.getReference("User");
+
+                                user.setEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                                user.setUsername(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                                user.setUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                user.setModerator(false);
+                                user.setBickerId("test1");
+                                user.setBickerId("test2");
+                                user.setVotedBickerIds("test3");
+                                user.setVotedBickerIds("test4");
+                                ref.push().setValue(user);
+
+                            }
+
+                            Log.d(TAG, "Facebook Login Successful");
+
+                            String username = authResult.getAdditionalUserInfo().getUsername();
+                            String email = authResult.getUser().getEmail();
+                            Log.d(TAG, "Facebook signInWithCredential: Success");
+                            Log.d(TAG, "authResult username: " + username);
+                            Log.d(TAG, "authResult email: " + email);
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            email = user.getEmail();
+                            String uid = user.getUid();
+                            Log.d(TAG, "user.getEmail(): " + email);
+                            Log.d(TAG, "user.getUid(): " + uid);
+                            // Sign in success, update UI with the signed-in user's information
+
+
+                            startActivity(new Intent(MainActivity.this, BickerActivity.class));
+
+                        } else {
+                            Log.d(TAG, "Facebook signInWithCredential: FAIL");
+                            Toast.makeText(MainActivity.this, "Facebook Authentication failed." ,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
+
+
     }
 
     //signs out of facebook
