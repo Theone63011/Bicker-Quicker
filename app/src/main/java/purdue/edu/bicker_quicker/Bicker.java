@@ -15,6 +15,14 @@ public class Bicker {
     private String senderID;
     private String receiverID; // This is used temporarily to store bickerID from db in callback()
 
+    public Bicker (){
+
+    }
+    public Bicker (String title, String description){
+        this.title = title;
+        this.description = description;
+    }
+
     public String getCategory() {
         return category;
     }
