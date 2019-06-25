@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
+import android.app.Activity;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+
 public class CreateActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, CodeDialog.CodeDialogListener {
     // Declare scene items
     Toolbar toolbar;
@@ -40,11 +49,20 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
     TextView descToolTip;
     TextView yourSide;
 
+    // TextViews below are for Censoring
+    private TextView bicker_title_censor;
+    private TextView bicker_desc_censor;
+    private TextView bicker_side_censor;
+
     EditText title;             // Editable Fields
     EditText description;
     EditText side;
 
     Button submitBicker;
+
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    private static Censor censor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +81,19 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         description = findViewById(R.id.editTextDesc);
         side = findViewById(R.id.editTextSide);
         submitBicker = findViewById(R.id.submitBicker);
+
+
+        censor = new Censor();
+        bicker_title_censor = findViewById(R.id.bicker_title_censor);
+        bicker_desc_censor = findViewById(R.id.bicker_desc_censor);
+        bicker_side_censor = findViewById(R.id.bicker_side_censor);
+        bicker_title_censor.setVisibility(View.GONE);
+        bicker_desc_censor.setVisibility(View.GONE);
+        bicker_side_censor.setVisibility(View.GONE);
+        title.addTextChangedListener(titleWatcher);
+        description.addTextChangedListener(descWatcher);
+        side.addTextChangedListener(sideWatcher);
+
 
         submitBicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +152,134 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         catSpin.setOnItemSelectedListener(this);
     }
 
+
+    private final TextWatcher titleWatcher = new TextWatcher() {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            int valid = 0;
+            if(censor.check_chars(s.toString()) == false) valid = 1;
+            if(censor.check_words(s.toString()) == false) valid = 2;
+            if(valid > 0) {
+                bicker_title_censor.setVisibility(View.VISIBLE);
+                if(valid == 1) {
+                    bicker_title_censor.setText("Invalid Character");
+                }
+                if(valid == 2) {
+                    bicker_title_censor.setText("Inappropriate Input");
+                }
+            }
+            else {
+                bicker_title_censor.setVisibility(View.GONE);
+            }
+        }
+
+        public void afterTextChanged(Editable s) {
+            int valid = 0;
+            if(censor.check_chars(s.toString()) == false) valid = 1;
+            if(censor.check_words(s.toString()) == false) valid = 2;
+            if(valid > 0) {
+                bicker_title_censor.setVisibility(View.VISIBLE);
+                if(valid == 1) {
+                    bicker_title_censor.setText("Invalid Character");
+                }
+                if(valid == 2) {
+                    bicker_title_censor.setText("Inappropriate Input");
+                }
+            }
+            else {
+                bicker_title_censor.setVisibility(View.GONE);
+            }
+        }
+    };
+
+    private final TextWatcher descWatcher = new TextWatcher() {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            int valid = 0;
+            if(censor.check_chars(s.toString()) == false) valid = 1;
+            if(censor.check_words(s.toString()) == false) valid = 2;
+            if(valid > 0) {
+                bicker_desc_censor.setVisibility(View.VISIBLE);
+                if(valid == 1) {
+                    bicker_desc_censor.setText("Invalid Character");
+                }
+                if(valid == 2) {
+                    bicker_desc_censor.setText("Inappropriate Input");
+                }
+            }
+            else {
+                bicker_desc_censor.setVisibility(View.GONE);
+            }
+        }
+
+        public void afterTextChanged(Editable s) {
+            int valid = 0;
+            if(censor.check_chars(s.toString()) == false) valid = 1;
+            if(censor.check_words(s.toString()) == false) valid = 2;
+            if(valid > 0) {
+                bicker_desc_censor.setVisibility(View.VISIBLE);
+                if(valid == 1) {
+                    bicker_desc_censor.setText("Invalid Character");
+                }
+                if(valid == 2) {
+                    bicker_desc_censor.setText("Inappropriate Input");
+                }
+            }
+            else {
+                bicker_desc_censor.setVisibility(View.GONE);
+            }
+        }
+    };
+
+    private final TextWatcher sideWatcher = new TextWatcher() {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            int valid = 0;
+            if(censor.check_chars(s.toString()) == false) valid = 1;
+            if(censor.check_words(s.toString()) == false) valid = 2;
+            if(valid > 0) {
+                bicker_side_censor.setVisibility(View.VISIBLE);
+                if(valid == 1) {
+                    bicker_side_censor.setText("Invalid Character");
+                }
+                if(valid == 2) {
+                    bicker_side_censor.setText("Inappropriate Input");
+                }
+            }
+            else {
+                bicker_side_censor.setVisibility(View.GONE);
+            }
+        }
+
+        public void afterTextChanged(Editable s) {
+            int valid = 0;
+            if(censor.check_chars(s.toString()) == false) valid = 1;
+            if(censor.check_words(s.toString()) == false) valid = 2;
+            if(valid > 0) {
+                bicker_side_censor.setVisibility(View.VISIBLE);
+                if(valid == 1) {
+                    bicker_side_censor.setText("Invalid Character");
+                }
+                if(valid == 2) {
+                    bicker_side_censor.setText("Inappropriate Input");
+                }
+            }
+            else {
+                bicker_side_censor.setVisibility(View.GONE);
+            }
+        }
+    };
+
+
     public  void resetColor(TextView textView, String color) {
         textView.setTextColor(Color.parseColor(color));
     }
@@ -134,6 +293,22 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         String bickSide = side.getText().toString();
 
         boolean failed = false;
+
+        boolean censor_passed = true;
+        if(censor.check_chars(bickTitle) == false) censor_passed = false;
+        if(censor.check_words(bickTitle) == false) censor_passed = false;
+        if(censor.check_chars(bickDesc) == false) censor_passed = false;
+        if(censor.check_words(bickDesc) == false) censor_passed = false;
+        if(censor.check_chars(bickSide) == false) censor_passed = false;
+        if(censor.check_words(bickSide) == false) censor_passed = false;
+        if(censor_passed == false) {
+            Log.d(TAG, "Censor not passed");
+            Toast.makeText(CreateActivity.this, "Invalid Input.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        else {
+            Log.d(TAG, "Censor passed");
+        }
 
         if (bickTitle.trim().equals("")) {
             failed = true;

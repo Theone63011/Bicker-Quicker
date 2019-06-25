@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
                 // Successfully signed in
                 if(response == null) {
                     Log.d(TAG, "Response is NULL");
-                    Toast.makeText(MainActivity.this, "Response is NULL.", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "Response is NULL.", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     boolean newUser = response.isNewUser();
