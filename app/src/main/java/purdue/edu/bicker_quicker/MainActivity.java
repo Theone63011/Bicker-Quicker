@@ -274,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickCustomGoogleButton(View view) {
         if(view == custom_google_login_button) {
             //google_btn_login.performClick();
-            Toast.makeText(this, "In SignInGoogle()", Toast.LENGTH_SHORT);
+            //Toast.makeText(this, "In SignInGoogle()", Toast.LENGTH_SHORT);
             SignInGoogle();
         }
     }
@@ -306,11 +306,16 @@ public class MainActivity extends AppCompatActivity {
 
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
-                boolean newUser = response.isNewUser();
+                if(response == null) {
+                    Log.d(TAG, "Response is NULL");
+                    Toast.makeText(MainActivity.this, "Response is NULL.", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    boolean newUser = response.isNewUser();
 
-                if(newUser == true){
-                    FirebaseDatabase db = FirebaseDatabase.getInstance();
-
+                    if (newUser == true) {
+                        FirebaseDatabase db = FirebaseDatabase.getInstance();
+                    }
                 }
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
