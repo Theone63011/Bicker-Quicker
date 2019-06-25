@@ -143,7 +143,18 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.categories, R.layout.support_simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         catSpin.setAdapter(adapter);
-        catSpin.setOnItemSelectedListener(this);
+        //catSpin.setOnItemSelectedListener(this);
+        catSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                resetColor(bickerCategory, "#777777");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
 
@@ -156,6 +167,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             int valid = 0;
             if(censor.check_chars(s.toString()) == false) valid = 1;
             if(censor.check_words(s.toString()) == false) valid = 2;
+            if(censor.check_title_length(s.toString()) == false) valid = 3;
             if(valid > 0) {
                 bicker_title_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
@@ -163,6 +175,9 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
                 }
                 if(valid == 2) {
                     bicker_title_censor.setText("Inappropriate Input");
+                }
+                if(valid == 3) {
+                    bicker_title_censor.setText("Length Limit: 18 chars");
                 }
             }
             else {
@@ -174,6 +189,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             int valid = 0;
             if(censor.check_chars(s.toString()) == false) valid = 1;
             if(censor.check_words(s.toString()) == false) valid = 2;
+            if(censor.check_title_length(s.toString()) == false) valid = 3;
             if(valid > 0) {
                 bicker_title_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
@@ -181,6 +197,9 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
                 }
                 if(valid == 2) {
                     bicker_title_censor.setText("Inappropriate Input");
+                }
+                if(valid == 3) {
+                    bicker_title_censor.setText("Length Limit: 18 chars");
                 }
             }
             else {
@@ -198,6 +217,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             int valid = 0;
             if(censor.check_chars(s.toString()) == false) valid = 1;
             if(censor.check_words(s.toString()) == false) valid = 2;
+            if(censor.check_desc_length(s.toString()) == false) valid = 3;
             if(valid > 0) {
                 bicker_desc_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
@@ -205,6 +225,9 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
                 }
                 if(valid == 2) {
                     bicker_desc_censor.setText("Inappropriate Input");
+                }
+                if(valid == 3) {
+                    bicker_desc_censor.setText("Length Limit: 50 chars");
                 }
             }
             else {
@@ -216,6 +239,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             int valid = 0;
             if(censor.check_chars(s.toString()) == false) valid = 1;
             if(censor.check_words(s.toString()) == false) valid = 2;
+            if(censor.check_desc_length(s.toString()) == false) valid = 3;
             if(valid > 0) {
                 bicker_desc_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
@@ -223,6 +247,9 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
                 }
                 if(valid == 2) {
                     bicker_desc_censor.setText("Inappropriate Input");
+                }
+                if(valid == 3) {
+                    bicker_desc_censor.setText("Length Limit: 50 chars");
                 }
             }
             else {
@@ -316,7 +343,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             Toast.makeText(CreateActivity.this, "Input values missing.", Toast.LENGTH_SHORT).show();
         }
 
-        if (bickCat.trim().equals("")) {
+        if (bickCat.trim().equals("Select Category")) {
             failed = true;
             bickerCategory.setTextColor(Color.parseColor("#FF758C"));
             Toast.makeText(CreateActivity.this, "Input values missing.", Toast.LENGTH_SHORT).show();

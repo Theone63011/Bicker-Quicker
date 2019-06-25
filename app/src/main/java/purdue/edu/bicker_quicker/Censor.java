@@ -1,16 +1,9 @@
 package purdue.edu.bicker_quicker;
+import android.util.Log;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import android.app.Activity;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
 
 public class Censor {
@@ -39,6 +32,24 @@ public class Censor {
         Log.d(TAG, "censor check_words: s =" + s);
 
         if(s.contains("*")) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    public static boolean check_title_length(String s) {
+        if(s.length() > 18) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    public static boolean check_desc_length(String s) {
+        if(s.length() > 50) {
             return false;
         }
         else {
