@@ -74,19 +74,6 @@ public class ViewVoting extends AppCompatActivity {
         });
 
 
-        //set listeners for voting buttons
-        /*leftVote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vote(1);
-            }
-        });
-        rightVote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                vote(2);
-            }
-        }); */
         noVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
