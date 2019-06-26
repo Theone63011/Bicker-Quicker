@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Inside OnActivityResult in MainActivity.java");
         Log.d(TAG, "requestCode == " + requestCode);
         Log.d(TAG, "resultCode == " + resultCode);
-        if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK && requestCode == 100) {
             // Successfully signed in
             IdpResponse response = IdpResponse.fromResultIntent(data);
             boolean newUser = false;
@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
                 newUser = response.isNewUser();
             }
 
-            if(newUser == true && requestCode == 100){
+            if(newUser == true){
                 User user = new User();
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference ref = database.getReference("User");
@@ -333,9 +333,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, BickerActivity.class));
             // ...
         } else {
-            message = new AlertDialog.Builder(this);
-            message.setMessage("Sign in failed");
-            message.show();
+            //message = new AlertDialog.Builder(this);
+            //message.setMessage("Sign in failed");
+            //message.show();
             // Sign in failed. If response is null the user canceled the
             // sign-in flow using the back button. Otherwise check
             // response.getError().getErrorCode() and handle the error.
@@ -433,6 +433,8 @@ public class MainActivity extends AppCompatActivity {
                             boolean newUser = authResult.getAdditionalUserInfo().isNewUser();
 
                             if(newUser == true){
+                                Toast.makeText(MainActivity.this, "New user." ,
+                                        Toast.LENGTH_SHORT).show();
                                 User user = new User();
                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                                 DatabaseReference ref = database.getReference("User");
