@@ -12,26 +12,37 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ViewVoting"></activity>
+        <activity
+            android:name=".HomeActivity"
+            android:label="@string/title_activity_home"
+            android:theme="@style/AppTheme.NoActionBar">
+
+
+        </activity>
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
         <activity android:name=".RespondActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".CreateActivity" />
         <activity
             android:name=".BickerActivity"
             android:label="@string/title_activity_bicker"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:theme="@style/AppTheme.NoActionBar">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <meta-data xmlns:tools="http://schemas.android.com/tools"
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id"
             tools:replace="android:value" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
         <activity
             android:name="com.facebook.FacebookActivity"

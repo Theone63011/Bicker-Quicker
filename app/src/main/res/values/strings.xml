@@ -8,10 +8,21 @@
     <string name="facebook_app_id">2154435281522898</string>
     <string name="fb_login_protocol_scheme">fb2154435281522898</string>
     <string-array name="categories">
-        <item>Relationship</item>
-        <item>Sports</item>
+        <item>Art</item>
+        <item>Board Games</item>
+        <item>Books</item>
+        <item>Comedy</item>
+        <item>Food</item>
+        <item>Miscellaneous</item>
+        <item>Movies</item>
+        <item>Music</item>
+        <item>Philosophy</item>
         <item>Politics</item>
-        <item>Academia</item>
-        <item>Other</item>
+        <item>Relationships</item>
+        <item>Science</item>
+        <item>Sports</item>
+        <item>TV Shows</item>
+        <item>Video Games</item>
     </string-array>
+    <string name="title_activity_home">HomeActivity</string>
 </resources>

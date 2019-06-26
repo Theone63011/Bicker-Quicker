@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,8 +20,12 @@ import com.facebook.login.LoginManager;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class BickerActivity extends AppCompatActivity {
+    private AlertDialog.Builder message;
+    FirebaseAuth mAuth;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -43,6 +50,7 @@ public class BickerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         setTheme(R.style.AppTheme_NoActionBar); // Need this so we can program our toolbar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bicker);
@@ -83,6 +91,10 @@ public class BickerActivity extends AppCompatActivity {
             }
         });
 
+        mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() != null) {
+            Log.d("TAG", "user id: " + mAuth.getCurrentUser().getUid());
+        }
     }
 
     public void openVoting() {
@@ -101,6 +113,14 @@ public class BickerActivity extends AppCompatActivity {
         // To Sign Out of Facebook, do this:
         MainActivity.signOut();
 
+        //sign out of google and take back to MainActivity on success
+        FirebaseAuth.getInstance().signOut();
+        MainActivity.mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, task -> {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                });
+
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -115,5 +135,4 @@ public class BickerActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
-
 }

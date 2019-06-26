@@ -114,44 +114,6 @@ public class ViewVoting extends AppCompatActivity {
         } else if (response == 2) {
             ref.child("right_votes").setValue(updatedCount);
         }
-
-        /*
-        if (response == 1) {
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Bicker bick = dataSnapshot.getValue(Bicker.class);
-                    int value = bick.getLeft_votes();
-                    value = value++;
-                    bick.setLeft_votes(value);
-                    System.out.println("Updated bicker: " + bick);
-                    dataSnapshot.getRef().setValue(bick);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError e) {
-                    System.out.println("Error updating DB");
-                }
-            });
-        } else if (response == 2) {
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Bicker bick = dataSnapshot.getValue(Bicker.class);
-                    int value = bick.getRight_votes();
-                    value = value++;
-                    bick.setRight_votes(value);
-                    System.out.println("Updated bicker: " + bick);
-                    dataSnapshot.getRef().setValue(bick);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError e) {
-                    System.out.println("Error updating DB");
-                }
-            });
-        }
-        */
         //update User db w/ this bicker's id
         viewVotes();
     }
