@@ -74,6 +74,27 @@
                     android:layout_weight="1"
                     android:text="right"/>
 
+                <!--Used to store the bicker's key -->
+                <TextView
+                    android:layout_width="0px"
+                    android:layout_height="0px"
+                    android:visibility="gone"
+                    android:id="@+id/hiddenBickerKey"/>
+
+                <TextView
+                    android:layout_width="0px"
+                    android:layout_height="0px"
+                    android:visibility="gone"
+                    android:id="@+id/hiddenLeftVotes"/>
+
+
+                <TextView
+                    android:layout_width="0px"
+                    android:layout_height="0px"
+                    android:visibility="gone"
+                    android:id="@+id/hiddenRightVotes"/>
+
+
             </LinearLayout>
 
 

@@ -25,10 +25,10 @@ public class Bicker {
     }
     public Bicker(String title, String right_side, String left_side,
                   int left_votes, int right_votes, String category, String key) {
-        this(title, null, right_side, left_side, null, left_votes, right_votes, null, category, null, null, key );
+        this(title, null,  left_side, right_side, null, left_votes, right_votes, null, category, null, null, key );
 
     }
-    public Bicker (String title, String description, String right_side, String left_side, Date create_date, int left_votes,
+    public Bicker (String title, String description, String left_side, String right_side, Date create_date, int left_votes,
                    int right_votes, String code, String category, String senderID, String receiverID, String key ){
 
         this.title = title;
@@ -42,6 +42,7 @@ public class Bicker {
         this.category = category;
         this.senderID = senderID;
         this.receiverID = receiverID;
+        this.key = key;
     }
 
     public String getCategory() {
