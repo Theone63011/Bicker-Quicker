@@ -41,6 +41,8 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_respond);
         cl = findViewById(R.id.RespondContainer);
@@ -91,6 +93,15 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         });
     }
 
+    @Override
+    public void onStart(){
+        if(bicker != null) {
+            if (bicker.getCode().equals("code_used")) {
+                startActivity(new Intent(RespondActivity.this, HomeActivity.class));
+            }
+        }
+        super.onStart();
+    }
 
     public void openCancelDialog() {
         CancelBickerDialog cancelDialog = new CancelBickerDialog();
