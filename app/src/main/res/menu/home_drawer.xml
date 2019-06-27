@@ -5,7 +5,7 @@
         android:title="Profile"/>
     <item android:id="@+id/settings"
         android:title="Settings"/>
-    <item android:id="@+id/other"
-        android:title="Placeholder"/>
+    <item android:id="@+id/signOut"
+        android:title="Sign Out" />
 
 </menu>

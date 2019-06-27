@@ -51,38 +51,6 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        /*database = FirebaseDatabase.getInstance();
-
-        DatabaseReference databaseRef = database.getReference();
-
-        bickers = new ArrayList<>();
-
-        databaseRef.addListenerForSingleValueEvent( new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-
-                for (DataSnapshot bickerSnapshot : dataSnapshot.child("Bicker").getChildren()) {
-                    bickers.add(new Bicker(
-                            bickerSnapshot.child("title").getValue().toString(),
-                            bickerSnapshot.child("description").getValue().toString()));
-                }
-
-            }
-
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });*/
-
-        Button signOut = findViewById(R.id.signOut);
-
-        signOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signOut();
-            }
-        });
-
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mDrawer = findViewById(R.id.drawer_layout);
@@ -98,6 +66,9 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
             }
         });
+
+        nvDrawer = findViewById(R.id.nav_view);
+        setupDrawerContent(nvDrawer);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -167,60 +138,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     }
 
 
-    /*//custom ArrayAdapter for filling the listView
-    class bickerArrayAdapter extends ArrayAdapter<Bicker> {
 
-        private Context context;
-        private List<Bicker> bickers;
-
-        //constructor
-        public bickerArrayAdapter(Context context, int resource, ArrayList<Bicker> bickers) {
-            super(context, resource, bickers);
-
-            this.context = context;
-            this.bickers = bickers;
-        }
-
-        //called when rendering the list
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            //get the property we are displaying
-            Bicker bicker = bickers.get(position);
-
-            //get the inflater and inflate the XML layout for each item
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.layout_unvoted_bicker, null);
-
-            TextView title = view.findViewById(R.id.title);
-            title.setText(bicker.getTitle());
-
-            TextView description = view.findViewById(R.id.description);
-            description.setText(bicker.getDescription());
-
-            LinearLayout header = view.findViewById(R.id.header);
-
-            LinearLayout dropdown = view.findViewById(R.id.dropdown);
-            dropdown.setVisibility(View.GONE);
-
-            header.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    LinearLayout parentView = (LinearLayout)v.getParent();
-
-                    LinearLayout dropdown = parentView.findViewById(R.id.dropdown);
-                    if(dropdown.isShown()){
-                        AnimationHandler.slide_up(HomeActivity.this, dropdown);
-                        dropdown.setVisibility(View.GONE);
-                    }
-                    else{
-                        dropdown.setVisibility(View.VISIBLE);
-                        AnimationHandler.slide_down(HomeActivity.this, dropdown);
-                    }
-                }
-            });
-
-            return view;
-        }
-    }*/
 
     private static ArrayList<View> getViewsByTag(ViewGroup root, String tag){
         ArrayList<View> views = new ArrayList<View>();
@@ -240,6 +158,50 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         return views;
     }
 
+    private void setupDrawerContent(NavigationView navigationView) {
+
+        navigationView.setNavigationItemSelectedListener(
+
+                new NavigationView.OnNavigationItemSelectedListener() {
+
+                    @Override
+
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                        selectDrawerItem(menuItem);
+
+                        return true;
+
+                    }
+
+                });
+
+    }
+
+
+    public void selectDrawerItem(MenuItem menuItem) {
+
+        switch (menuItem.getItemId()) {
+
+            case R.id.profile:
+                Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+                startActivity(intent);
+
+                break;
+
+            case R.id.settings:
+                //TODO: settings page
+
+                break;
+
+            case R.id.signOut:
+
+                signOut();
+
+                break;
+
+        }
+    }
 
 
     @Override
@@ -255,6 +217,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 mDrawer.openDrawer(GravityCompat.START);
 
                 return true;
+
 
         }
 

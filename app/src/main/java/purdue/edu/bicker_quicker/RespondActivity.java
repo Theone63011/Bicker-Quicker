@@ -119,6 +119,8 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         bicker.setCode("code_used");
         ref.setValue(bicker);
         Toast.makeText(this, "Response Sent", Toast.LENGTH_LONG).show();
+
+
         leave();
     }
 
