@@ -107,7 +107,7 @@ public class Home_Fragment extends Fragment {
 
                 for (DataSnapshot bickerSnapshot : dataSnapshot.child("Bicker").getChildren()) {
 
-                    if(votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
+                    if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
                         bickers.add(new Bicker(
                                 bickerSnapshot.child("title").getValue() != null ? bickerSnapshot.child("title").getValue().toString() : "No title",
                                 bickerSnapshot.child("left_side").getValue() != null ? bickerSnapshot.child("left_side").getValue().toString() : "No left side",
