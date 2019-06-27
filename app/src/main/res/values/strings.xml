@@ -14,7 +14,6 @@
         <item>Books</item>
         <item>Comedy</item>
         <item>Food</item>
-        <item>Miscellaneous</item>
         <item>Movies</item>
         <item>Music</item>
         <item>Philosophy</item>
@@ -24,6 +23,7 @@
         <item>Sports</item>
         <item>TV Shows</item>
         <item>Video Games</item>
+        <item>Miscellaneous</item>
     </string-array>
     <string name="title_activity_home">HomeActivity</string>
 
