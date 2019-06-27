@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,12 +91,17 @@ public class Home_Fragment extends Fragment {
                 String id = user.getUid();
 
                 for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()){
-                    if(userSnapshot.child("userId").getValue().toString().equals(id)) {
-                        userKey = userSnapshot.getKey();
+                    try {
+                        if (userSnapshot.child("userId") != null && userSnapshot.child("userId").getValue().toString().equals(id)) {
+                            userKey = userSnapshot.getKey();
 
-                        for(DataSnapshot votedId :  userSnapshot.child("votedBickerIds").getChildren()){
-                            votedBickerIds.add(votedId.getValue().toString());
+                            for (DataSnapshot votedId : userSnapshot.child("votedBickerIds").getChildren()) {
+                                votedBickerIds.add(votedId.getValue().toString());
+                            }
                         }
+                    }
+                    catch (Exception e){
+                        Log.w(TAG, "Home_Fragment detected a null user in the database.   " + e);
                     }
                 }
 
