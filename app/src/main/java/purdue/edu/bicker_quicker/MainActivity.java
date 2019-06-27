@@ -453,6 +453,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
     //signs out of facebook
     public static void signOut() {
         mAuth.signOut();

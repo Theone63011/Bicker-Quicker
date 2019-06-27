@@ -48,6 +48,10 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if(FirebaseAuth.getInstance().getCurrentUser() == null){
+            startActivity(new Intent(HomeActivity.this, MainActivity.class));
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
