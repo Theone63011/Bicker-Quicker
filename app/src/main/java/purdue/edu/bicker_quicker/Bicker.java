@@ -17,17 +17,19 @@ public class Bicker {
     private String category;
     private String senderID;
     private String receiverID; // This is used temporarily to store bickerID from db in callback()
+    private String key;
+    private boolean voted;
 
     public Bicker (){
 
     }
     public Bicker(String title, String right_side, String left_side,
-                  int left_votes, int right_votes, String category) {
-        this(title, null, right_side, left_side, null, left_votes, right_votes, null, category, null, null );
+                  int left_votes, int right_votes, String category, String key) {
+        this(title, null, right_side, left_side, null, left_votes, right_votes, null, category, null, null, key );
 
     }
-    public Bicker (String title, String description, String right_side, String left_side, Date create_date,
-                   int left_votes, int right_votes, String code, String category, String senderID, String receiverID ){
+    public Bicker (String title, String description, String right_side, String left_side, Date create_date, int left_votes,
+                   int right_votes, String code, String category, String senderID, String receiverID, String key ){
 
         this.title = title;
         this.description = description;
@@ -130,6 +132,13 @@ public class Bicker {
         this.receiverID = receiverID;
     }
 
+    public String getKey() { return key; }
+
+    public void setKey(String key) { this.key = key; }
+
+    public boolean isVoted() { return voted; }
+
+    public void setVoted(boolean voted) { this.voted = voted; }
 
     public String toString() {
         String res = "";
@@ -146,4 +155,6 @@ public class Bicker {
         res += "\nReceiverID: " + receiverID;
         return res;
     }
+
+
 }

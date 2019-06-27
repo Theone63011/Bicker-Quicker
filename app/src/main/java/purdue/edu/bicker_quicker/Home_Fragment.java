@@ -3,15 +3,19 @@ package purdue.edu.bicker_quicker;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +36,10 @@ public class Home_Fragment extends Fragment {
     private ArrayList<Bicker> bickers;
     private static final String TAG = HomeActivity.class.getSimpleName();
     private boolean voted;
+
+    private Button leftVote;
+    private Button rightVote;
+    private Button noVote;
 
     public Home_Fragment() {
         // Required empty public constructor
@@ -80,8 +88,11 @@ public class Home_Fragment extends Fragment {
                             bickerSnapshot.child("left_side").getValue() != null ? bickerSnapshot.child("left_side").getValue().toString() : "No left side",
                             (int) (long) bickerSnapshot.child("right_votes").getValue(),
                             (int) (long) bickerSnapshot.child("left_votes").getValue(),
-                            bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category"));
+                            bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
+                            bickerSnapshot.getKey()));
                 }
+
+
 
                 ArrayAdapter<Bicker> adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, bickers);
 
@@ -127,6 +138,50 @@ public class Home_Fragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+    //method to update the vote count for left (1) or right (2)
+    public void vote(String key, int response, int leftSideVotes, int rightSideVotes) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        //access bicker where id == LhrhW1FAWRsJXfopsuR
+        //DatabaseReference ref = response == 1 ? database.getReference("Bicker/-LhrhW1FAWRsJXfopsuR").orderByChild("left_votes") :
+        //        database.getReference("Bicker").child("right_votes");
+        DatabaseReference ref = database.getReference("Bicker/" + key);
+
+        if (response == 1) {
+            leftSideVotes++;
+            ref.child("left_votes").setValue(leftSideVotes);
+        } else if (response == 2) {
+            rightSideVotes++;
+            ref.child("right_votes").setValue(rightSideVotes);
+        }
+
+        //update textfields of voting counts
+
+
+        //update User db w/ this bicker's id
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        //List<String> votedBickerIds = new ArrayList<String>();
+        System.out.println("CurrUserID: " + user.getUid());
+        final DatabaseReference userRef = database.getReference("User/" + user.getUid());
+        //final User currUser;
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User currUser = dataSnapshot.getValue(User.class);
+                List<String> votedBickerIds = new ArrayList<String>();
+                votedBickerIds = currUser.getVotedBickerIds();
+                votedBickerIds.add("-LhrhW1FAWRsJXfopsuR");
+                userRef.child("votedBickerids").setValue(votedBickerIds);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -198,6 +253,52 @@ public class Home_Fragment extends Fragment {
                         dropdown.setVisibility(View.VISIBLE);
                         AnimationHandler.slide_down(getActivity(), dropdown);
                     }
+                }
+            });
+
+            leftVote = view.findViewById(R.id.left);
+            rightVote = view.findViewById(R.id.right);
+            noVote = view.findViewById(R.id.abstain);
+
+            leftVote.setOnClickListener(new View.OnClickListener(){
+                public void onClick(View V){
+
+                    leftVote.setText(Integer.toString(bicker.getLeft_votes() + 1));
+                    rightVote.setText(Integer.toString(bicker.getRight_votes()));
+                    noVote.setText("Left");
+
+                    leftVote.setEnabled(false);
+                    rightVote.setEnabled(false);
+                    noVote.setEnabled(false);
+
+                    vote(bicker.getKey(), 1, bicker.getLeft_votes(), bicker.getRight_votes());
+                }
+            });
+
+            rightVote.setOnClickListener(new View.OnClickListener(){
+                public void onClick(View V){
+
+                    leftVote.setText(Integer.toString(bicker.getLeft_votes()));
+                    rightVote.setText(Integer.toString(bicker.getRight_votes() + 1));
+                    noVote.setText("Right");
+
+                    leftVote.setEnabled(false);
+                    rightVote.setEnabled(false);
+                    noVote.setEnabled(false);
+
+                    vote(bicker.getKey(), 2, bicker.getLeft_votes(), bicker.getRight_votes());
+                }
+            });
+
+            noVote.setOnClickListener(new View.OnClickListener(){
+                public void onClick(View V){
+                    leftVote.setText(Integer.toString(bicker.getLeft_votes()));
+                    rightVote.setText(Integer.toString(bicker.getRight_votes()));
+                    noVote.setText("Abstain");
+
+                    leftVote.setEnabled(false);
+                    rightVote.setEnabled(false);
+                    noVote.setEnabled(false);
                 }
             });
 
