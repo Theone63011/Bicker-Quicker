@@ -13,7 +13,7 @@
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/textCode"
+        android:id="@+id/enterCodeHere"
         android:layout_width="378dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView2"
@@ -28,7 +28,7 @@
         android:id="@+id/textView4"
         android:layout_width="395dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textCode"
+        android:layout_below="@+id/enterCodeHere"
         android:layout_marginTop="4dp"
         android:text="Send this to the other bickerer to\nget this show on the road"
         android:textAlignment="center" />

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/RespondContainer"
+    tools:context=".RespondActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarRespond"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/bickerCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Bicker Code:"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/bickerTitle"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarRespond" />
+
+    <TextView
+        android:id="@+id/bickerTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Bicker Title:"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/bickerDescription"
+        app:layout_constraintTop_toBottomOf="@+id/bickerCode" />
+
+    <TextView
+        android:id="@+id/codeHere"
+        android:layout_width="0dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="Code Here"
+        android:textColor="@color/colorPrimary"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/bickerCode"
+        app:layout_constraintTop_toTopOf="@+id/bickerCode" />
+
+    <TextView
+        android:id="@+id/titleHere"
+        android:layout_width="0dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Title Here"
+        android:textColor="@color/colorPrimary"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bickerTitle"
+        app:layout_constraintTop_toTopOf="@+id/bickerTitle" />
+
+    <TextView
+        android:id="@+id/bickerDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Bicker Description:"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/descHere"
+        app:layout_constraintTop_toBottomOf="@+id/bickerTitle" />
+
+    <TextView
+        android:id="@+id/descHere"
+        android:layout_width="0dp"
+        android:layout_height="84dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        android:text="Description Here"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bickerDescription" />
+
+    <TextView
+        android:id="@+id/yourSide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Your Side"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/descHere"
+        app:layout_constraintTop_toBottomOf="@+id/descHere" />
+
+    <EditText
+        android:id="@+id/respondSide"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginBottom="16dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        android:textColorHighlight="#00BCD4"
+        android:textColorLink="#00BCD4"
+        app:layout_constraintBottom_toTopOf="@+id/submitResponse"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yourSide" />
+
+    <Button
+        android:id="@+id/submitResponse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/standard_button"
+        android:text="Send your side!"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/cancelbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="Cancel Bicker"
+        android:backgroundTint="#FF7777"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarRespond" />
+
+
+</android.support.constraint.ConstraintLayout>
