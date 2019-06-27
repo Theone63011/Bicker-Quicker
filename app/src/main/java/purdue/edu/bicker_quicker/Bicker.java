@@ -18,6 +18,8 @@ public class Bicker {
     private String senderID;
     private String receiverID; // This is used temporarily to store bickerID from db in callback()
     private String key;
+    private String side1;
+    private String side2;
     private boolean voted;
 
     public Bicker (){
@@ -136,6 +138,14 @@ public class Bicker {
     public String getKey() { return key; }
 
     public void setKey(String key) { this.key = key; }
+
+    public void setSide1(String side){side1 = side;}
+
+    public String getSide1(){ return side1;}
+
+    public void setSide2(String side){side2 = side;}
+
+    public String getSide2(){ return side2;}
 
     public boolean isVoted() { return voted; }
 
