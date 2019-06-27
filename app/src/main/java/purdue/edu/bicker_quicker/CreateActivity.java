@@ -142,7 +142,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.categories, R.layout.support_simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         catSpin.setAdapter(adapter);
-        catSpin.setSelection(6);
+        catSpin.setSelection(0);
         catSpin.setOnItemSelectedListener(this);
         catSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
