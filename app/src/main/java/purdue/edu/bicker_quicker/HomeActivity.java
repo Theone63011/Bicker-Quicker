@@ -2,20 +2,29 @@ package purdue.edu.bicker_quicker;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
 import android.view.ViewGroup;
+import android.support.v7.widget.Toolbar;
+import android.widget.ImageButton;
 
 import java.util.ArrayList;
 
 
-public class HomeActivity extends FragmentActivity implements Home_Fragment.OnBickerPressedListener {
+public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener {
 
     //private FirebaseDatabase database;
     //private ArrayList<Bicker> bickers;
@@ -25,7 +34,10 @@ public class HomeActivity extends FragmentActivity implements Home_Fragment.OnBi
     private ViewPager mPager;
     private PagerAdapter pagerAdapter;
 
-
+    private DrawerLayout mDrawer;
+    private Toolbar toolbar;
+    private NavigationView nvDrawer;
+    private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +66,22 @@ public class HomeActivity extends FragmentActivity implements Home_Fragment.OnBi
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });*/
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        mDrawer = findViewById(R.id.drawer_layout);
+
+        ImageButton drawerButton = findViewById(R.id.DrawerButton);
+
+        drawerButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                mDrawer.openDrawer(Gravity.LEFT);
+
+            }
+        });
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -184,5 +212,27 @@ public class HomeActivity extends FragmentActivity implements Home_Fragment.OnBi
 
         }
         return views;
+    }
+
+
+
+    @Override
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        // The action bar home/up action should open or close the drawer.
+
+        switch (item.getItemId()) {
+
+            case android.R.id.home:
+
+                mDrawer.openDrawer(GravityCompat.START);
+
+                return true;
+
+        }
+
+        return super.onOptionsItemSelected(item);
+
     }
 }
