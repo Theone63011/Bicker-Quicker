@@ -246,6 +246,9 @@ public class Home_Fragment extends Fragment {
             TextView title = view.findViewById(R.id.title);
             title.setText(bicker.getTitle());
 
+            TextView category = view.findViewById(R.id.category);
+            category.setText(bicker.getCategory());
+
             TextView leftSide = view.findViewById(R.id.leftSide);
             leftSide.setText(bicker.getLeft_side());
 
