@@ -8,6 +8,7 @@
     <string name="facebook_app_id">2154435281522898</string>
     <string name="fb_login_protocol_scheme">fb2154435281522898</string>
     <string-array name="categories">
+        <item>Select Category</item>
         <item>Art</item>
         <item>Board Games</item>
         <item>Books</item>
@@ -25,4 +26,7 @@
         <item>Video Games</item>
     </string-array>
     <string name="title_activity_home">HomeActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

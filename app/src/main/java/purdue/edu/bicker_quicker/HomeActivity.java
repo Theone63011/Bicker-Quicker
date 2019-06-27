@@ -1,46 +1,50 @@
 package purdue.edu.bicker_quicker;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import android.support.v7.widget.Toolbar;
+import android.widget.ImageButton;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener {
 
-    private FirebaseDatabase database;
-    private ArrayList<Bicker> bickers;
-    private static final String TAG = HomeActivity.class.getSimpleName();
+    //private FirebaseDatabase database;
+    //private ArrayList<Bicker> bickers;
+    //private static final String TAG = HomeActivity.class.getSimpleName();
 
+    private static final int NUM_PAGES = 2;
+    private ViewPager mPager;
+    private PagerAdapter pagerAdapter;
+
+    private DrawerLayout mDrawer;
+    private Toolbar toolbar;
+    private NavigationView nvDrawer;
+    private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        database = FirebaseDatabase.getInstance();
+        /*database = FirebaseDatabase.getInstance();
 
         DatabaseReference databaseRef = database.getReference();
 
@@ -56,22 +60,26 @@ public class HomeActivity extends AppCompatActivity {
                             bickerSnapshot.child("description").getValue().toString()));
                 }
 
-                ArrayAdapter<Bicker> adapter = new bickerArrayAdapter(HomeActivity.this, 0, bickers);
-
-                ListView listView = findViewById(R.id.unvotedListView);
-                listView.setAdapter(adapter);
-                int count = listView.getAdapter().getCount();
-
-                //We can't set visibility to GONE until after all list elements are loaded or they will overlap
-                for ( int i=0; i < listView.getAdapter().getCount(); i++) {
-                    View child = listView.getAdapter().getView(i, null, null);
-                    LinearLayout dropdown = child.findViewById(R.id.dropdown);
-                    dropdown.setVisibility(View.GONE);
-                }
             }
 
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });*/
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        mDrawer = findViewById(R.id.drawer_layout);
+
+        ImageButton drawerButton = findViewById(R.id.DrawerButton);
+
+        drawerButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                mDrawer.openDrawer(Gravity.LEFT);
+
             }
         });
 
@@ -84,10 +92,56 @@ public class HomeActivity extends AppCompatActivity {
             }
 
         });
+
+
+        mPager = (ViewPager) findViewById(R.id.pager);
+        pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(pagerAdapter);
+
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (fragment instanceof Home_Fragment) {
+            Home_Fragment homeFragment = (Home_Fragment) fragment;
+            homeFragment.setOnBickerPressedListener(this);
+        }
+    }
+
+    @Override
+    public void onBickerPressed(int position) {
+        // Required. Currently does nothing, can be changed and used if fragment needs to communicate with activity
     }
 
 
-    //custom ArrayAdapter for filling the listView
+    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Home_Fragment homeFragment = new Home_Fragment();
+            Bundle args = new Bundle();
+            if(position == 0){
+                args.putBoolean("voted", false);
+            }
+            else{
+                args.putBoolean("voted", true);
+            }
+            homeFragment.setArguments(args);
+
+            return homeFragment;
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
+        }
+    }
+
+
+    /*//custom ArrayAdapter for filling the listView
     class bickerArrayAdapter extends ArrayAdapter<Bicker> {
 
         private Context context;
@@ -140,7 +194,7 @@ public class HomeActivity extends AppCompatActivity {
 
             return view;
         }
-    }
+    }*/
 
     private static ArrayList<View> getViewsByTag(ViewGroup root, String tag){
         ArrayList<View> views = new ArrayList<View>();
@@ -158,5 +212,27 @@ public class HomeActivity extends AppCompatActivity {
 
         }
         return views;
+    }
+
+
+
+    @Override
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        // The action bar home/up action should open or close the drawer.
+
+        switch (item.getItemId()) {
+
+            case android.R.id.home:
+
+                mDrawer.openDrawer(GravityCompat.START);
+
+                return true;
+
+        }
+
+        return super.onOptionsItemSelected(item);
+
     }
 }

@@ -1,5 +1,4 @@
 package purdue.edu.bicker_quicker;
-import android.util.Log;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,8 +13,11 @@ public class Censor {
 
     // Return false is an invalid string, return true is valid
     public static boolean check_chars(String s) {
+        String bad_char = "NOT SET";
         for (String ch : bad_chars) {
             if(s.contains(ch)) {
+                bad_char = ch;
+                //Log.d(TAG, "check_chars: bad char found = " + bad_char);
                 return false;
             }
         }
@@ -24,14 +26,26 @@ public class Censor {
     }
 
     public static boolean check_words(String s) {
+        boolean found = false;
+        String bad_word = "NOT SET";
         for (String word : bad_words) {
             Pattern rx = Pattern.compile("\\b" + word + "\\b", Pattern.CASE_INSENSITIVE);
-            s = rx.matcher(s).replaceAll(new String(new char[word.length()]).replace('\0', '*'));
+            //s = rx.matcher(s).replaceAll(new String(new char[word.length()]).replace('\0', '*'));
+            found = rx.matcher(s).find(0);
+            bad_word = rx.matcher(s).pattern().toString();
+            if(found) {
+                break;
+            }
         }
 
-        Log.d(TAG, "censor check_words: s =" + s);
+        bad_word = bad_word.substring(2, (bad_word.length() - 2));
 
-        if(s.contains("*")) {
+        if(s.length() == 1) {
+            found = false;
+        }
+
+        if(found) {
+            //Log.d(TAG, "check_words: bad word found = " + bad_word);
             return false;
         }
         else {
@@ -41,6 +55,7 @@ public class Censor {
 
     public static boolean check_title_length(String s) {
         if(s.length() > 18) {
+            //Log.d(TAG, "check_title_length: title is longer than 18 chars");
             return false;
         }
         else {
@@ -50,6 +65,7 @@ public class Censor {
 
     public static boolean check_desc_length(String s) {
         if(s.length() > 50) {
+            //Log.d(TAG, "check_desc_length: description is longer than 50 chars");
             return false;
         }
         else {

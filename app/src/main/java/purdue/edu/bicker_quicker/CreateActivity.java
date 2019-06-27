@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,7 +142,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.categories, R.layout.support_simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         catSpin.setAdapter(adapter);
-        catSpin.setSelection(5);
+        catSpin.setSelection(0);
         catSpin.setOnItemSelectedListener(this);
         catSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -324,12 +323,12 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         if(censor.check_chars(bickSide) == false) censor_passed = false;
         if(censor.check_words(bickSide) == false) censor_passed = false;
         if(censor_passed == false) {
-            Log.d(TAG, "Censor not passed");
+            //Log.d(TAG, "Censor not passed");
             Toast.makeText(CreateActivity.this, "Invalid Input.", Toast.LENGTH_SHORT).show();
             return;
         }
         else {
-            Log.d(TAG, "Censor passed");
+            //Log.d(TAG, "Censor passed");
         }
 
         if (bickTitle.trim().equals("")) {

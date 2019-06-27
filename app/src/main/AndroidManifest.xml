@@ -16,19 +16,18 @@
             android:name=".HomeActivity"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme.NoActionBar">
-
-
-        </activity>
-        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity">
 
         </activity>
         <activity android:name=".RespondActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".CreateActivity" />
+        <activity android:name=".ViewVoting" />
         <activity
             android:name=".BickerActivity"
             android:label="@string/title_activity_bicker"

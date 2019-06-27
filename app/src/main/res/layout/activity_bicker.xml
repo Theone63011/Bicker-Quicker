@@ -51,4 +51,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/createnewicon" />
 
+    <Button
+        android:id="@+id/voting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginLeft="200dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginBottom="28dp"
+        android:text="Voting"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </android.support.constraint.ConstraintLayout>
