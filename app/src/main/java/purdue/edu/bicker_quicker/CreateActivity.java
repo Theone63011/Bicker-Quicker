@@ -452,7 +452,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
     @Override
     public void leave() {
-        Intent intent = new Intent(this, BickerActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
     }
 }
