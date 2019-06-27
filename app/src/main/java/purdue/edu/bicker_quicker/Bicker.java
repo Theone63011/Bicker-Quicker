@@ -23,9 +23,9 @@ public class Bicker {
     public Bicker (){
 
     }
-    public Bicker(String title, String right_side, String left_side,
+    public Bicker(String title, String left_Side, String right_side,
                   int left_votes, int right_votes, String category, String key) {
-        this(title, null,  left_side, right_side, null, left_votes, right_votes, null, category, null, null, key );
+        this(title, null,  left_Side, right_side, null, left_votes, right_votes, null, category, null, null, key );
 
     }
     public Bicker (String title, String description, String left_side, String right_side, Date create_date, int left_votes,
