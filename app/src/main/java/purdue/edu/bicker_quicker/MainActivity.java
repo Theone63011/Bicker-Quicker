@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            Intent intent = new Intent(this, BickerActivity.class);
+            Intent intent = new Intent(this, HomeActivity.class);
             startActivity(intent);
         }
         super.onResume();
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             String message = "User is Logged into Facebook";
             Log.d(TAG, message);
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            startActivity(new Intent(MainActivity.this, BickerActivity.class));
+            startActivity(new Intent(MainActivity.this, HomeActivity.class));
         }
         else {
             String message = "User is NOT Logged into Facebook";
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
 
         //check if a user is already logged in and by pass login page
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            Intent intent = new Intent(this, BickerActivity.class);
+            Intent intent = new Intent(this, HomeActivity.class);
             startActivity(intent);
         }
     }
@@ -302,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
             }
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-            startActivity(new Intent(MainActivity.this, BickerActivity.class));
+            startActivity(new Intent(MainActivity.this, HomeActivity.class));
             // ...
         } else {
             //message = new AlertDialog.Builder(this);
@@ -342,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
                             ref.push().setValue(user);
 
                         }
-                        Intent intent = new Intent(this, BickerActivity.class);
+                        Intent intent = new Intent(this, HomeActivity.class);
                         startActivity(intent);
 
                         FirebaseUser user = mAuth.getCurrentUser();
@@ -439,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
 
 
-                            startActivity(new Intent(MainActivity.this, BickerActivity.class));
+                            startActivity(new Intent(MainActivity.this, HomeActivity.class));
 
                         } else {
                             Log.d(TAG, "Facebook signInWithCredential: FAIL");

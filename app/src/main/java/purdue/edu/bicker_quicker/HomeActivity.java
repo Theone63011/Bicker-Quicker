@@ -1,6 +1,7 @@
 package purdue.edu.bicker_quicker;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -19,7 +20,13 @@ import android.view.View;
 import android.content.Intent;
 import android.view.ViewGroup;
 import android.support.v7.widget.Toolbar;
+import android.widget.Button;
 import android.widget.ImageButton;
+
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -66,6 +73,15 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });*/
+
+        Button signOut = findViewById(R.id.signOut);
+
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signOut();
+            }
+        });
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -234,5 +250,28 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
         return super.onOptionsItemSelected(item);
 
+    }
+
+    public void signOut(){
+
+        // To Sign Out of Facebook, do this:
+        MainActivity.signOut();
+
+        //sign out of google and take back to MainActivity on success
+        FirebaseAuth.getInstance().signOut();
+        MainActivity.mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, task -> {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                });
+
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        startActivity(new Intent(HomeActivity.this, MainActivity.class));
+                    }
+                });
     }
 }
