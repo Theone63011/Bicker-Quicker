@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,6 +51,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     protected void onCreate(Bundle savedInstanceState) {
 
         if(FirebaseAuth.getInstance().getCurrentUser() == null){
+            Log.d("Error", "NULL USER");
             startActivity(new Intent(HomeActivity.this, MainActivity.class));
         }
         super.onCreate(savedInstanceState);
@@ -99,6 +101,15 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
         });
 
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(FirebaseAuth.getInstance().getCurrentUser() == null){
+            Log.d("Error", "NULL USER");
+            startActivity(new Intent(HomeActivity.this, MainActivity.class));
+        }
     }
 
     @Override
