@@ -293,10 +293,10 @@ public class MainActivity extends AppCompatActivity {
                 user.setUsername(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                 user.setUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 user.setModerator(false);
-                user.setBickerId("test1");
-                user.setBickerId("test2");
-                user.setVotedBickerIds("test3");
-                user.setVotedBickerIds("test4");
+                //user.setBickerId("test1");
+                //user.setBickerId("test2");
+                //user.setVotedBickerIds("test3");
+                //user.setVotedBickerIds("test4");
                 ref.push().setValue(user);
 
             }
@@ -335,10 +335,10 @@ public class MainActivity extends AppCompatActivity {
                             user.setUsername(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                             user.setUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
                             user.setModerator(false);
-                            user.setBickerId("test1");
-                            user.setBickerId("test2");
-                            user.setVotedBickerIds("test3");
-                            user.setVotedBickerIds("test4");
+                            //user.setBickerId("test1");
+                            //user.setBickerId("test2");
+                            //user.setVotedBickerIds("test3");
+                            //user.setVotedBickerIds("test4");
                             ref.push().setValue(user);
 
                         }
@@ -418,10 +418,10 @@ public class MainActivity extends AppCompatActivity {
                                 user.setUsername(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                                 user.setUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
                                 user.setModerator(false);
-                                user.setBickerId("test1");
-                                user.setBickerId("test2");
-                                user.setVotedBickerIds("test3");
-                                user.setVotedBickerIds("test4");
+                                //user.setBickerId("test1");
+                                //user.setBickerId("test2");
+                                //user.setVotedBickerIds("test3");
+                                //user.setVotedBickerIds("test4");
                                 ref.push().setValue(user);
 
                             }
