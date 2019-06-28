@@ -14,16 +14,17 @@
         android:layout_height="120dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="104dp"
+        android:layout_marginTop="276dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:fontFamily="@font/sriracha"
+        android:fontFamily="@font/bubbler_one"
         android:text="Bicker"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/blueAccent3"
+        android:textColor="#84C9E8"
         android:textSize="80dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.324"
+        app:layout_constraintHorizontal_bias="0.379"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
@@ -38,20 +39,21 @@
 
     <Button
         android:id="@+id/signInButton"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="180dp"
+        android:layout_width="280dp"
+        android:layout_height="46dp"
         android:background="@drawable/standard_button"
+        android:drawableLeft="@drawable/ic_logo_whitegrey"
+        android:paddingLeft="5dp"
         android:shadowColor="#A8A8A8"
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="5"
         android:text="Login/Sign Up"
         android:textColor="#FFFFFF"
-        android:textSize="25dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/google_login_frame_layout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent" />
 
     <FrameLayout
@@ -62,10 +64,10 @@
         android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="-8dp"
+        app:layout_constraintBottom_toTopOf="@+id/facebook_login_frame_layout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.gms.common.SignInButton
@@ -76,15 +78,15 @@
 
         <Button
             android:id="@+id/custom_google_login_button"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
+            android:layout_width="280dp"
+            android:layout_height="46dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
-            android:background="@drawable/google_button_shape"
-            android:drawableLeft="@drawable/resizeable_google_icon"
+            android:background="@drawable/standard_button"
+            android:drawableLeft="@drawable/ic_google_icon"
             android:paddingLeft="10dp"
             android:text="Login with Google"
-            android:textColor="#000000"
+            android:textColor="#E9F2F9"
             android:textSize="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
@@ -102,10 +104,10 @@
         android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent">
 
         <com.facebook.login.widget.LoginButton xmlns:facebook="http://schemas.android.com/apk/res-auto"
@@ -116,12 +118,12 @@
 
         <Button
             android:id="@+id/custom_facebook_login_button"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
+            android:layout_width="280dp"
+            android:layout_height="46dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
-            android:background="@drawable/facebook_button_shape"
-            android:drawableLeft="@drawable/resizeable_facebook_icon"
+            android:background="@drawable/standard_button"
+            android:drawableLeft="@drawable/ic_facebook_logo_full"
             android:paddingLeft="10dp"
             android:text="Login with Facebook"
             android:textColor="#FFFFFF"
@@ -139,18 +141,31 @@
         android:layout_height="157dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="172dp"
+        android:layout_marginTop="62dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:fontFamily="@font/sriracha"
+        android:fontFamily="@font/bubbler_one"
         android:text="Quicker"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/purpleAccent1"
+        android:textColor="#C580D5"
         android:textSize="80dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.769"
+        app:layout_constraintHorizontal_bias="0.931"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+        app:layout_constraintTop_toTopOf="@+id/textView5" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:layout_marginTop="64dp"
+        android:foregroundGravity="center_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_logo_blue_lightpurple" />
 
 </android.support.constraint.ConstraintLayout>
 
