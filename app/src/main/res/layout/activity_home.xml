@@ -21,72 +21,11 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:minHeight="?attr/actionBarSize"
-            android:background="#DDDDDD"
-            app:contentInsetLeft="0dp"
-            app:contentInsetStart="0dp">
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageButton
-                    android:id="@+id/DrawerButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    app:srcCompat="@drawable/ic_menu_dgrey_24dp"
-                    android:layout_weight="0"
-                    android:onClick="toggleDrawer"/>
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Bicker"
-                    android:textColor="#CC66FF"
-                    android:textSize="32dp"
-                    android:layout_gravity="center_vertical"
-                    android:id="@+id/toolbar_title_1"
-                    android:layout_weight="0"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Quicker"
-                    android:textColor="#6699FF"
-                    android:textSize="32dp"
-                    android:layout_gravity="center_vertical"
-                    android:id="@+id/toolbar_title_2"
-                    android:layout_weight="0"/>
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"/>
-
-                <ImageButton
-                    android:id="@+id/profileButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_profile_dgrey"
-                    android:layout_weight="0"
-                    />
-
-            </LinearLayout>
-
-    </android.support.v7.widget.Toolbar>
-
+        <include
+            layout="@layout/toolbar_rs"
+            android:id="@+id/toolbarHome"
+            >
+        </include>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -142,13 +81,14 @@
     <!--</android.support.v4.widget.NestedScrollView>-->
 
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_add_white_24dp" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            app:backgroundTint="#6CC4E6"
+            app:srcCompat="@drawable/ic_add_white_24dp" />
 
     </android.support.design.widget.CoordinatorLayout>
 

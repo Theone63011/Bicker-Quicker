@@ -16,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
@@ -57,9 +58,23 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        toolbar = findViewById(R.id.toolbarHome);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("");
+        toolbar.setNavigationIcon(R.drawable.ic_logo_whitegrey);
+
+        mDrawer = findViewById(R.id.drawer_layout);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawer.openDrawer(Gravity.LEFT);
+            }
+        });
+        /*
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        mDrawer = findViewById(R.id.drawer_layout);
+
 
         ImageButton drawerButton = findViewById(R.id.DrawerButton);
 
@@ -72,6 +87,8 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
             }
         });
+        */
+
 
         nvDrawer = findViewById(R.id.nav_view);
         setupDrawerContent(nvDrawer);
@@ -87,11 +104,13 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         });
 
 
+
         mPager = (ViewPager) findViewById(R.id.pager);
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(pagerAdapter);
 
-        ImageButton profileButton = findViewById(R.id.profileButton);
+/*
+        ImageButton profileButton = findViewById(R.id.profButton);
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -100,7 +119,15 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
             }
 
         });
+*/
 
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu,menu);
+        return true;
     }
 
     @Override
@@ -224,6 +251,11 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     public boolean onOptionsItemSelected(MenuItem item) {
 
         // The action bar home/up action should open or close the drawer.
+        if (item.getItemId() == R.id.profButton) {
+            Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        }
+
 
         switch (item.getItemId()) {
 

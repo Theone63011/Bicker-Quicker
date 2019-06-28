@@ -17,7 +17,7 @@
     -->
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbarProfile"
+        android:id="@+id/toolbarBicker"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
@@ -61,7 +61,7 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarProfile" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbarBicker" />
 
     <TextView
         android:id="@+id/textViewCategory"

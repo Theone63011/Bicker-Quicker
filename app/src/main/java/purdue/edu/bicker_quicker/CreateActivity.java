@@ -121,10 +121,12 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
 
         // Change toolbar to a new toolbar (
-        toolbar = (Toolbar) findViewById(R.id.toolbarProfile);
+        toolbar = (Toolbar) findViewById(R.id.toolbarBicker);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Create Bicker");
         toolbar.setSubtitle("Enter Your Bicker Details Below");
+        toolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
+        toolbar.setSubtitleTextColor(Color.parseColor("#FFFFFF"));
 
         // Scale and draw back button icon in top left of toolbar
         Drawable drawable= getResources().getDrawable(R.drawable.backicon);

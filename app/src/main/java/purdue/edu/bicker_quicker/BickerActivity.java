@@ -8,7 +8,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,12 +15,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 
-import com.facebook.login.LoginManager;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class BickerActivity extends AppCompatActivity {
     private AlertDialog.Builder message;
@@ -57,7 +54,7 @@ public class BickerActivity extends AppCompatActivity {
         Button signOut = findViewById(R.id.signOutButton);
         Button voting = findViewById(R.id.voting);
         FloatingActionButton createBicker = findViewById(R.id.createNewBickerButton);
-        Toolbar toolbar = findViewById(R.id.toolbarProfile);
+        Toolbar toolbar = findViewById(R.id.toolbarBicker);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Bicker Page");
 

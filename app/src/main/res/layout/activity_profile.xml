@@ -7,7 +7,7 @@
     tools:context=".ProfileActivity">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbarProfile"
+        android:id="@+id/toolbarBicker"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
@@ -16,6 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:title="Profile"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
@@ -38,7 +39,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarProfile" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbarBicker" />
+
+    <Button
+        android:id="@+id/signOutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
+        android:text="Sign Out"
+        app:layout_constraintEnd_toEndOf="@+id/bickerRespond"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/bickerRespond"
+        app:layout_constraintTop_toBottomOf="@+id/bickerRespond" />
 
 
 </android.support.constraint.ConstraintLayout>
