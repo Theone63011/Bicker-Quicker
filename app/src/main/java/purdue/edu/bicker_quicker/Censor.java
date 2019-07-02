@@ -72,4 +72,20 @@ public class Censor {
             return true;
         }
     }
+
+    public static boolean check_tag_length(String s) {
+        if (s.length() > 12) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean check_tag_length_short(String s) {
+        if (s.length() < 2) {
+            return false;
+        }
+
+        return true;
+    }
 }
