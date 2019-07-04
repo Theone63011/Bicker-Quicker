@@ -31,6 +31,7 @@ import com.google.zxing.common.StringUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
@@ -514,6 +515,17 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         String bickCat = tv.getText().toString();
         String bickSide = side.getText().toString();
 
+        // Get tags into a list
+        ArrayList<String> tags = new ArrayList<String>();
+        if (tag_string1 != null && !tag_string1.equals(""))
+            tags.add(tag_string1);
+
+        if (tag_string2 != null && !tag_string2.equals(""))
+            tags.add(tag_string2);
+
+        if (tag_string3 != null && !tag_string3.equals(""))
+            tags.add(tag_string3);
+
         boolean failed = false;
 
         boolean censor_passed = true;
@@ -594,6 +606,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setCategory(bickCat.trim());
         bicker.setSenderID(FirebaseAuth.getInstance().getCurrentUser().getUid());
         bicker.setReceiverID("Unknown");
+        bicker.setTags(tags);
         ref.push().setValue(bicker);
         Toast.makeText(CreateActivity.this,"Bicker Sent", Toast.LENGTH_LONG).show();
     }

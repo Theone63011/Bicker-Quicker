@@ -23,7 +23,6 @@
         android:layout_marginStart="4dp"
         android:layout_marginLeft="4dp"
         android:layout_marginBottom="1dp"
-        android:text="Hello"
         android:textColor="@color/colorAccent"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/tagsTitle"
@@ -142,17 +141,11 @@
         android:id="@+id/textViewDesc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:text="Bicker Description"
         android:textColor="#777777"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.151"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textViewTitle"
         app:layout_constraintTop_toBottomOf="@+id/categorySpinner" />
 
     <TextView
