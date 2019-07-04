@@ -2,10 +2,12 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,12 +25,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -38,6 +38,11 @@ public class Home_Fragment extends Fragment {
 
     private FirebaseDatabase database;
     private ArrayList<Bicker> bickers;
+
+    private static ArrayList<LinearLayout> closed_bicker_layout_list;
+    private static ArrayList<LinearLayout> open_bicker_layout_list;
+
+
     private static final String TAG = HomeActivity.class.getSimpleName();
     private boolean voted;
     List<String> votedBickerIds;
@@ -86,6 +91,9 @@ public class Home_Fragment extends Fragment {
         votedBickerIds = new ArrayList<String>();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
+        closed_bicker_layout_list = new ArrayList<LinearLayout>();
+        open_bicker_layout_list = new ArrayList<LinearLayout>();
+
 
         databaseRef.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -129,8 +137,8 @@ public class Home_Fragment extends Fragment {
                 //We can't set visibility to GONE until after all list elements are loaded or they will overlap
                 for ( int i=0; i < listView.getAdapter().getCount(); i++) {
                     View child = listView.getAdapter().getView(i, null, null);
-                    LinearLayout dropdown = child.findViewById(R.id.dropdown);
-                    dropdown.setVisibility(View.GONE);
+                    LinearLayout open_bicker = child.findViewById(R.id.open_bicker_holder);
+                    //open_bicker.setVisibility(View.GONE);
                 }
             }
 
@@ -230,6 +238,10 @@ public class Home_Fragment extends Fragment {
             //get the property we are displaying
             Bicker bicker = bickers.get(position);
 
+            int total = bicker.getLeft_votes() + bicker.getRight_votes();
+            String total_votes = Integer.toString(total);
+            total_votes += " Votes";
+
             //get the inflater and inflate the XML layout for each item
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.layout_unvoted_bicker, null);
@@ -243,11 +255,80 @@ public class Home_Fragment extends Fragment {
             TextView hiddenRightVotes = view.findViewById(R.id.hiddenRightVotes);
             hiddenRightVotes.setText(String.valueOf(bicker.getRight_votes()));
 
-            TextView title = view.findViewById(R.id.title);
-            title.setText(bicker.getTitle());
+            TextView closed_title = view.findViewById(R.id.closed_title);
+            closed_title.setText(bicker.getTitle());
 
-            TextView category = view.findViewById(R.id.category);
-            category.setText(bicker.getCategory());
+            TextView open_title = view.findViewById(R.id.open_title);
+            open_title.setText(bicker.getTitle());
+
+            TextView closed_category = view.findViewById(R.id.closed_category);
+            TextView open_category = view.findViewById(R.id.open_category);
+            String catName = bicker.getCategory();
+            closed_category.setText(catName);
+            closed_category.setTextColor(Color.WHITE);
+            open_category.setText(catName);
+            open_category.setTextColor(Color.WHITE);
+            Drawable catDraw = ContextCompat.getDrawable(getActivity(), R.drawable.shape_category);
+
+            //Below sets the correct color of the category icon
+            switch (catName) {
+                case "Art":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Art), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Board Games":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_BoardGames), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Books":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Books), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Comedy":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Comedy), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Food":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Food), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Movies":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Movies), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Music":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Music), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Philosophy":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Philosophy), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Politics":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Politics), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Relationships":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Relationships), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Science":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Science), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Sports":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Sports), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "TV Shows":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_TvShows), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Video Games":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_VideoGames), PorterDuff.Mode.MULTIPLY);
+                    break;
+                case "Miscellaneous":
+                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Misc), PorterDuff.Mode.MULTIPLY);
+                    break;
+
+                    default:
+                        Log.d(TAG, "ERROR: Could not find a corresponding color category. See colors.xml for correct options");
+                        Toast.makeText(getActivity(), "Home_Fragment: ERROR: Could not find a corresponding color category. " +
+                                "See colors.xml for correct options" , Toast.LENGTH_LONG).show();
+
+            }
+
+            closed_category.setBackground(catDraw);
+            closed_category.setPadding(8, 8, 8, 8);
+            open_category.setBackground(catDraw);
+            open_category.setPadding(8, 8, 8, 8);
 
             TextView leftSide = view.findViewById(R.id.leftSide);
             leftSide.setText(bicker.getLeft_side());
@@ -255,26 +336,68 @@ public class Home_Fragment extends Fragment {
             TextView rightSide = view.findViewById(R.id.rightSide);
             rightSide.setText(bicker.getRight_side());
 
-            LinearLayout header = view.findViewById(R.id.header);
+            //int screenWidth = getContext().getResources().getDisplayMetrics().widthPixels;
 
-            LinearLayout dropdown = view.findViewById(R.id.dropdown);
-            dropdown.setVisibility(View.GONE);
+            //Log.d(TAG, "Parents width= " + screenWidth);
 
-            header.setOnClickListener(new View.OnClickListener() {
+            LinearLayout closed_bicker_holder = view.findViewById(R.id.closed_bicker_holder);
+            LinearLayout open_bicker_holder = view.findViewById(R.id.open_bicker_holder);
+
+            LinearLayout closed_header = view.findViewById(R.id.closed_header);
+            LinearLayout open_header = view.findViewById(R.id.open_header);
+
+            LinearLayout closed_voteCountHolder = view.findViewById(R.id.closed_voteCount_holder);
+            LinearLayout open_voteCountHolder = view.findViewById(R.id.open_voteCount_holder);
+
+            TextView closed_vote_count = view.findViewById(R.id.closed_vote_count_text);
+            TextView open_vote_count = view.findViewById(R.id.open_vote_count_text);
+            closed_vote_count.setText(total_votes);
+            open_vote_count.setText(total_votes);
+
+            open_bicker_holder.setVisibility(View.GONE);
+
+            closed_bicker_holder.setOnClickListener(new View.OnClickListener() {
+                @Override
                 public void onClick(View v) {
-                    LinearLayout parentView = (LinearLayout)v.getParent();
-
-                    LinearLayout dropdown = parentView.findViewById(R.id.dropdown);
-                    if(dropdown.isShown()){
-                        AnimationHandler.slide_up(getActivity(), dropdown);
-                        dropdown.setVisibility(View.GONE);
-                    }
-                    else{
-                        dropdown.setVisibility(View.VISIBLE);
-                        AnimationHandler.slide_down(getActivity(), dropdown);
-                    }
+                    onBickerClick(v, closed_bicker_holder, open_bicker_holder);
                 }
             });
+
+            open_bicker_holder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBickerClick(v, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            closed_header.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBickerClick(v, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            open_header.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBickerClick(v, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            closed_voteCountHolder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            open_voteCountHolder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
 
             leftVote = view.findViewById(R.id.left);
             rightVote = view.findViewById(R.id.right);
@@ -312,6 +435,12 @@ public class Home_Fragment extends Fragment {
                     noVote.setEnabled(false);
 
                     vote(hiddenKey.getText().toString(), 1, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
+
+                    int tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
+                    String tot_str = Integer.toString(tot);
+                    tot_str += " Votes";
+                    open_vote_count.setText(tot_str);
+                    closed_vote_count.setText(tot_str);
                 }
             });
 
@@ -337,6 +466,13 @@ public class Home_Fragment extends Fragment {
                     noVote.setEnabled(false);
 
                     vote(hiddenKey.getText().toString(), 2, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
+
+                    int tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
+                    String tot_str = Integer.toString(tot);
+                    tot_str += " Votes";
+                    open_vote_count.setText(tot_str);
+                    closed_vote_count.setText(tot_str);
+
                 }
             });
 
@@ -366,6 +502,19 @@ public class Home_Fragment extends Fragment {
             });
 
             return view;
+        }
+
+        public void onBickerClick (View view, LinearLayout closed_bicker, LinearLayout open_bicker) {
+            if(closed_bicker.isShown()){
+                open_bicker.setVisibility(View.VISIBLE);
+                AnimationHandler.slide_down(getActivity(), open_bicker);
+                closed_bicker.setVisibility(View.GONE);
+            }
+            else{
+                AnimationHandler.slide_up(getActivity(), open_bicker);
+                closed_bicker.setVisibility(View.VISIBLE);
+                open_bicker.setVisibility(View.GONE);
+            }
         }
     }
 }

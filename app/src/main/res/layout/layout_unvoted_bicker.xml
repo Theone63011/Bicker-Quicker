@@ -1,53 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent_holder"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <LinearLayout
+        android:id="@+id/closed_bicker_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="5dp"
+        android:background="@drawable/bicker_closed_shadow"
+        android:orientation="vertical"
         android:paddingHorizontal="15dp"
-        android:orientation="vertical">
+        android:paddingVertical="5dp"
+        android:visibility="visible">
 
         <LinearLayout
+            android:id="@+id/closed_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/header"
-            android:clickable="true">
+            android:layout_alignTop="@+id/closed_bicker_holder"
+            android:clickable="true"
+            android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/closed_title_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/closed_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="placeholder"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20sp" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.2" />
+
+                <TextView
+                    android:id="@+id/closed_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/shape_category"
+                    android:padding="5sp"
+                    android:text="placeholder"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/closed_voteCount_holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/closed_vote_count_icon"
+                android:layout_width="37dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="2dp"
+                app:srcCompat="@drawable/vote_count_icon" />
+
             <TextView
+                android:id="@+id/closed_vote_count_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/title"
-                android:textColor="@color/colorPrimary"
-                android:textSize="20sp"/>
+                android:layout_gravity="left|center_vertical"
+                android:text="Placeholder"
+                android:textColor="@color/purpleAccent1" />
 
             <Space
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1"/>
+                android:layout_weight="0.3" />
+
+            <ImageView
+                android:id="@+id/closed_timer"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="3dp"
+                app:srcCompat="@drawable/stopwatch" />
 
             <TextView
+                android:id="@+id/closed_clock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/category"
-                android:textSize="20sp"
-                android:text="placeholder"/>
+                android:layout_gravity="bottom|center_vertical"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="2dp"
+                android:text="10:00"
+                android:textColor="@color/timer"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/open_bicker_holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bicker_closed_shadow"
+        android:orientation="vertical"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="5dp"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:id="@+id/open_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/open_bicker_holder"
+            android:clickable="true"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/open_title_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/open_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="placeholder"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20sp" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.2" />
+
+                <TextView
+                    android:id="@+id/open_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/shape_category"
+                    android:padding="5sp"
+                    android:text="placeholder"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
 
             </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/open_dropdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:id="@+id/dropdown"
             android:tag="dropdown">
 
             <LinearLayout
@@ -55,21 +176,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/leftSide"
-                android:layout_weight=".5"/>
+                <TextView
+                    android:id="@+id/leftSide"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5" />
 
                 <Space
                     android:layout_width="10sp"
                     android:layout_height="match_parent" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/rightSide"
-                android:layout_weight=".5"/>
+                <TextView
+                    android:id="@+id/rightSide"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5" />
 
             </LinearLayout>
 
@@ -79,48 +200,103 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:id="@+id/left"
-                    android:layout_weight="1"
-                    android:text="left"/>
-                <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="left" />
+
+                <Button
                     android:id="@+id/abstain"
-                    android:layout_weight="1"
-                    android:text="abstain"/>
-                <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/right"
                     android:layout_weight="1"
-                    android:text="right"/>
+                    android:text="abstain" />
+
+                <Button
+                    android:id="@+id/right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="right" />
 
                 <!--Used to store the bicker's key -->
                 <TextView
+                    android:id="@+id/hiddenBickerKey"
                     android:layout_width="0px"
                     android:layout_height="0px"
-                    android:visibility="gone"
-                    android:id="@+id/hiddenBickerKey"/>
+                    android:visibility="gone" />
 
                 <TextView
+                    android:id="@+id/hiddenLeftVotes"
                     android:layout_width="0px"
                     android:layout_height="0px"
-                    android:visibility="gone"
-                    android:id="@+id/hiddenLeftVotes"/>
+                    android:visibility="gone" />
 
 
                 <TextView
+                    android:id="@+id/hiddenRightVotes"
                     android:layout_width="0px"
                     android:layout_height="0px"
-                    android:visibility="gone"
-                    android:id="@+id/hiddenRightVotes"/>
+                    android:visibility="gone" />
 
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/open_voteCount_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/open_vote_count_icon"
+                    android:layout_width="37dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="2dp"
+                    app:srcCompat="@drawable/vote_count_icon" />
+
+                <TextView
+                    android:id="@+id/open_vote_count_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:text="Placeholder"
+                    android:textColor="@color/purpleAccent1" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.3" />
+
+                <ImageView
+                    android:id="@+id/open_timer"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="3dp"
+                    app:srcCompat="@drawable/stopwatch" />
+
+                <TextView
+                    android:id="@+id/open_clock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_vertical"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginBottom="2dp"
+                    android:text="10:00"
+                    android:textColor="@color/timer"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
             </LinearLayout>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>
