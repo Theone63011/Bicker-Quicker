@@ -131,6 +131,7 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
                         bick.setLeft_votes(value.getLeft_votes());
                         bick.setCreate_date(value.getCreate_date());
                         bick.setReceiverID(bicker.getKey());
+                        bick.setTags(value.getTags());
                     }
                 }
 

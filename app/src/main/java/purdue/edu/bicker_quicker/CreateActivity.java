@@ -76,7 +76,6 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
 
-
         // Instantiate Scene Items
         bickerTitle = findViewById(R.id.textViewTitle);
         bickerCategory = findViewById(R.id.textViewCategory);
@@ -266,6 +265,15 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
         s = s.toLowerCase();
         s = Character.toUpperCase(s.charAt(0)) + s.substring(1); // Cap first letter
+
+        // Ensure no duplicate tags from same user
+        if (tag_string1 != null && s.toLowerCase().compareTo(tag_string1.toLowerCase()) == 0) {
+            return false;
+        }
+
+        if (tag_string2 != null && s.toLowerCase().compareTo(tag_string2.toLowerCase()) == 0) {
+            return false;
+        }
 
         /*
         if (censor.check_chars(s) == false || censor.check_words(s) == false || censor.check_tag_length(s))
