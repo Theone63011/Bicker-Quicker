@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -26,9 +27,11 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.zxing.common.StringUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
@@ -41,17 +44,27 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
     TextView bickerDescription;
     TextView descToolTip;
     TextView yourSide;
+    TextView tag1;
+    TextView tag2;
+    TextView tag3;
+    int numTags = 0;
+    String tag_string1;
+    String tag_string2;
+    String tag_string3;
 
     // TextViews below are for Censoring
     private TextView bicker_title_censor;
     private TextView bicker_desc_censor;
     private TextView bicker_side_censor;
+    private TextView bicker_tag_censor;
 
     EditText title;             // Editable Fields
     EditText description;
     EditText side;
+    EditText tag;
 
     Button submitBicker;
+    FloatingActionButton addTag;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -63,7 +76,6 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create);
 
-
         // Instantiate Scene Items
         bickerTitle = findViewById(R.id.textViewTitle);
         bickerCategory = findViewById(R.id.textViewCategory);
@@ -74,19 +86,61 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         description = findViewById(R.id.editTextDesc);
         side = findViewById(R.id.editTextSide);
         submitBicker = findViewById(R.id.submitBicker);
-
+        tag = findViewById(R.id.tagField);
+        addTag = findViewById(R.id.fabAddTag);
+        tag1 = findViewById(R.id.liveTag1);
+        tag2 = findViewById(R.id.liveTag2);
+        tag3 = findViewById(R.id.liveTag3);
+        numTags = 0;
+        tag_string1 = null;
+        tag_string2 = null;
+        tag_string3 = null;
 
         censor = new Censor();
         bicker_title_censor = findViewById(R.id.bicker_title_censor);
         bicker_desc_censor = findViewById(R.id.bicker_desc_censor);
         bicker_side_censor = findViewById(R.id.bicker_side_censor);
+        bicker_tag_censor = findViewById(R.id.bicker_tag_censor);
         bicker_title_censor.setVisibility(View.GONE);
         bicker_desc_censor.setVisibility(View.GONE);
         bicker_side_censor.setVisibility(View.GONE);
+        bicker_tag_censor.setVisibility(View.GONE);
         title.addTextChangedListener(titleWatcher);
         description.addTextChangedListener(descWatcher);
         side.addTextChangedListener(sideWatcher);
+        tag.addTextChangedListener(tagWatcher);
 
+        tag1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteTag(1);
+            }
+        });
+
+        tag2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteTag(2);
+            }
+        });
+
+        tag3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteTag(3);
+            }
+        });
+
+        addTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (numTags >= 3)
+                    return;
+                if (addNewTag(tag.getText().toString())) { // Tag worked
+                    tag.setText("");
+                }
+            }
+        });
 
         submitBicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,6 +211,109 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
             }
         });
+    }
+
+    public boolean deleteTag(int tagID) {
+        if (tagID == 1) {
+            if (numTags == 1) {
+                numTags = 0;
+                tag_string1 = null;
+                tag1.setText("");
+            } else if (numTags == 2) {
+                numTags = 1;
+                tag_string1 = tag_string2;
+                tag_string2 = null;
+                tag2.setText("");
+                tag1.setText(tag_string1+" x");
+            } else if (numTags == 3) {
+                numTags = 2;
+                tag_string1 = tag_string2;
+                tag_string2 = tag_string3;
+                tag3.setText("");
+                tag2.setText(tag_string2+" x");
+                tag1.setText(tag_string1+" x");
+                tag3.setText("");
+            }
+        } else if (tagID == 2) {
+            if (numTags == 2) {
+                numTags = 1;
+                tag_string2 = null;
+                tag2.setText("");
+            } else if (numTags == 3) {
+                numTags = 2;
+                tag_string2 = tag_string3;
+                tag_string3 = null;
+                tag3.setText("");
+                tag2.setText(tag_string2+" x");
+            }
+        } else if (tagID == 3) {
+            numTags = 2;
+            tag_string3 = null;
+            tag3.setText("");
+        }
+
+        return false;
+    }
+
+    public boolean addNewTag(String s) {
+
+        if (s.length() < 2) {
+            bicker_tag_censor.setText("Length Minimum: 2 chars");
+            bicker_tag_censor.setVisibility(View.VISIBLE);
+            return false;
+        }
+
+        s = s.toLowerCase();
+        s = Character.toUpperCase(s.charAt(0)) + s.substring(1); // Cap first letter
+
+        // Ensure no duplicate tags from same user
+        if (tag_string1 != null && s.toLowerCase().compareTo(tag_string1.toLowerCase()) == 0) {
+            return false;
+        }
+
+        if (tag_string2 != null && s.toLowerCase().compareTo(tag_string2.toLowerCase()) == 0) {
+            return false;
+        }
+
+        /*
+        if (censor.check_chars(s) == false || censor.check_words(s) == false || censor.check_tag_length(s))
+            return false;
+        */
+
+        if (bicker_tag_censor.getVisibility() == View.VISIBLE) {
+            return false;
+        }
+
+        //Toast.makeText(this, "NumTags "+(numTags), Toast.LENGTH_LONG).show();
+
+        if (numTags >= 3)
+            return false;
+
+        switch (numTags) {
+            case 0: {
+                tag1.setText(s+" x");
+                tag_string1 = s;
+                numTags = 1;
+                break;
+            }
+            case 1: {
+                tag2.setText(s+" x");
+                tag_string2 = s;
+                numTags = 2;
+                break;
+            }
+            case 2: {
+                tag3.setText(s+" x");
+                tag_string3 = s;
+                numTags = 3;
+                break;
+            }
+            default: {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 
@@ -260,6 +417,57 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         }
     };
 
+    private final TextWatcher tagWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            int valid = 0;
+            if (censor.check_chars(s.toString()) == false) valid = 1;
+            if (censor.check_words(s.toString()) == false) valid = 2;
+            if (censor.check_tag_length(s.toString()) == false) valid = 3;
+
+            if (valid > 0) {
+                if (valid == 3) {
+                    bicker_tag_censor.setText("Length Limit: 12 chars");
+                } else if (valid == 1) {
+                    bicker_tag_censor.setText("Invalid Character");
+                } else if (valid == 2) {
+                    bicker_tag_censor.setText("Inappropriate Input");
+                }
+
+                bicker_tag_censor.setVisibility(View.VISIBLE);
+            } else {
+                bicker_tag_censor.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            int valid = 0;
+            if (censor.check_chars(s.toString()) == false) valid = 1;
+            if (censor.check_words(s.toString()) == false) valid = 2;
+            if (censor.check_tag_length(s.toString()) == false) valid = 3;
+
+            if (valid > 0) {
+                if (valid == 3) {
+                    bicker_tag_censor.setText("Tags Must Be Shorter than 12 Characters");
+                } else if (valid == 1) {
+                    bicker_tag_censor.setText("Invalid Character");
+                } else if (valid == 2) {
+                    bicker_tag_censor.setText("Inappropriate Input");
+                }
+
+                bicker_tag_censor.setVisibility(View.VISIBLE);
+            } else {
+                bicker_tag_censor.setVisibility(View.GONE);
+            }
+        }
+    };
+
     private final TextWatcher sideWatcher = new TextWatcher() {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -314,6 +522,17 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         TextView tv = (TextView) catSpin.getSelectedView();
         String bickCat = tv.getText().toString();
         String bickSide = side.getText().toString();
+
+        // Get tags into a list
+        ArrayList<String> tags = new ArrayList<String>();
+        if (tag_string1 != null && !tag_string1.equals(""))
+            tags.add(tag_string1);
+
+        if (tag_string2 != null && !tag_string2.equals(""))
+            tags.add(tag_string2);
+
+        if (tag_string3 != null && !tag_string3.equals(""))
+            tags.add(tag_string3);
 
         boolean failed = false;
 
@@ -395,6 +614,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setCategory(bickCat.trim());
         bicker.setSenderID(FirebaseAuth.getInstance().getCurrentUser().getUid());
         bicker.setReceiverID("Unknown");
+        bicker.setTags(tags);
         ref.push().setValue(bicker);
         Toast.makeText(CreateActivity.this,"Bicker Sent", Toast.LENGTH_LONG).show();
     }
