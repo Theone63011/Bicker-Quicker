@@ -17,7 +17,7 @@
         android:layout_marginRight="32dp"
         android:layout_marginBottom="-16dp"
         android:background="#9A9ECADD"
-        app:layout_constraintBottom_toBottomOf="@+id/switch7"
+        app:layout_constraintBottom_toBottomOf="@+id/voteFinished"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +37,7 @@
         app:title="Settings"/>
 
     <Switch
-        android:id="@+id/switch1"
+        android:id="@+id/allNot"
         android:layout_width="0dp"
         android:layout_height="26dp"
         android:layout_marginStart="8dp"
@@ -67,7 +67,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/textView8"
         app:layout_constraintEnd_toEndOf="@+id/textView7"
         app:layout_constraintStart_toStartOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/switch1" />
+        app:layout_constraintTop_toBottomOf="@+id/allNot" />
 
     <TextView
         android:id="@+id/textView8"
@@ -79,10 +79,10 @@
         android:text="Send Me a Notification When :"
         android:textColor="#444444"
         app:layout_constraintStart_toStartOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/switch1" />
+        app:layout_constraintTop_toBottomOf="@+id/allNot" />
 
     <Switch
-        android:id="@+id/switch2"
+        android:id="@+id/beenResponded"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="12dp"
@@ -98,7 +98,7 @@
         tools:ignore="NotSibling" />
 
     <Switch
-        android:id="@+id/switch3"
+        android:id="@+id/votingEndMine"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="12dp"
@@ -109,10 +109,10 @@
         android:text="Voting Has Ended On My Bickers"
         app:layout_constraintEnd_toEndOf="@+id/textView7"
         app:layout_constraintStart_toStartOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/switch2" />
+        app:layout_constraintTop_toBottomOf="@+id/beenResponded" />
 
     <Switch
-        android:id="@+id/switch4"
+        android:id="@+id/cancelBicker"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="12dp"
@@ -123,10 +123,10 @@
         android:text="Someone Cancels My Bicker"
         app:layout_constraintEnd_toEndOf="@+id/textView7"
         app:layout_constraintStart_toStartOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/switch3" />
+        app:layout_constraintTop_toBottomOf="@+id/votingEndMine" />
 
     <Switch
-        android:id="@+id/switch5"
+        android:id="@+id/closeRequest"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -137,10 +137,10 @@
         android:text="Someone I'm Bickering With Wants to\nClose a Bicker"
         app:layout_constraintEnd_toEndOf="@+id/textView7"
         app:layout_constraintStart_toStartOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/switch4" />
+        app:layout_constraintTop_toBottomOf="@+id/cancelBicker" />
 
     <Switch
-        android:id="@+id/switch6"
+        android:id="@+id/closeConfirm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -151,10 +151,10 @@
         android:text="The Other Bickerer Confirms my\nClose Request"
         app:layout_constraintEnd_toEndOf="@+id/textView7"
         app:layout_constraintStart_toStartOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/switch5" />
+        app:layout_constraintTop_toBottomOf="@+id/closeRequest" />
 
     <Switch
-        android:id="@+id/switch7"
+        android:id="@+id/voteFinished"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -165,6 +165,6 @@
         android:text="A Bicker I Voted On Has Finished"
         app:layout_constraintEnd_toEndOf="@+id/textView7"
         app:layout_constraintStart_toStartOf="@+id/textView7"
-        app:layout_constraintTop_toBottomOf="@+id/switch6" />
+        app:layout_constraintTop_toBottomOf="@+id/closeConfirm" />
 
 </android.support.constraint.ConstraintLayout>
