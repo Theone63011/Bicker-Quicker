@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent_holder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
 
     <LinearLayout
         android:id="@+id/closed_bicker_holder"
@@ -34,7 +36,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="placeholder"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/blueAccent2"
                     android:textSize="20sp" />
 
                 <Space
@@ -111,7 +113,6 @@
 
     </LinearLayout>
 
-
     <LinearLayout
         android:id="@+id/open_bicker_holder"
         android:layout_width="match_parent"
@@ -141,7 +142,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="placeholder"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/blueAccent2"
                     android:textSize="20sp" />
 
                 <Space
@@ -172,60 +173,27 @@
             android:tag="dropdown">
 
             <LinearLayout
+                android:id="@+id/choice_label_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/leftSide"
+                    android:id="@+id/choose_side_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight=".5" />
-
-                <Space
-                    android:layout_width="10sp"
-                    android:layout_height="match_parent" />
-
-                <TextView
-                    android:id="@+id/rightSide"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".5" />
-
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="Choose your Side"
+                    android:textColor="@color/blue_purple_mix"
+                    android:textSize="18sp" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/side_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/left"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="left" />
-
-                <Button
-                    android:id="@+id/abstain"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="abstain" />
-
-                <Button
-                    android:id="@+id/right"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="right" />
-
-                <!--Used to store the bicker's key -->
-                <TextView
-                    android:id="@+id/hiddenBickerKey"
-                    android:layout_width="0px"
-                    android:layout_height="0px"
-                    android:visibility="gone" />
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/hiddenLeftVotes"
@@ -233,13 +201,98 @@
                     android:layout_height="0px"
                     android:visibility="gone" />
 
-
                 <TextView
                     android:id="@+id/hiddenRightVotes"
                     android:layout_width="0px"
                     android:layout_height="0px"
                     android:visibility="gone" />
 
+                <TextView
+                    android:id="@+id/hiddenBickerKey"
+                    android:layout_width="0px"
+                    android:layout_height="0px"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/left_right_label_holder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/left_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:text="Blue Side"
+                        android:textColor="@color/blueAccent3"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/right_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.85"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:text="Purple Side"
+                        android:textColor="@color/purpleAccent1"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/left_right_holder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/left"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|top"
+                        android:layout_weight="1"
+                        android:background="@drawable/side_prechoice_blue"
+                        android:clickable="true"
+                        android:gravity="left"
+                        android:hapticFeedbackEnabled="true"
+                        android:text="left" />
+
+                    <Button
+                        android:id="@+id/right"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|top"
+                        android:layout_weight="1"
+                        android:background="@drawable/side_prechoice_purple"
+                        android:clickable="true"
+                        android:gravity="left"
+                        android:text="right" />
+
+                    <!--Used to store the bicker's key -->
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/abstain_holder"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/abstain"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:text="abstain" />
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -273,6 +326,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="0.3" />
+
 
                 <ImageView
                     android:id="@+id/open_timer"

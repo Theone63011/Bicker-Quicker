@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -98,6 +99,7 @@ public class Home_Fragment extends Fragment {
         databaseRef.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String id = user.getUid();
+                String voted_id;
 
                 for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()){
                     try {
@@ -105,7 +107,8 @@ public class Home_Fragment extends Fragment {
                             userKey = userSnapshot.getKey();
 
                             for (DataSnapshot votedId : userSnapshot.child("votedBickerIds").getChildren()) {
-                                votedBickerIds.add(votedId.getValue().toString());
+                                voted_id = votedId.getKey().toString();
+                                votedBickerIds.add(voted_id);
                             }
                         }
                     }
@@ -194,7 +197,17 @@ public class Home_Fragment extends Fragment {
         }
 
         //update User db w/ this bicker's id
-        ref.child("User/" + userKey + "/votedBickerIds").push().setValue(key);
+        ref.child("User/" + userKey + "/votedBickerIds/" + key).push();
+
+        if(response == 0) {
+            ref.child("User/" + userKey + "/votedBickerIds/" + key + "/Side Voted").setValue("abstain");
+        }
+        else if(response == 1) {
+            ref.child("User/" + userKey + "/votedBickerIds/" + key + "/Side Voted").setValue("left");
+        }
+        else if(response == 2) {
+            ref.child("User/" + userKey + "/votedBickerIds/" + key + "/Side Voted").setValue("right");
+        }
 
     }
 
@@ -245,6 +258,11 @@ public class Home_Fragment extends Fragment {
             //get the inflater and inflate the XML layout for each item
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.layout_unvoted_bicker, null);
+
+            final ViewGroup sideContainer = (ViewGroup) view.findViewById(R.id.side_holder);
+
+            TextView leftLabel = view.findViewById(R.id.left_label);
+            TextView rightLabel = view.findViewById(R.id.right_label);
 
             TextView hiddenKey = view.findViewById(R.id.hiddenBickerKey);
             hiddenKey.setText((bicker.getKey()));
@@ -330,11 +348,11 @@ public class Home_Fragment extends Fragment {
             open_category.setBackground(catDraw);
             open_category.setPadding(8, 8, 8, 8);
 
-            TextView leftSide = view.findViewById(R.id.leftSide);
-            leftSide.setText(bicker.getLeft_side());
+            //TextView leftSide = view.findViewById(R.id.leftSide);
+            //leftSide.setText(bicker.getLeft_side());
 
-            TextView rightSide = view.findViewById(R.id.rightSide);
-            rightSide.setText(bicker.getRight_side());
+            //TextView rightSide = view.findViewById(R.id.rightSide);
+            //rightSide.setText(bicker.getRight_side());
 
             //int screenWidth = getContext().getResources().getDisplayMetrics().widthPixels;
 
@@ -400,108 +418,212 @@ public class Home_Fragment extends Fragment {
 
 
             leftVote = view.findViewById(R.id.left);
+            leftVote.setText(bicker.getLeft_side());
             rightVote = view.findViewById(R.id.right);
+            rightVote.setText(bicker.getRight_side());
             noVote = view.findViewById(R.id.abstain);
 
+            leftVote.setBackgroundResource(R.drawable.side_prechoice_blue);
+            rightVote.setBackgroundResource(R.drawable.side_prechoice_purple);
+
+            leftLabel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    leftLabel.setEnabled(false);
+                    rightLabel.setEnabled(false);
+                    leftSideClick(view, bicker, open_vote_count, closed_vote_count);
+                }
+            });
+
+            rightLabel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    rightLabel.setEnabled(false);
+                    leftLabel.setEnabled(false);
+                    rightSideClick(view, bicker, open_vote_count, closed_vote_count);
+                }
+            });
+
+
             if(voted == true){
-                leftVote.setText(Integer.toString(bicker.getLeft_votes()));
-                rightVote.setText(Integer.toString(bicker.getRight_votes()));
-                noVote.setText("Already Voted");
+                //leftVote.setText(Integer.toString(bicker.getLeft_votes()));
+                //rightVote.setText(Integer.toString(bicker.getRight_votes()));
+                //noVote.setText("Already Voted");
+
+                leftVote.setText(bicker.getLeft_side());
+                rightVote.setText(bicker.getRight_side());
+                noVote.setText("Abstain");
+                noVote.setVisibility(View.GONE);
 
                 leftVote.setEnabled(false);
                 rightVote.setEnabled(false);
                 noVote.setEnabled(false);
+                leftLabel.setEnabled(false);
+                rightLabel.setEnabled(false);
+
+                String bickerCode = hiddenKey.getText().toString();
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                //String ref_path  ="User/" + userKey + "/votedBickerIds/" + bickerCode + "/Side Voted";
+                //Log.d(TAG, "Home_fragment: ref_path=" + ref_path);
+                DatabaseReference ref = database.getReference();
+                ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String side_voted = dataSnapshot.child("User").child(userKey).child("votedBickerIds").child(bickerCode).child("Side Voted").getValue().toString();
+                        Log.d(TAG, "Home_fragment: side_voted=" + side_voted);
+                        Log.d(TAG, "Home_fragment: title=" + bicker.getTitle());
+
+                        if(side_voted.equalsIgnoreCase("left")){
+                            Log.d(TAG, "Home_fragment: left vote found");
+                            leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_blue);
+                            rightVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
+                        }
+                        else if(side_voted.equalsIgnoreCase("right")) {
+                            Log.d(TAG, "Home_fragment: right vote found");
+                            leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
+                            rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_purple);
+                        }
+                        else if(side_voted.equalsIgnoreCase("abstain")) {
+                            Log.d(TAG, "Home_fragment: abstain vote found");
+                            leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
+                            rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
+                            noVote.setVisibility(View.VISIBLE);
+                            noVote.setTextColor(getResources().getColor(R.color.blue_purple_mix));
+                        }
+                        else {
+                            Log.d(TAG, "Home_fragment: ERROR- side_voted not assigned");
+                            Toast.makeText(getActivity(), "Home_fragment: ERROR- side_voted not assigned", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             leftVote.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
-                    LinearLayout parentView = (LinearLayout)v.getParent();
-                    leftVote = parentView.findViewById(R.id.left);
-                    rightVote = parentView.findViewById(R.id.right);
-                    noVote = parentView.findViewById(R.id.abstain);
-
-                    TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
-
-                    TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
-
-                    TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
-
-                    leftVote.setText(Integer.toString(Integer.parseInt(hiddenLeftVotes.getText().toString()) + 1));
-                    rightVote.setText(hiddenRightVotes.getText().toString());
-                    noVote.setText("Left");
-
-                    leftVote.setEnabled(false);
-                    rightVote.setEnabled(false);
-                    noVote.setEnabled(false);
-
-                    vote(hiddenKey.getText().toString(), 1, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
-
-                    int tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
-                    String tot_str = Integer.toString(tot);
-                    tot_str += " Votes";
-                    open_vote_count.setText(tot_str);
-                    closed_vote_count.setText(tot_str);
+                    leftLabel.setEnabled(false);
+                    rightLabel.setEnabled(false);
+                    leftSideClick(v, bicker, open_vote_count, closed_vote_count);
                 }
             });
 
             rightVote.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
-                    LinearLayout parentView = (LinearLayout)v.getParent();
-                    leftVote = parentView.findViewById(R.id.left);
-                    rightVote = parentView.findViewById(R.id.right);
-                    noVote = parentView.findViewById(R.id.abstain);
-
-                    TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
-
-                    TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
-
-                    TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
-
-                    leftVote.setText(hiddenLeftVotes.getText().toString());
-                    rightVote.setText(Integer.toString(Integer.parseInt(hiddenRightVotes.getText().toString()) + 1));
-                    noVote.setText("Right");
-
-                    leftVote.setEnabled(false);
-                    rightVote.setEnabled(false);
-                    noVote.setEnabled(false);
-
-                    vote(hiddenKey.getText().toString(), 2, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
-
-                    int tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
-                    String tot_str = Integer.toString(tot);
-                    tot_str += " Votes";
-                    open_vote_count.setText(tot_str);
-                    closed_vote_count.setText(tot_str);
-
+                    rightLabel.setEnabled(false);
+                    leftLabel.setEnabled(false);
+                    rightSideClick(v, bicker, open_vote_count, closed_vote_count);
                 }
             });
 
             noVote.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
-                    LinearLayout parentView = (LinearLayout)v.getParent();
-                    leftVote = parentView.findViewById(R.id.left);
-                    rightVote = parentView.findViewById(R.id.right);
-                    noVote = parentView.findViewById(R.id.abstain);
-
-                    TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
-
-                    TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
-
-                    TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
-
-                    leftVote.setText(hiddenLeftVotes.getText().toString());
-                    rightVote.setText(hiddenRightVotes.getText().toString());
-                    noVote.setText("Abstain");
-
-                    leftVote.setEnabled(false);
-                    rightVote.setEnabled(false);
-                    noVote.setEnabled(false);
-
-                    vote(hiddenKey.getText().toString(), 0, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
+                    rightLabel.setEnabled(false);
+                    leftLabel.setEnabled(false);
+                    noSideClick(v, bicker, open_vote_count, closed_vote_count);
                 }
             });
 
             return view;
+        }
+
+        public void leftSideClick(View view, Bicker bicker, TextView open_vote_count, TextView closed_vote_count) {
+            View parentView = (View)view.getParent().getParent().getParent().getParent().getParent();
+            leftVote = parentView.findViewById(R.id.left);
+            rightVote = parentView.findViewById(R.id.right);
+            noVote = parentView.findViewById(R.id.abstain);
+
+            TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
+
+            TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
+
+            TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
+
+            //leftVote.setText(Integer.toString(Integer.parseInt(hiddenLeftVotes.getText().toString()) + 1));
+            //rightVote.setText(hiddenRightVotes.getText().toString());
+            noVote.setText("Blue Side");
+
+            // Not needed now, but may need later
+            leftVote.setEnabled(false);
+            rightVote.setEnabled(false);
+
+
+            noVote.setEnabled(false);
+
+            vote(hiddenKey.getText().toString(), 1, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
+
+            int tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
+            String tot_str = Integer.toString(tot);
+            tot_str += " Votes";
+            open_vote_count.setText(tot_str);
+            closed_vote_count.setText(tot_str);
+
+            AnimationHandler.select_blue(leftVote, rightVote, parentView, getActivity());
+        }
+
+        public void rightSideClick(View view, Bicker bicker, TextView open_vote_count, TextView closed_vote_count) {
+            View parentView = (View)view.getParent().getParent().getParent().getParent().getParent();
+            leftVote = parentView.findViewById(R.id.left);
+            rightVote = parentView.findViewById(R.id.right);
+            noVote = parentView.findViewById(R.id.abstain);
+
+            TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
+
+            TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
+
+            TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
+
+            //leftVote.setText(hiddenLeftVotes.getText().toString());
+            //rightVote.setText(Integer.toString(Integer.parseInt(hiddenRightVotes.getText().toString()) + 1));
+            noVote.setText("Purple Side");
+
+            // Not needed now, but may need later
+            leftVote.setEnabled(false);
+            rightVote.setEnabled(false);
+
+
+            noVote.setEnabled(false);
+
+            vote(hiddenKey.getText().toString(), 2, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
+
+            int tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
+            String tot_str = Integer.toString(tot);
+            tot_str += " Votes";
+            open_vote_count.setText(tot_str);
+            closed_vote_count.setText(tot_str);
+
+            AnimationHandler.select_purple(leftVote, rightVote, parentView, getActivity());
+        }
+
+        public void noSideClick(View view, Bicker bicker, TextView open_vote_count, TextView closed_vote_count) {
+            View parentView = (View)view.getParent().getParent().getParent().getParent().getParent();
+            leftVote = parentView.findViewById(R.id.left);
+            rightVote = parentView.findViewById(R.id.right);
+            noVote = parentView.findViewById(R.id.abstain);
+
+            TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
+
+            TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
+
+            TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
+
+            // Not needed now, but may need later
+            //leftVote.setText(hiddenLeftVotes.getText().toString());
+            //rightVote.setText(hiddenRightVotes.getText().toString());
+
+
+            noVote.setText("Abstain");
+
+            leftVote.setEnabled(false);
+            rightVote.setEnabled(false);
+            noVote.setEnabled(false);
+
+            vote(hiddenKey.getText().toString(), 0, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
+
+            AnimationHandler.select_abstain(leftVote, rightVote, parentView, getActivity());
         }
 
         public void onBickerClick (View view, LinearLayout closed_bicker, LinearLayout open_bicker) {
