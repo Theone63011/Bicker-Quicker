@@ -42,6 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
     Toolbar toolbar;
     private static FirebaseAuth mAuth;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme_NoActionBar); // Disable action bar (should be by default but this is precautionary)
@@ -199,7 +200,25 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void deleteAccount() {
         //delete entry in auth and db
+        final FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("User"); //.child("userId").equalTo(currUser.getUid());
+        ref.child("userId").equalTo(currUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //delete the user from db
+                dataSnapshot.getRef().setValue(null);
+                //delete the user from fb auth
+                currUser.delete();
+                //take user back to starting page
+                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
     }
 }
