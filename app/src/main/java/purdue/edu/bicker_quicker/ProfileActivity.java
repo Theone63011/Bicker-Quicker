@@ -93,7 +93,7 @@ public class ProfileActivity extends AppCompatActivity {
         //create listener for PastBickers button in user info retrieval; pass User to pastBickers()
         FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference ref = database.getReference("User"); //.child("userId").equalTo(currUser.getUid());
+        DatabaseReference ref = database.getReference("User"); //.child("userId").equalTo(currUser.getUid());
         ref.child("userId").equalTo(currUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
