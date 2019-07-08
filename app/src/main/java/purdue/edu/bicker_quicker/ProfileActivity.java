@@ -114,7 +114,10 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
                 bob.setMessage("Are you sure you want to delete your account? This action is permanent.");
+                bob.create();
+                bob.show();
             }
+
         });
 
         modToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -128,7 +131,9 @@ public class ProfileActivity extends AppCompatActivity {
                     //unchecked, deactivate mod mode
                     msg = "Moderator mode deactivated.";
                 }
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT);
+                System.out.println(msg);
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -136,14 +141,40 @@ public class ProfileActivity extends AppCompatActivity {
         //create listener for PastBickers button in user info retrieval; pass User to pastBickers()
         FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("User"); //.child("userId").equalTo(currUser.getUid());
-        ref.child("userId").equalTo(currUser.getUid()).addValueEventListener(new ValueEventListener() {
+        DatabaseReference ref = database.getReference();
+        ref.addListenerForSingleValueEvent( new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
+                    if (userSnapshot.child("userId").getValue().toString().equals(currUser.getUid())) {
+                        //if the userId is that of the current user, check mod status
+                        if (userSnapshot.child("moderator").getValue().toString().equals("true")) {
+                            System.out.println("User is mod");
+                            modToggle.setVisibility(View.VISIBLE);
+                        } else {
+                            System.out.println("User is not mod");
+                        }
+                    }
+                }
+            }
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+        /*
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("User");
+        System.out.println("Current User ID: " + currUser.getUid());
+        ref.orderByChild("userId").equalTo(currUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
+                System.out.println(user);
                 if (user.getModerator()) {
                     //is mod, set toggle button to visible
+                    System.out.println("User is mod");
                     modToggle.setVisibility(View.VISIBLE);
+                } else {
+                    System.out.println("User is not mod");
                 }
             }
 
@@ -152,6 +183,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
+        */
     }
 
     public void pastBickers() {

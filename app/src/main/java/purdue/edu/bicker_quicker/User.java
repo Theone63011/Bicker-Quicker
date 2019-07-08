@@ -35,4 +35,13 @@ public class User {
 
     public List<String> getVotedBickerIds(){ return votedBickerIds;}
 
+    public String toString() {
+        String res = "";
+        res += username + "\n";
+        res += email + "\n";
+        res += userId + "\n";
+        res += moderator + "\n";
+        return res;
+    }
+
 }
