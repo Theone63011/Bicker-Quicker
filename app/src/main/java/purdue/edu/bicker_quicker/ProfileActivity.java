@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +34,7 @@ public class ProfileActivity extends AppCompatActivity {
     Button signOut;
     Button toSettings;
     Button pastBickers;
+    Switch modToggle;
     Toolbar toolbar;
     private static FirebaseAuth mAuth;
 
@@ -45,6 +48,7 @@ public class ProfileActivity extends AppCompatActivity {
         respondToBicker = findViewById(R.id.bickerRespond);
         pastBickers = findViewById(R.id.pastBickers);
         toolbar = findViewById(R.id.toolbarBicker);
+        modToggle = findViewById(R.id.mod);
         setSupportActionBar(toolbar);
         toolbar.setTitle("Your Profile");
         Drawable drawable= getResources().getDrawable(R.drawable.backicon);
@@ -89,6 +93,17 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        modToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if (checked) {
+                    //is checked, activate mod mode
+                } else {
+                    //unchecked, deactivate mod mode
+                }
+            }
+        });
+
         //get user info from DB, check if mod. If so, make mod toggle visible
         //create listener for PastBickers button in user info retrieval; pass User to pastBickers()
         FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -99,7 +114,8 @@ public class ProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 if (user.getModerator()) {
-                    //is mod, set toggle button to true
+                    //is mod, set toggle button to visible
+                    modToggle.setVisibility(View.VISIBLE);
                 }
             }
 
