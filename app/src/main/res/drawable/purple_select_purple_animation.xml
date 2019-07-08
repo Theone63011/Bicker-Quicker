@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="true">
+
+    <item
+        android:drawable="@drawable/side_prechoice_purple"
+        android:fromAlpha="1.0"
+        android:toAlpha="0.0"
+        android:fillAfter="true"
+        android:duration="100" />
+
+    <item
+        android:drawable="@drawable/side_postchoice_purple_select_purple"
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0"
+        android:fillAfter="true"
+        android:duration="900" />
+
+</animation-list>

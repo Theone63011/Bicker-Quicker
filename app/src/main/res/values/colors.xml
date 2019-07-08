@@ -10,6 +10,8 @@
     <color name="blueAccent3">#7CC5E4</color>
     <color name="purpleAccent1">#C27CD1</color>
 
+    <color name="blue_purple_mix">#4453B6</color>
+
     <color name="orangeAccent1">#FFA94B</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
@@ -19,4 +21,23 @@
     <color name="green">#05D10E</color>
     <color name="blue">#0072FF</color>
     <color name="purple">#9618AC</color>
+
+    <color name="timer">#c2272d</color>
+
+    <!--Below are the colors for specific categories:-->
+    <color name="category_Sports">#4062B2</color>
+    <color name="category_Philosophy">#5E43B6</color>
+    <color name="category_Music">#FFE049</color>
+    <color name="category_Comedy">#FFC249</color>
+    <color name="category_Books">#43D23C</color>
+    <color name="category_Food">#2EA39F</color>
+    <color name="category_Art">#FF9A49</color>
+    <color name="category_BoardGames">#FD484D</color>
+    <color name="category_Movies">#34B57E</color>
+    <color name="category_VideoGames">#397AAB</color>
+    <color name="category_Relationships">#FFB149</color>
+    <color name="category_TvShows">#FF7D49</color>
+    <color name="category_Politics">#E84271</color>
+    <color name="category_Science">#88E441</color>
+    <color name="category_Misc">#000000</color>
 </resources>
