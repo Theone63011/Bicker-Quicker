@@ -29,8 +29,11 @@ exports.deleteOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(asyn
 
 exports.moveOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(async (change) => {
   const ref = change.after.ref.parent; // reference to the parent
-
+  const expBickRef = ref.('ExpiredBicker'); //reference to parent then expired bicker document
   const now = Date.now();
+
+  const oldItemsQuery = ref.orderByChild('create_date/time');
+  const snapshot = await oldItemsQuery.once('value');
 
   // create a map with all children that need to be removed
   const updates = {};
@@ -47,5 +50,5 @@ exports.moveOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(async 
     });
 
   // execute all updates in one go and return the result to end the function
-  return ref.update(updates);
+  return expBickRef.update(updates);
 });
