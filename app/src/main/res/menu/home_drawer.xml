@@ -7,5 +7,7 @@
         android:title="Settings"/>
     <item android:id="@+id/signOut"
         android:title="Sign Out" />
+    <item android:id="@+id/delete"
+        android:title="Temp Delete Page" />
 
 </menu>
