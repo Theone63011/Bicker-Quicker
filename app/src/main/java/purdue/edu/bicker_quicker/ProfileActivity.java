@@ -217,7 +217,7 @@ public class ProfileActivity extends AppCompatActivity {
                     if (userSnapshot.child("userId").getValue().toString().equals(currUser.getUid())) {
                         //if the userId is that of the current user, check mod status
                         System.out.println("Attempting delete calls");
-                        dataSnapshot.getRef().setValue(null);
+                        //dataSnapshot.getRef().child("User").orderByChild("userId").equalTo(currUser.getUid());
                         currUser.delete();
                         //take user back to starting page
                         Intent intent = new Intent(ProfileActivity.this, MainActivity.class);

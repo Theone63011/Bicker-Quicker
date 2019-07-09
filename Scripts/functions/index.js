@@ -26,3 +26,26 @@ exports.deleteOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(asyn
   // execute all updates in one go and return the result to end the function
   return ref.update(updates);
 });
+
+exports.moveOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(async (change) => {
+  const ref = change.after.ref.parent; // reference to the parent
+
+  const now = Date.now();
+
+  // create a map with all children that need to be removed
+  const updates = {};
+
+  snapshot.forEach(function (childSnapshot) {
+      var value = childSnapshot.val();
+      //value.create_date.time gives time bicker was created
+      //now is the current time
+      //value.expiry should be the total time, in milliseconds, the bicker was set to expire after
+      if ((now - value.create_date.time) > value.expiry) {
+          //bicker has expired. Move it to expiredBicker section of DB
+          console.log('Bicker has expired:' + value.title);
+      }
+    });
+
+  // execute all updates in one go and return the result to end the function
+  return ref.update(updates);
+});
