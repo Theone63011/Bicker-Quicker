@@ -26,6 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -95,13 +96,36 @@ public class Home_Fragment extends Fragment {
         closed_bicker_layout_list = new ArrayList<LinearLayout>();
         open_bicker_layout_list = new ArrayList<LinearLayout>();
 
+        bickers = new ArrayList<>();
+        votedBickerIds = new ArrayList<String>();
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
-        databaseRef.addListenerForSingleValueEvent( new ValueEventListener() {
+        Query databaseRef2 = database.getReference("User").orderByChild("category");
+
+        Query databaseRef3 = database.getReference("Bicker").orderByChild("category"); //create_date
+
+        /*
+        databaseRef2.addListenerForSingleValueEvent( new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot2) {
+
+                for (DataSnapshot childSnapshot: dataSnapshot2.getChildren()) {
+                    Log.d("", childSnapshot.child("title").getValue().toString());
+                    //System.out.println("Key = "+childSnapshot.getKey()+" Value = "+childSnapshot.toString());
+                }
+            }
+
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });*/
+
+        databaseRef2.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                 String id = user.getUid();
                 String voted_id;
 
-                for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()){
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                     try {
                         if (userSnapshot.child("userId") != null && userSnapshot.child("userId").getValue().toString().equals(id)) {
                             userKey = userSnapshot.getKey();
@@ -111,13 +135,21 @@ public class Home_Fragment extends Fragment {
                                 votedBickerIds.add(voted_id);
                             }
                         }
-                    }
-                    catch (Exception e){
+                    } catch (Exception e) {
                         Log.w(TAG, "Home_Fragment detected a null user in the database.   " + e);
                     }
                 }
+            }
 
-                for (DataSnapshot bickerSnapshot : dataSnapshot.child("Bicker").getChildren()) {
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+
+        databaseRef3.addListenerForSingleValueEvent( new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot bickerSnapshot : dataSnapshot.getChildren()) {
 
                     if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
                         bickers.add(new Bicker(
@@ -131,6 +163,8 @@ public class Home_Fragment extends Fragment {
                     }
                 }
 
+
+
                 ArrayAdapter<Bicker> adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, bickers);
 
                 ListView listView = getView().findViewById(R.id.unvotedListView);
@@ -140,8 +174,8 @@ public class Home_Fragment extends Fragment {
                 //We can't set visibility to GONE until after all list elements are loaded or they will overlap
                 for ( int i=0; i < listView.getAdapter().getCount(); i++) {
                     View child = listView.getAdapter().getView(i, null, null);
-                    LinearLayout open_bicker = child.findViewById(R.id.open_bicker_holder);
-                    //open_bicker.setVisibility(View.GONE);
+                    LinearLayout dropdown = child.findViewById(R.id.open_bicker_holder);
+                    dropdown.setVisibility(View.GONE);
                 }
             }
 
@@ -336,10 +370,10 @@ public class Home_Fragment extends Fragment {
                     catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Misc), PorterDuff.Mode.MULTIPLY);
                     break;
 
-                    default:
-                        Log.d(TAG, "ERROR: Could not find a corresponding color category. See colors.xml for correct options");
-                        Toast.makeText(getActivity(), "Home_Fragment: ERROR: Could not find a corresponding color category. " +
-                                "See colors.xml for correct options" , Toast.LENGTH_LONG).show();
+                default:
+                    Log.d(TAG, "ERROR: Could not find a corresponding color category. See colors.xml for correct options");
+                    Toast.makeText(getActivity(), "Home_Fragment: ERROR: Could not find a corresponding color category. " +
+                            "See colors.xml for correct options" , Toast.LENGTH_LONG).show();
 
             }
 
