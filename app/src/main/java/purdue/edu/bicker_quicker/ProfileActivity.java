@@ -160,30 +160,6 @@ public class ProfileActivity extends AppCompatActivity {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
-        /*
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("User");
-        System.out.println("Current User ID: " + currUser.getUid());
-        ref.orderByChild("userId").equalTo(currUser.getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                System.out.println(user);
-                if (user.getModerator()) {
-                    //is mod, set toggle button to visible
-                    System.out.println("User is mod");
-                    modToggle.setVisibility(View.VISIBLE);
-                } else {
-                    System.out.println("User is not mod");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        */
     }
 
     public void pastBickers() {
@@ -234,7 +210,29 @@ public class ProfileActivity extends AppCompatActivity {
         //delete entry in auth and db
         final FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference();
+        ref.addListenerForSingleValueEvent( new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
+                    if (userSnapshot.child("userId").getValue().toString().equals(currUser.getUid())) {
+                        //if the userId is that of the current user, check mod status
+                        System.out.println("Attempting delete calls");
+                        dataSnapshot.getRef().setValue(null);
+                        currUser.delete();
+                        //take user back to starting page
+                        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                }
+            }
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+        /*
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("User"); //.child("userId").equalTo(currUser.getUid());
+        System.out.println("Deleting user " + currUser.getUid());
         ref.child("userId").equalTo(currUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -252,5 +250,6 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
+        */
     }
 }
