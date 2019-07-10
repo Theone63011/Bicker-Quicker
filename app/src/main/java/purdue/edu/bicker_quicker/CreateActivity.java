@@ -115,6 +115,47 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         radioButton3 = (RadioButton) findViewById(R.id.radioButton3);
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // If you want to modify the timer values, please change below
+        // If changing timer options, please use 'seconds', 'minutes' or 'hours' as the 2nd word
+        // **************************************************************************************
+        String option1 = "30 seconds";
+        String option2 = "2 minutes";
+        String option3 = "24 hours";
+        radioButton1.setText(option1);
+        radioButton2.setText(option2);
+        radioButton3.setText(option3);
+        // **************************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         tag1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -606,6 +647,33 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             Toast.makeText(CreateActivity.this, "Input values missing.", Toast.LENGTH_SHORT).show();
         }
 
+        // get the time for the timer
+        int selectedId = radioGroup.getCheckedRadioButtonId();
+        RadioButton selectedBtn = (RadioButton) findViewById(selectedId);
+        String btnText = selectedBtn.getText().toString();
+        String radioText = btnText.substring(0, 2);
+        double time_selected = Double.parseDouble(radioText);
+
+        double seconds_until_expired = -1;
+        if(btnText.contains("seconds")) {
+            seconds_until_expired = time_selected;
+        }
+        else if(btnText.contains("minutes")) {
+            seconds_until_expired = time_selected * 60;
+        }
+        else if(btnText.contains("hours")) {
+            seconds_until_expired = time_selected * 60 * 60;
+        }
+        else {
+            Log.d(TAG, "Create_activity ERROR: time selected is neither \'seconds\', \'minutes\' or \'hours\'");
+            Toast.makeText(CreateActivity.this,"ERROR: (CreateActivity.java) time selected is ne" +
+                    "ither \'seconds\', \'minutes\' or \'hours\'", Toast.LENGTH_LONG).show();
+            failed = true;
+        }
+
+        Log.d(TAG, "Create_activity: radioText = " + radioText + " hours");
+        Log.d(TAG, "Create_activity: seconds_until_expired = " + seconds_until_expired);
+
         if (failed) return; // Improper data input. Show bad fields
 
         // Disable all fields
@@ -634,17 +702,6 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-
-        // get the time for the timer
-        int selectedId = radioGroup.getCheckedRadioButtonId();
-        RadioButton selectedBtn = (RadioButton) findViewById(selectedId);
-        String radioText = selectedBtn.getText().toString();
-        radioText = radioText.substring(0, 2);
-        double time_selected = Double.parseDouble(radioText);
-        double seconds_until_expired = time_selected * 60 * 60;
-
-        Log.d(TAG, "Create_activity: radioText = " + radioText + " hours");
-        Log.d(TAG, "Create_activity: seconds_until_expired = " + seconds_until_expired);
 
         // Initialize the new bicker for the DB
         bicker.setCode(c);

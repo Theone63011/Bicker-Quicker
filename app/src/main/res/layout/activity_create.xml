@@ -292,7 +292,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:checked="false"
-                android:text="12 hours" />
+                android:text="placeholder" />
 
             <RadioButton
                 android:id="@+id/radioButton2"
@@ -300,7 +300,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:checked="false"
-                android:text="24 hours" />
+                android:text="placeholder" />
 
             <RadioButton
                 android:id="@+id/radioButton3"
@@ -308,7 +308,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:checked="false"
-                android:text="48 hours" />
+                android:text="placeholder" />
         </RadioGroup>
     </LinearLayout>
 

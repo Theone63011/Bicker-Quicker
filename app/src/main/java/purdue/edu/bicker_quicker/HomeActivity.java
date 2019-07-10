@@ -48,6 +48,16 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     private NavigationView nvDrawer;
     private ActionBarDrawerToggle drawerToggle;
 
+    private String sortBy = "recent";
+
+    private Boolean initializeHomeFrag1 = false;
+
+    Button recentButton;
+    Button popularButton;
+
+    Home_Fragment homefrag1 = null;
+    Home_Fragment homefrag2 = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -121,6 +131,25 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         });
 */
 
+        this.popularButton = findViewById(R.id.popular);
+        popularButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sortBy = "popular";
+                homefrag1.sortByPopularity();
+                homefrag2.sortByPopularity();
+            }
+        });
+
+        this.recentButton = findViewById(R.id.recent);
+        recentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sortBy = "recent";
+                homefrag1.sortByRecent();
+                homefrag2.sortByRecent();
+            }
+        });
     }
 
 
@@ -144,6 +173,14 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         if (fragment instanceof Home_Fragment) {
             Home_Fragment homeFragment = (Home_Fragment) fragment;
             homeFragment.setOnBickerPressedListener(this);
+
+            if (initializeHomeFrag1 == false) {
+                homefrag1 = homeFragment;
+                initializeHomeFrag1 = true;
+            }else if (initializeHomeFrag1 == true) {
+                homefrag2 = homeFragment;
+                initializeHomeFrag1 = false;
+            }
         }
     }
 
