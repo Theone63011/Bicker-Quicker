@@ -27,7 +27,6 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.zxing.common.StringUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -53,10 +52,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
     String tag_string3;
 
     // TextViews below are for Censoring
-    private TextView bicker_title_censor;
-    private TextView bicker_desc_censor;
-    private TextView bicker_side_censor;
-    private TextView bicker_tag_censor;
+    private TextView bicker_censor;
 
     EditText title;             // Editable Fields
     EditText description;
@@ -97,14 +93,8 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         tag_string3 = null;
 
         censor = new Censor();
-        bicker_title_censor = findViewById(R.id.bicker_title_censor);
-        bicker_desc_censor = findViewById(R.id.bicker_desc_censor);
-        bicker_side_censor = findViewById(R.id.bicker_side_censor);
-        bicker_tag_censor = findViewById(R.id.bicker_tag_censor);
-        bicker_title_censor.setVisibility(View.GONE);
-        bicker_desc_censor.setVisibility(View.GONE);
-        bicker_side_censor.setVisibility(View.GONE);
-        bicker_tag_censor.setVisibility(View.GONE);
+        bicker_censor = findViewById(R.id.bicker_censor);
+        bicker_censor.setVisibility(View.GONE);
         title.addTextChangedListener(titleWatcher);
         description.addTextChangedListener(descWatcher);
         side.addTextChangedListener(sideWatcher);
@@ -258,8 +248,8 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
     public boolean addNewTag(String s) {
 
         if (s.length() < 2) {
-            bicker_tag_censor.setText("Length Minimum: 2 chars");
-            bicker_tag_censor.setVisibility(View.VISIBLE);
+            bicker_censor.setText("Tag Length Minimum: 2 chars");
+            bicker_censor.setVisibility(View.VISIBLE);
             return false;
         }
 
@@ -280,7 +270,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             return false;
         */
 
-        if (bicker_tag_censor.getVisibility() == View.VISIBLE) {
+        if (bicker_censor.getVisibility() == View.VISIBLE) {
             return false;
         }
 
@@ -328,19 +318,19 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             if(censor.check_words(s.toString()) == false) valid = 2;
             if(censor.check_title_length(s.toString()) == false) valid = 3;
             if(valid > 0) {
-                bicker_title_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
-                    bicker_title_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 }
                 if(valid == 2) {
-                    bicker_title_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
                 if(valid == 3) {
-                    bicker_title_censor.setText("Length Limit: 18 chars");
+                    bicker_censor.setText("Length Limit: 18 chars");
                 }
             }
             else {
-                bicker_title_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
 
@@ -350,19 +340,19 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             if(censor.check_words(s.toString()) == false) valid = 2;
             if(censor.check_title_length(s.toString()) == false) valid = 3;
             if(valid > 0) {
-                bicker_title_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
-                    bicker_title_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 }
                 if(valid == 2) {
-                    bicker_title_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
                 if(valid == 3) {
-                    bicker_title_censor.setText("Length Limit: 18 chars");
+                    bicker_censor.setText("Length Limit: 18 chars");
                 }
             }
             else {
-                bicker_title_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
     };
@@ -378,19 +368,19 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             if(censor.check_words(s.toString()) == false) valid = 2;
             if(censor.check_desc_length(s.toString()) == false) valid = 3;
             if(valid > 0) {
-                bicker_desc_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
-                    bicker_desc_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 }
                 if(valid == 2) {
-                    bicker_desc_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
                 if(valid == 3) {
-                    bicker_desc_censor.setText("Length Limit: 50 chars");
+                    bicker_censor.setText("Length Limit: 50 chars");
                 }
             }
             else {
-                bicker_desc_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
 
@@ -400,19 +390,19 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             if(censor.check_words(s.toString()) == false) valid = 2;
             if(censor.check_desc_length(s.toString()) == false) valid = 3;
             if(valid > 0) {
-                bicker_desc_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
-                    bicker_desc_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 }
                 if(valid == 2) {
-                    bicker_desc_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
                 if(valid == 3) {
-                    bicker_desc_censor.setText("Length Limit: 50 chars");
+                    bicker_censor.setText("Length Limit: 50 chars");
                 }
             }
             else {
-                bicker_desc_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
     };
@@ -432,16 +422,16 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
             if (valid > 0) {
                 if (valid == 3) {
-                    bicker_tag_censor.setText("Length Limit: 12 chars");
+                    bicker_censor.setText("Length Limit: 12 chars");
                 } else if (valid == 1) {
-                    bicker_tag_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 } else if (valid == 2) {
-                    bicker_tag_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
 
-                bicker_tag_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
             } else {
-                bicker_tag_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
 
@@ -454,16 +444,16 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
             if (valid > 0) {
                 if (valid == 3) {
-                    bicker_tag_censor.setText("Tags Must Be Shorter than 12 Characters");
+                    bicker_censor.setText("Tags Must Be Shorter than 12 Characters");
                 } else if (valid == 1) {
-                    bicker_tag_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 } else if (valid == 2) {
-                    bicker_tag_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
 
-                bicker_tag_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
             } else {
-                bicker_tag_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
     };
@@ -478,16 +468,16 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             if(censor.check_chars(s.toString()) == false) valid = 1;
             if(censor.check_words(s.toString()) == false) valid = 2;
             if(valid > 0) {
-                bicker_side_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
-                    bicker_side_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 }
                 if(valid == 2) {
-                    bicker_side_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
             }
             else {
-                bicker_side_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
 
@@ -496,16 +486,16 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             if(censor.check_chars(s.toString()) == false) valid = 1;
             if(censor.check_words(s.toString()) == false) valid = 2;
             if(valid > 0) {
-                bicker_side_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
-                    bicker_side_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 }
                 if(valid == 2) {
-                    bicker_side_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
             }
             else {
-                bicker_side_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
     };

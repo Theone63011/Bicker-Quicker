@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -28,7 +27,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -47,12 +49,15 @@ public class Home_Fragment extends Fragment {
     private static final String TAG = HomeActivity.class.getSimpleName();
     private boolean voted;
     List<String> votedBickerIds;
+    private HashMap<String, String> bickers_votes;
     FirebaseUser user;
     String userKey;
 
     private Button leftVote;
     private Button rightVote;
     private Button noVote;
+
+    private LinearLayout choice_label_holder;
 
     public Home_Fragment() {
         // Required empty public constructor
@@ -92,6 +97,8 @@ public class Home_Fragment extends Fragment {
         votedBickerIds = new ArrayList<String>();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
+        bickers_votes = new HashMap<String, String>();
+
         closed_bicker_layout_list = new ArrayList<LinearLayout>();
         open_bicker_layout_list = new ArrayList<LinearLayout>();
 
@@ -100,7 +107,11 @@ public class Home_Fragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String id = user.getUid();
                 String voted_id;
+                String side;
+                String code;
+                String bicker_id;
 
+                // This loop adds the user's voted on bickers to the votedBickerIds list and bickers_votes map
                 for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()){
                     try {
                         if (userSnapshot.child("userId") != null && userSnapshot.child("userId").getValue().toString().equals(id)) {
@@ -108,7 +119,16 @@ public class Home_Fragment extends Fragment {
 
                             for (DataSnapshot votedId : userSnapshot.child("votedBickerIds").getChildren()) {
                                 voted_id = votedId.getKey().toString();
+                                side = votedId.child("Side Voted").getValue().toString();
                                 votedBickerIds.add(voted_id);
+                                if(bickers_votes.isEmpty() == false) {
+                                    if(bickers_votes.containsKey(voted_id) == false) {
+                                        bickers_votes.put(voted_id, side);
+                                    }
+                                }
+                                else {
+                                    bickers_votes.put(voted_id, side);
+                                }
                             }
                         }
                     }
@@ -117,6 +137,7 @@ public class Home_Fragment extends Fragment {
                     }
                 }
 
+                // This loop adds all voted on bickers to the bickers array
                 for (DataSnapshot bickerSnapshot : dataSnapshot.child("Bicker").getChildren()) {
 
                     if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
@@ -236,6 +257,7 @@ public class Home_Fragment extends Fragment {
 
         private Context context;
         private List<Bicker> bickers;
+        private DecimalFormat df = new DecimalFormat("0.0");
 
         //constructor
         public bickerArrayAdapter(Context context, int resource, ArrayList<Bicker> bickers) {
@@ -252,8 +274,7 @@ public class Home_Fragment extends Fragment {
             Bicker bicker = bickers.get(position);
 
             int total = bicker.getLeft_votes() + bicker.getRight_votes();
-            String total_votes = Integer.toString(total);
-            total_votes += " Votes";
+            String total_votes = display_votes(Double.valueOf(total));
 
             //get the inflater and inflate the XML layout for each item
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -423,6 +444,8 @@ public class Home_Fragment extends Fragment {
             rightVote.setText(bicker.getRight_side());
             noVote = view.findViewById(R.id.abstain);
 
+            choice_label_holder = view.findViewById(R.id.choice_label_holder);
+
             leftVote.setBackgroundResource(R.drawable.side_prechoice_blue);
             rightVote.setBackgroundResource(R.drawable.side_prechoice_purple);
 
@@ -443,65 +466,6 @@ public class Home_Fragment extends Fragment {
                     rightSideClick(view, bicker, open_vote_count, closed_vote_count);
                 }
             });
-
-
-            if(voted == true){
-                //leftVote.setText(Integer.toString(bicker.getLeft_votes()));
-                //rightVote.setText(Integer.toString(bicker.getRight_votes()));
-                //noVote.setText("Already Voted");
-
-                leftVote.setText(bicker.getLeft_side());
-                rightVote.setText(bicker.getRight_side());
-                noVote.setText("Abstain");
-                noVote.setVisibility(View.GONE);
-
-                leftVote.setEnabled(false);
-                rightVote.setEnabled(false);
-                noVote.setEnabled(false);
-                leftLabel.setEnabled(false);
-                rightLabel.setEnabled(false);
-
-                String bickerCode = hiddenKey.getText().toString();
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                //String ref_path  ="User/" + userKey + "/votedBickerIds/" + bickerCode + "/Side Voted";
-                //Log.d(TAG, "Home_fragment: ref_path=" + ref_path);
-                DatabaseReference ref = database.getReference();
-                ref.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String side_voted = dataSnapshot.child("User").child(userKey).child("votedBickerIds").child(bickerCode).child("Side Voted").getValue().toString();
-                        Log.d(TAG, "Home_fragment: side_voted=" + side_voted);
-                        Log.d(TAG, "Home_fragment: title=" + bicker.getTitle());
-
-                        if(side_voted.equalsIgnoreCase("left")){
-                            Log.d(TAG, "Home_fragment: left vote found");
-                            leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_blue);
-                            rightVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
-                        }
-                        else if(side_voted.equalsIgnoreCase("right")) {
-                            Log.d(TAG, "Home_fragment: right vote found");
-                            leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
-                            rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_purple);
-                        }
-                        else if(side_voted.equalsIgnoreCase("abstain")) {
-                            Log.d(TAG, "Home_fragment: abstain vote found");
-                            leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
-                            rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
-                            noVote.setVisibility(View.VISIBLE);
-                            noVote.setTextColor(getResources().getColor(R.color.blue_purple_mix));
-                        }
-                        else {
-                            Log.d(TAG, "Home_fragment: ERROR- side_voted not assigned");
-                            Toast.makeText(getActivity(), "Home_fragment: ERROR- side_voted not assigned", Toast.LENGTH_LONG).show();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
 
             leftVote.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
@@ -526,6 +490,68 @@ public class Home_Fragment extends Fragment {
                     noSideClick(v, bicker, open_vote_count, closed_vote_count);
                 }
             });
+
+            if(voted == true){
+                //leftVote.setText(Integer.toString(bicker.getLeft_votes()));
+                //rightVote.setText(Integer.toString(bicker.getRight_votes()));
+                //noVote.setText("Already Voted");
+
+                leftVote.setText(bicker.getLeft_side());
+                rightVote.setText(bicker.getRight_side());
+                noVote.setText("Abstain");
+                noVote.setVisibility(View.GONE);
+                choice_label_holder.setVisibility(View.GONE);
+
+                leftVote.setEnabled(false);
+                rightVote.setEnabled(false);
+                noVote.setEnabled(false);
+                leftLabel.setEnabled(false);
+                rightLabel.setEnabled(false);
+
+                String bickerCode = hiddenKey.getText().toString();
+                String side_voted = bickers_votes.get(bickerCode);
+
+                if(side_voted.equalsIgnoreCase("left")){
+                    Log.d(TAG, "Home_fragment: left vote found");
+                    leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_blue);
+                    rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
+                }
+                else if(side_voted.equalsIgnoreCase("right")) {
+                    Log.d(TAG, "Home_fragment: right vote found");
+                    leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
+                    rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_purple);
+                }
+                else if(side_voted.equalsIgnoreCase("abstain")) {
+                    Log.d(TAG, "Home_fragment: abstain vote found");
+                    leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
+                    rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
+                    noVote.setVisibility(View.VISIBLE);
+                    noVote.setTextColor(getResources().getColor(R.color.blue_purple_mix));
+                }
+                else {
+                    Log.d(TAG, "Home_fragment: ERROR- side_voted not assigned");
+                    Toast.makeText(getActivity(), "Home_fragment: ERROR- side_voted not assigned", Toast.LENGTH_LONG).show();
+                }
+
+                // Below reads from the database
+                /*FirebaseDatabase database = FirebaseDatabase.getInstance();
+                //String ref_path  ="User/" + userKey + "/votedBickerIds/" + bickerCode + "/Side Voted";
+                //Log.d(TAG, "Home_fragment: ref_path=" + ref_path);
+                DatabaseReference ref = database.getReference();
+                ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String side_voted = dataSnapshot.child("User").child(userKey).child("votedBickerIds").child(bickerCode).child("Side Voted").getValue().toString();
+                        Log.d(TAG, "Home_fragment: side_voted=" + side_voted);
+                        Log.d(TAG, "Home_fragment: title=" + bicker.getTitle());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });*/
+            }
 
             return view;
         }
@@ -637,6 +663,62 @@ public class Home_Fragment extends Fragment {
                 closed_bicker.setVisibility(View.VISIBLE);
                 open_bicker.setVisibility(View.GONE);
             }
+        }
+
+        public String display_votes(double d) {
+            String ret = null;
+
+            double zero = 0.0;
+            double thousand = 1000.0;
+            double ten_thousand = 10000.0;
+            double hundred_thousand = 100000.0;
+            double million = 1000000.0;
+            double ten_million = 10000000.0;
+            double hundred_million = 100000000.0;
+            double billion = 1000000000.0;
+
+            df.setRoundingMode(RoundingMode.DOWN);
+            if(d < zero) {
+                Log.d(TAG, "Home_fragment ERROR: vote count is negative in display_votes");
+                Toast.makeText(getActivity(), "Home_fragment ERROR: vote count is negative in display_votes", Toast.LENGTH_LONG).show();
+            }
+            else if(d >= zero && d < thousand) {
+                ret = Integer.toString((int)d) + " Votes";
+            }
+            else if(d >= thousand && d < ten_thousand) {
+                ret = df.format(d / thousand);
+                ret += "K Votes";
+            }
+            else if(d >= ten_thousand && d < hundred_thousand) {
+                ret = df.format(d / thousand);
+                ret += "K Votes";
+            }
+            else if(d >= hundred_thousand && d < million) {
+                ret = df.format(d / thousand);
+                ret += "K Votes";
+            }
+            else if(d >= million && d < ten_million) {
+                ret = df.format(d / million);
+                ret += "M Votes";
+            }
+            else if(d >= ten_million && d < hundred_million) {
+                ret = df.format(d / million);
+                ret += "M Votes";
+            }
+            else if(d >= hundred_million && d < billion) {
+                ret = df.format(d / million);
+                ret += "M Votes";
+            }
+            else if(d >= billion) {
+                ret = df.format(d / billion);
+                ret += "B Votes";
+            }
+            else {
+                Log.d(TAG, "Home_fragment- ERROR in display_votes. d = " + d);
+                Toast.makeText(getActivity(), "Home_fragment- ERROR in display_votes", Toast.LENGTH_LONG).show();
+            }
+
+            return ret;
         }
     }
 }
