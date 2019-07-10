@@ -40,7 +40,7 @@ public class PastBickersActivity extends AppCompatActivity {
     public PastBickersActivity() {}
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_past_bickers);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -58,6 +58,11 @@ public class PastBickersActivity extends AppCompatActivity {
                     if (bickerSnapshot.child("senderID").equals(currId)) {
                         //if the sender is the current user, add the bicker to the list
                         bickers.add(bickerSnapshot.getValue(Bicker.class));
+                    }
+                }
+                for (DataSnapshot expBickerSnapshot : dataSnapshot.child("ExpiredBicker").getChildren()) {
+                    if (expBickerSnapshot.child("senderID").equals(currId)) {
+                        bickers.add(expBickerSnapshot.getValue(Bicker.class));
                     }
                 }
                 ArrayAdapter<Bicker> adapter = new PastBickersActivity.bickerArrayAdapter(getApplicationContext(), 0, bickers);
