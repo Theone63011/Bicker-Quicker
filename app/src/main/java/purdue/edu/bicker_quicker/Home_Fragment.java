@@ -583,9 +583,8 @@ public class Home_Fragment extends Fragment {
 
             vote(hiddenKey.getText().toString(), 1, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
 
-            int tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
-            String tot_str = Integer.toString(tot);
-            tot_str += " Votes";
+            double tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
+            String tot_str = display_votes(tot);
             open_vote_count.setText(tot_str);
             closed_vote_count.setText(tot_str);
 
@@ -617,9 +616,8 @@ public class Home_Fragment extends Fragment {
 
             vote(hiddenKey.getText().toString(), 2, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
 
-            int tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
-            String tot_str = Integer.toString(tot);
-            tot_str += " Votes";
+            double tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
+            String tot_str = display_votes(tot);
             open_vote_count.setText(tot_str);
             closed_vote_count.setText(tot_str);
 
