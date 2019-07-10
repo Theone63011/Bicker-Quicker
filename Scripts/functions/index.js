@@ -43,16 +43,17 @@ exports.moveOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(async 
       var value = childSnapshot.val();
       //value.create_date.time gives time bicker was created
       //now is the current time
-      //value.expiry should be the total time, in milliseconds, the bicker was set to expire after
+      //value.expiry is the total time, in seconds, the bicker was set to expire after
       if ((now - value.create_date.time) > (value.seconds_until_expired * 1000)) {
           //bicker has expired. Move it to expiredBicker section of DB
           exp_updates[childSnapshot.key] = childSnapshot.value;
-          updates[childSnapshot.key] = null;
+          //updates[childSnapshot.key] = null;
           console.log('Bicker has expired:' + value.title);
       }
     });
 
   // execute all updates in one go and return the result to end the function
-  return ref.update(updates);
+  //ref.update(updates);
+  return ref.child('ExpiredBicker/{pushId}').set(exp_updates);
   // return expBickRef.update(exp_updates);
 });
