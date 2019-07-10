@@ -229,27 +229,5 @@ public class ProfileActivity extends AppCompatActivity {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
-        /*
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("User"); //.child("userId").equalTo(currUser.getUid());
-        System.out.println("Deleting user " + currUser.getUid());
-        ref.child("userId").equalTo(currUser.getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //delete the user from db
-                dataSnapshot.getRef().setValue(null);
-                //delete the user from fb auth
-                currUser.delete();
-                //take user back to starting page
-                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        */
     }
 }
