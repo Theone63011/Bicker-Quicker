@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -210,15 +211,51 @@ public class Home_Fragment extends Fragment {
         path.charAt(2);
 
         if (response == 1) {
-            leftSideVotes++;
-            ref.child("Bicker/" + key + "/left_votes").setValue(leftSideVotes);
-        } else if (response == 2) {
-            rightSideVotes++;
-            ref.child("Bicker/" + key + "/right_votes").setValue(rightSideVotes);
-        }
 
-        //update User db w/ this bicker's id
-        ref.child("User/" + userKey + "/votedBickerIds/" + key).push();
+            ref.child("Bicker/" + key).addListenerForSingleValueEvent( new ValueEventListener() {
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()){
+                        try {
+                            dataSnapshot.child("left_votes").getRef().setValue(
+                                    Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + 1);
+                        }
+                        catch (Exception e){
+                            Log.e(TAG, "ERROR: could not update left_votes for bicker " + dataSnapshot.getKey());
+                        }
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+
+            });
+
+        } else if (response == 2) {
+
+            ref.child("Bicker/" + key).addListenerForSingleValueEvent( new ValueEventListener() {
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()){
+                        try {
+                            dataSnapshot.child("right_votes").getRef().setValue(
+                                    Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()) + 1);
+                        }
+                        catch (Exception e){
+                            Log.e(TAG, "ERROR: could not update right_votes for bicker " + dataSnapshot.getKey());
+                        }
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+
+            });
+        }
 
         if(response == 0) {
             ref.child("User/" + userKey + "/votedBickerIds/" + key + "/Side Voted").setValue("abstain");
