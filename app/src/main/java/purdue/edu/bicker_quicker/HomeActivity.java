@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -47,6 +48,16 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     private Toolbar toolbar;
     private NavigationView nvDrawer;
     private ActionBarDrawerToggle drawerToggle;
+
+    private String sortBy = "recent";
+
+    private Boolean initializeHomeFrag1 = false;
+
+    Button recentButton;
+    Button popularButton;
+
+    Home_Fragment homefrag1;
+    Home_Fragment homefrag2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,9 +131,85 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
         });
 */
+        /*
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            Log.d("savedInstanceState", savedInstanceState.getString("sortBy"));
+            sortBy = savedInstanceState.getString("sortBy");
+        }*/
 
+        /*
+        this.recentButton = findViewById(R.id.recent);
+        recentButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                //Fragment fragment=getFragmentManager().findFragmentById(sortBy);
+                setSortByToRecent();
+            }
+        });*/
+/*
+        this.popularButton = findViewById(R.id.popular);
+        popularButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                setSortByToPopular();
+            }
+        });
+*/
+
+        this.popularButton = findViewById(R.id.popular);
+        popularButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                homefrag1.test();
+                homefrag2.test();
+            }
+        });
+
+        this.recentButton = findViewById(R.id.recent);
+        recentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Fragment fragment=getFragmentManager().findFragmentById(sortBy);
+                homefrag1.test2();
+                homefrag2.test2();
+            }
+        });
     }
 
+    public void setSortByToRecent() {
+        this.sortBy = "recent";
+        //startActivity(new Intent(HomeActivity.this, MainActivity.class));
+    }
+
+    public void setSortByToPopular() {
+        this.sortBy = "category";
+        //startActivity(new Intent(HomeActivity.this, MainActivity.class));
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        Log.d("onrestart", sortBy);
+    }
+
+    /*
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            Log.d("onrestoreInstance", sortBy);
+            this.sortBy = savedInstanceState.getString("sortBy");
+        }
+    }*/
+
+    /*
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        Log.d("onsaveinstance", sortBy);
+        savedInstanceState.putString("sortBy", "test");
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,8 +229,34 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     @Override
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof Home_Fragment) {
+
             Home_Fragment homeFragment = (Home_Fragment) fragment;
+
             homeFragment.setOnBickerPressedListener(this);
+
+
+            Log.d("onAttachFrag sortby=", sortBy);
+
+            //Bundle args = new Bundle();
+            //args.putString("sortBy", sortBy);
+            //homeFragment.setArguments(args);
+
+            if (initializeHomeFrag1 == false) {
+                homefrag1 = homeFragment;
+                initializeHomeFrag1 = true;
+            }else if (initializeHomeFrag1 == true) {
+                homefrag2 = homeFragment;
+                initializeHomeFrag1 = false;
+            }
+            /*
+            if(this.sortBy == "recent"){
+                args.putString("sortBy", "recent");
+                homeFragment.setArguments(args);
+            } else if (this.sortBy == "popular") {
+                args.putString("sortBy", "category");
+                homeFragment.setArguments(args);
+            }*/
+
         }
     }
 
