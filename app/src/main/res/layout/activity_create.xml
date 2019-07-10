@@ -94,7 +94,7 @@
         <Spinner
             android:id="@+id/categorySpinner"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="30dp"
             android:background="#EEEEEE"
             android:backgroundTintMode="add"
             android:scrollbarSize="3dp"
@@ -203,7 +203,6 @@
                 android:id="@+id/liveTag1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="placeholder"
                 android:textColor="@color/colorAccent"
                 android:textSize="13sp" />
 
@@ -216,7 +215,6 @@
                 android:id="@+id/liveTag2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="placeholder"
                 android:textColor="@color/colorAccent"
                 android:textSize="13sp" />
 
@@ -229,7 +227,6 @@
                 android:id="@+id/liveTag3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="placeholder"
                 android:textColor="@color/colorAccent"
                 android:textSize="13sp" />
 
@@ -266,6 +263,55 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/timer_holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bicker_closed_shadow"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tags_holder">
+
+        <TextView
+            android:id="@+id/timer_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select a time limit:" />
+
+        <RadioGroup
+            android:id="@+id/timer_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioButton1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="false"
+                android:text="12 hours" />
+
+            <RadioButton
+                android:id="@+id/radioButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="false"
+                android:text="24 hours" />
+
+            <RadioButton
+                android:id="@+id/radioButton3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="false"
+                android:text="48 hours" />
+        </RadioGroup>
+    </LinearLayout>
+
     <Button
         android:id="@+id/submitBicker"
         android:layout_width="344dp"
@@ -278,7 +324,7 @@
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tags_holder" />
+        app:layout_constraintTop_toBottomOf="@+id/timer_holder" />
 
     <!-- Edit categories for drop down in strings.xml, there is a string array with them -->
 

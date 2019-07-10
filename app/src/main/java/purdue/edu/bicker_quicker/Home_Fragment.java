@@ -148,7 +148,9 @@ public class Home_Fragment extends Fragment {
                                 (int) (long) bickerSnapshot.child("left_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("right_votes").getValue(),
                                 bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
-                                bickerSnapshot.getKey()));
+                                bickerSnapshot.getKey(),
+                                (double) (long) bickerSnapshot.child("seconds_until_expired").getValue()
+                        ));
                     }
                 }
 
