@@ -29,7 +29,7 @@ exports.deleteOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(asyn
 
 exports.moveOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(async (change) => {
   const ref = change.after.ref.parent; // reference to the parent
-  const expBickRef = ref.parent.('/ExpiredBicker'); //reference to parent then expired bicker document
+  const expBickRef = ref.orderByChild('/ExpiredBicker'); //reference to parent then expired bicker document
   const now = Date.now();
 
   const oldItemsQuery = ref.orderByChild('create_date/time');
@@ -44,7 +44,7 @@ exports.moveOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(async 
       //value.create_date.time gives time bicker was created
       //now is the current time
       //value.expiry should be the total time, in milliseconds, the bicker was set to expire after
-      if ((now - value.create_date.time) > value.expiry) {
+      if ((now - value.create_date.time) > (value.expiry * 1000)) {
           //bicker has expired. Move it to expiredBicker section of DB
           exp_updates[childSnapshot.key] = childSnapshot.value;
           updates[childSnapshot.key] = null;
