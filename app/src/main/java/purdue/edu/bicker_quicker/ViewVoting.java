@@ -1,32 +1,8 @@
 package purdue.edu.bicker_quicker;
 
-        import android.app.Activity;
-        import android.content.Intent;
         import android.os.Bundle;
-        import android.support.annotation.NonNull;
-        import android.support.design.widget.FloatingActionButton;
-        import android.support.design.widget.Snackbar;
-        import android.support.v7.app.AppCompatActivity;
-        import android.support.v7.widget.Toolbar;
-        import android.view.MotionEvent;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.view.inputmethod.InputMethodManager;
-        import android.widget.Button;
-        import android.widget.EditText;
-        import android.widget.TextView;
-        import android.widget.Toast;
-
-        import com.google.firebase.auth.FirebaseAuth;
-        import com.google.firebase.auth.FirebaseUser;
-        import com.google.firebase.database.*;
-        import com.google.firebase.database.FirebaseDatabase;
-        import com.firebase.ui.auth.AuthUI;
-        import com.google.android.gms.tasks.OnCompleteListener;
-        import com.google.android.gms.tasks.Task;
-
-        import java.util.ArrayList;
-        import java.util.List;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.Button;
 
 public class ViewVoting extends AppCompatActivity {
     Button leftVote;
@@ -36,7 +12,7 @@ public class ViewVoting extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        /*FirebaseDatabase database = FirebaseDatabase.getInstance();
         //have bicker ID passed in
         //DatabaseReference ref = database.getReference("Bicker/" + bickerID);
         DatabaseReference ref = database.getReference("Bicker/-LhrhW1FAWRsJXfopsuR");
@@ -92,11 +68,11 @@ public class ViewVoting extends AppCompatActivity {
             public void onClick(View v) {
                 exit();
             }
-        });
+        });*/
     }
 
     //method to update the vote count for left (1) or right (2)
-    public void vote(int response, int updatedLeftCount, int updatedRightCount) {
+    /*public void vote(int response, int updatedLeftCount, int updatedRightCount) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         //access bicker where id == LhrhW1FAWRsJXfopsuR
         //DatabaseReference ref = response == 1 ? database.getReference("Bicker/-LhrhW1FAWRsJXfopsuR").orderByChild("left_votes") :
@@ -116,9 +92,9 @@ public class ViewVoting extends AppCompatActivity {
         }
         //update User db w/ this bicker's id
         viewVotes();
-    }
+    }*/
 
-    public void viewVotes() {
+    /*public void viewVotes() {
         //disable voting buttons, show results
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         leftVote.setEnabled(false);
@@ -144,10 +120,10 @@ public class ViewVoting extends AppCompatActivity {
 
             }
         });
-    }
+    }*/
 
-    public void exit() {
+    /*public void exit() {
         Intent intent = new Intent(this, BickerActivity.class);
         startActivity(intent);
-    }
+    }*/
 }

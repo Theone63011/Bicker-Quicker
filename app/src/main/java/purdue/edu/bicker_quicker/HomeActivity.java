@@ -242,6 +242,12 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
                 break;
 
+            case  R.id.delete://Temporary until notifications are figured out
+                Intent tempIntent = new Intent(HomeActivity.this, TempDeleteActivity.class);
+                startActivity(tempIntent);
+
+                break;
+
         }
     }
 

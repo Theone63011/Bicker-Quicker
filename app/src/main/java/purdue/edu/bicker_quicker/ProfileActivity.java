@@ -21,6 +21,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     Button respondToBicker;
     Button signOut;
+    Button toSettings;
     Toolbar toolbar;
 
     @Override
@@ -29,6 +30,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        toSettings = findViewById(R.id.settingsButton);
         respondToBicker = findViewById(R.id.bickerRespond);
         toolbar = findViewById(R.id.toolbarBicker);
         setSupportActionBar(toolbar);
@@ -43,6 +45,13 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 leave();
+            }
+        });
+
+        toSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToSettings();
             }
         });
 
@@ -70,6 +79,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void goToRespond() {
         Intent intent = new Intent(this, RespondActivity.class);
+        startActivity(intent);
+    }
+
+    public void goToSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
