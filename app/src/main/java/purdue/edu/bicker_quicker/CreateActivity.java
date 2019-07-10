@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +30,6 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.zxing.common.StringUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -53,10 +55,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
     String tag_string3;
 
     // TextViews below are for Censoring
-    private TextView bicker_title_censor;
-    private TextView bicker_desc_censor;
-    private TextView bicker_side_censor;
-    private TextView bicker_tag_censor;
+    private TextView bicker_censor;
 
     EditText title;             // Editable Fields
     EditText description;
@@ -69,6 +68,11 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static Censor censor;
+
+    private RadioGroup radioGroup;
+    private RadioButton radioButton1;
+    private RadioButton radioButton2;
+    private RadioButton radioButton3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,18 +101,19 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         tag_string3 = null;
 
         censor = new Censor();
-        bicker_title_censor = findViewById(R.id.bicker_title_censor);
-        bicker_desc_censor = findViewById(R.id.bicker_desc_censor);
-        bicker_side_censor = findViewById(R.id.bicker_side_censor);
-        bicker_tag_censor = findViewById(R.id.bicker_tag_censor);
-        bicker_title_censor.setVisibility(View.GONE);
-        bicker_desc_censor.setVisibility(View.GONE);
-        bicker_side_censor.setVisibility(View.GONE);
-        bicker_tag_censor.setVisibility(View.GONE);
+        bicker_censor = findViewById(R.id.bicker_censor);
+        bicker_censor.setVisibility(View.GONE);
         title.addTextChangedListener(titleWatcher);
         description.addTextChangedListener(descWatcher);
         side.addTextChangedListener(sideWatcher);
         tag.addTextChangedListener(tagWatcher);
+
+        TextView timer_title = (TextView) findViewById(R.id.timer_title);
+        radioGroup = (RadioGroup) findViewById(R.id.timer_radio_group);
+        radioButton1 = (RadioButton) findViewById(R.id.radioButton1);
+        radioButton2 = (RadioButton) findViewById(R.id.radioButton2);
+        radioButton3 = (RadioButton) findViewById(R.id.radioButton3);
+
 
         tag1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,6 +178,15 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             }
         });
 
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if(hasWindowFocus()) {
+                    resetColor(timer_title, "#777777");
+                }
+            }
+        });
+
 
         // Change toolbar to a new toolbar (
         toolbar = (Toolbar) findViewById(R.id.toolbarBicker);
@@ -195,7 +209,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         });
         // Set up category spinner
         catSpin = findViewById(R.id.categorySpinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.categories, R.layout.support_simple_spinner_dropdown_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.categories, R.layout.simple_spinner);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         catSpin.setAdapter(adapter);
         catSpin.setSelection(0);
@@ -258,8 +272,8 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
     public boolean addNewTag(String s) {
 
         if (s.length() < 2) {
-            bicker_tag_censor.setText("Length Minimum: 2 chars");
-            bicker_tag_censor.setVisibility(View.VISIBLE);
+            bicker_censor.setText("Tag Length Minimum: 2 chars");
+            bicker_censor.setVisibility(View.VISIBLE);
             return false;
         }
 
@@ -280,7 +294,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             return false;
         */
 
-        if (bicker_tag_censor.getVisibility() == View.VISIBLE) {
+        if (bicker_censor.getVisibility() == View.VISIBLE) {
             return false;
         }
 
@@ -328,19 +342,19 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             if(censor.check_words(s.toString()) == false) valid = 2;
             if(censor.check_title_length(s.toString()) == false) valid = 3;
             if(valid > 0) {
-                bicker_title_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
-                    bicker_title_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 }
                 if(valid == 2) {
-                    bicker_title_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
                 if(valid == 3) {
-                    bicker_title_censor.setText("Length Limit: 18 chars");
+                    bicker_censor.setText("Length Limit: 18 chars");
                 }
             }
             else {
-                bicker_title_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
 
@@ -350,19 +364,19 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             if(censor.check_words(s.toString()) == false) valid = 2;
             if(censor.check_title_length(s.toString()) == false) valid = 3;
             if(valid > 0) {
-                bicker_title_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
-                    bicker_title_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 }
                 if(valid == 2) {
-                    bicker_title_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
                 if(valid == 3) {
-                    bicker_title_censor.setText("Length Limit: 18 chars");
+                    bicker_censor.setText("Length Limit: 18 chars");
                 }
             }
             else {
-                bicker_title_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
     };
@@ -378,19 +392,19 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             if(censor.check_words(s.toString()) == false) valid = 2;
             if(censor.check_desc_length(s.toString()) == false) valid = 3;
             if(valid > 0) {
-                bicker_desc_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
-                    bicker_desc_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 }
                 if(valid == 2) {
-                    bicker_desc_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
                 if(valid == 3) {
-                    bicker_desc_censor.setText("Length Limit: 50 chars");
+                    bicker_censor.setText("Length Limit: 50 chars");
                 }
             }
             else {
-                bicker_desc_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
 
@@ -400,19 +414,19 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             if(censor.check_words(s.toString()) == false) valid = 2;
             if(censor.check_desc_length(s.toString()) == false) valid = 3;
             if(valid > 0) {
-                bicker_desc_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
-                    bicker_desc_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 }
                 if(valid == 2) {
-                    bicker_desc_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
                 if(valid == 3) {
-                    bicker_desc_censor.setText("Length Limit: 50 chars");
+                    bicker_censor.setText("Length Limit: 50 chars");
                 }
             }
             else {
-                bicker_desc_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
     };
@@ -432,16 +446,16 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
             if (valid > 0) {
                 if (valid == 3) {
-                    bicker_tag_censor.setText("Length Limit: 12 chars");
+                    bicker_censor.setText("Length Limit: 12 chars");
                 } else if (valid == 1) {
-                    bicker_tag_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 } else if (valid == 2) {
-                    bicker_tag_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
 
-                bicker_tag_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
             } else {
-                bicker_tag_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
 
@@ -454,16 +468,16 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
             if (valid > 0) {
                 if (valid == 3) {
-                    bicker_tag_censor.setText("Tags Must Be Shorter than 12 Characters");
+                    bicker_censor.setText("Tags Must Be Shorter than 12 Characters");
                 } else if (valid == 1) {
-                    bicker_tag_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 } else if (valid == 2) {
-                    bicker_tag_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
 
-                bicker_tag_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
             } else {
-                bicker_tag_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
     };
@@ -478,16 +492,16 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             if(censor.check_chars(s.toString()) == false) valid = 1;
             if(censor.check_words(s.toString()) == false) valid = 2;
             if(valid > 0) {
-                bicker_side_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
-                    bicker_side_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 }
                 if(valid == 2) {
-                    bicker_side_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
             }
             else {
-                bicker_side_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
 
@@ -496,16 +510,16 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             if(censor.check_chars(s.toString()) == false) valid = 1;
             if(censor.check_words(s.toString()) == false) valid = 2;
             if(valid > 0) {
-                bicker_side_censor.setVisibility(View.VISIBLE);
+                bicker_censor.setVisibility(View.VISIBLE);
                 if(valid == 1) {
-                    bicker_side_censor.setText("Invalid Character");
+                    bicker_censor.setText("Invalid Character");
                 }
                 if(valid == 2) {
-                    bicker_side_censor.setText("Inappropriate Input");
+                    bicker_censor.setText("Inappropriate Input");
                 }
             }
             else {
-                bicker_side_censor.setVisibility(View.GONE);
+                bicker_censor.setVisibility(View.GONE);
             }
         }
     };
@@ -522,6 +536,16 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         TextView tv = (TextView) catSpin.getSelectedView();
         String bickCat = tv.getText().toString();
         String bickSide = side.getText().toString();
+
+        TextView timer_title = (TextView) findViewById(R.id.timer_title);
+        radioGroup = (RadioGroup) findViewById(R.id.timer_radio_group);
+        radioButton1 = (RadioButton) findViewById(R.id.radioButton1);
+        radioButton2 = (RadioButton) findViewById(R.id.radioButton2);
+        radioButton3 = (RadioButton) findViewById(R.id.radioButton3);
+
+        boolean rad1Checked = radioButton1.isChecked();
+        boolean rad2Checked = radioButton2.isChecked();
+        boolean rad3Checked = radioButton3.isChecked();
 
         // Get tags into a list
         ArrayList<String> tags = new ArrayList<String>();
@@ -550,6 +574,12 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         }
         else {
             //Log.d(TAG, "Censor passed");
+        }
+
+        if(rad1Checked == false && rad2Checked == false && rad3Checked == false) {
+            failed = true;
+            timer_title.setTextColor(Color.parseColor("#FF758C"));
+            Toast.makeText(CreateActivity.this, "Input values missing.", Toast.LENGTH_SHORT).show();
         }
 
         if (bickTitle.trim().equals("")) {
@@ -583,6 +613,9 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         description.setFocusable(false);
         catSpin.setFocusable(false);
         side.setFocusable(false);
+        radioButton1.setFocusable(false);
+        radioButton2.setFocusable(false);
+        radioButton3.setFocusable(false);
 
         CodeDialog codeDialog = new CodeDialog(); // Get code dialog ready
         // You have to send arguments for the dialog in a bundle because
@@ -602,6 +635,17 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
 
+        // get the time for the timer
+        int selectedId = radioGroup.getCheckedRadioButtonId();
+        RadioButton selectedBtn = (RadioButton) findViewById(selectedId);
+        String radioText = selectedBtn.getText().toString();
+        radioText = radioText.substring(0, 2);
+        double time_selected = Double.parseDouble(radioText);
+        double seconds_until_expired = time_selected * 60 * 60;
+
+        Log.d(TAG, "Create_activity: radioText = " + radioText + " hours");
+        Log.d(TAG, "Create_activity: seconds_until_expired = " + seconds_until_expired);
+
         // Initialize the new bicker for the DB
         bicker.setCode(c);
         bicker.setCreate_date(date);
@@ -615,6 +659,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setSenderID(FirebaseAuth.getInstance().getCurrentUser().getUid());
         bicker.setReceiverID("Unknown");
         bicker.setTags(tags);
+        bicker.setSeconds_until_expired(seconds_until_expired);
         ref.push().setValue(bicker);
         Toast.makeText(CreateActivity.this,"Bicker Sent", Toast.LENGTH_LONG).show();
     }
