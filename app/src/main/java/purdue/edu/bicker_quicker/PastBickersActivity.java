@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PastBickersActivity extends AppCompatActivity {
-
+    /*
     private ArrayList<Bicker> bickers;
     private static ArrayList<LinearLayout> open_bicker_layout_list;
 
@@ -190,6 +190,7 @@ public class PastBickersActivity extends AppCompatActivity {
             return convertView;
         }
     }
+    */
 }
 
 
