@@ -16,6 +16,11 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
     public Switch closeRequest;
     public Switch closeConfirm;
     public Switch voteOnEnd;
+    public byte bitString;
 
 
     public static final String SHARED_PREFS = "sharedPrefs";
@@ -39,6 +45,14 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String SW_CLOSEREQ = "swCloseReq";
     public static final String SW_CLOSECON = "swCloseCon";
     public static final String SW_VOTEONEND = "swVoteOnEnd";
+    public static final byte BYTE_ALLNOT = (byte)    0b10000000;
+    public static final byte BYTE_BEENRESP = (byte)  0b01000000;
+    public static final byte BYTE_VOTEEND = (byte)   0b00100000;
+    public static final byte BYTE_BICKCAN = (byte)   0b00010000;
+    public static final byte BYTE_CLOSEREQ = (byte)  0b00001000;
+    public static final byte BYTE_CLOSECON = (byte)  0b00000100;
+    public static final byte BYTE_VOTEONEND = (byte) 0b00000010;
+
 
     public static final String SHARED_TEST = "sharedTest";
     public static final String TEST_STRING = "testString";
@@ -84,6 +98,34 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    public void setBitString() {
+        byte n = (byte) 0b00000000;
+        if (allNotifications.isChecked()) {
+            n = (byte)(n | BYTE_ALLNOT);
+        }
+        if (beenResponded.isChecked()) {
+            n = (byte)(n | BYTE_BEENRESP);
+        }
+        if (bickerCanceled.isChecked()) {
+            n = (byte)(n | BYTE_BICKCAN);
+        }
+        if (closeConfirm.isChecked()) {
+            n = (byte)(n | BYTE_CLOSECON);
+        }
+        if (closeRequest.isChecked()) {
+            n = (byte)(n | BYTE_CLOSEREQ);
+        }
+        if (votingEnded.isChecked()) {
+            n = (byte)(n | BYTE_VOTEEND);
+        }
+        if (voteOnEnd.isChecked()) {
+            n = (byte)(n | BYTE_VOTEONEND);
+        }
+
+        sendSettingsUpdateToDatabase();
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +144,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 setAllNotifications(isChecked);
+                setBitString();
             }
         });
 
@@ -113,6 +156,7 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putBoolean(SW_BEENRESP, isChecked);
                     editor.commit();
+                    setBitString();
                 }
             }
         });
@@ -125,6 +169,7 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putBoolean(SW_VOTEEND, isChecked);
                     editor.commit();
+                    setBitString();
                 }
             }
         });
@@ -137,6 +182,7 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putBoolean(SW_BICKCAN, isChecked);
                     editor.commit();
+                    setBitString();
                 }
             }
         });
@@ -149,6 +195,7 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putBoolean(SW_CLOSEREQ, isChecked);
                     editor.commit();
+                    setBitString();
                 }
             }
         });
@@ -161,6 +208,7 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putBoolean(SW_CLOSECON, isChecked);
                     editor.commit();
+                    setBitString();
                 }
             }
         });
@@ -173,6 +221,7 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putBoolean(SW_VOTEONEND, isChecked);
                     editor.commit();
+                    setBitString();
                 }
             }
         });
@@ -240,6 +289,22 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
 
+    public void sendSettingsUpdateToDatabase() {
+
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference ref = db.getReference("User");
+
+        Query q = ref.child("User").equalTo(uid);
+
+        //ref.child("userId")
+        //ref.child()
+        /*
+
+        DatabaseReference ref = db.getReference("User/"+ FirebaseAuth.getInstance().getCurrentUser().getUid());
+        ref.child("notificationSettings").setValue(bitString);
+        */
+    }
 
     public void leave() {
         Intent intent = new Intent(this, ProfileActivity.class);
