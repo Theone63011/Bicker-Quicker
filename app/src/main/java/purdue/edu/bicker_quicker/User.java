@@ -10,19 +10,19 @@ public class User {
     private String userId;
     private boolean moderator;
     private List<String> votedBickerIds = new ArrayList<String>();
-    private byte notificationSettings;
+    private int notificationSettings;
 
-    public void setNotificationSettings(byte newSettings) {
+    public void setNotificationSettings(int newSettings) {
         notificationSettings = newSettings;
     }
 
-    public byte getNotSettings() {
+    public int getNotSettings() {
         return notificationSettings;
     }
 
     public User() {
         // Init settings for notifications
-        notificationSettings = (byte) 0b11111100;
+        notificationSettings = 0b11111100;
     }
 
     public void setBickerId(String bickerId){this.bickerId.add(bickerId);}
