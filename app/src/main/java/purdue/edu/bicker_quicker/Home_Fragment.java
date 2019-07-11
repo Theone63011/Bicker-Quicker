@@ -152,7 +152,7 @@ public class Home_Fragment extends Fragment {
                 // This loop adds all voted on bickers to the bickers array
                 for (DataSnapshot bickerSnapshot : dataSnapshot.getChildren()) {
 
-                    if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
+                    if(bickerSnapshot.child("code").exists() && bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
                         bickers.add(new Bicker(
                                 bickerSnapshot.child("title").getValue() != null ? bickerSnapshot.child("title").getValue().toString() : "No title",
                                 bickerSnapshot.child("left_side").getValue() != null ? bickerSnapshot.child("left_side").getValue().toString() : "No left side",

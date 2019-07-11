@@ -32,6 +32,22 @@
         android:layout_height="wrap_content"
         android:text="delete"
         android:onClick="delete"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Enter bicker key request a deleteion"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/bickerRequestKeyEdit"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="delete"
+            android:onClick="requestDelete"/>
     </LinearLayout>
 
 </RelativeLayout>
