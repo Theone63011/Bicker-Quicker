@@ -723,7 +723,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setSeconds_until_expired(seconds_until_expired);
         ref.push().setValue(bicker);
 
-        ref.orderByChild("code").equalTo(c).addListenerForSingleValueEvent(new ValueEventListener() {
+        /*ref.orderByChild("code").equalTo(c).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
@@ -749,7 +749,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        });*/
 
         Toast.makeText(CreateActivity.this,"Bicker Sent", Toast.LENGTH_LONG).show();
     }

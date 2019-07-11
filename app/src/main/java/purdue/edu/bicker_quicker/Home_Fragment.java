@@ -20,6 +20,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -454,6 +457,20 @@ public class Home_Fragment extends Fragment {
 
             });
         }
+
+        FirebaseMessaging.getInstance().subscribeToTopic(key)
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                String msg = "Notification succeeded";
+                if (!task.isSuccessful()) {
+                    msg = "Notification failed";
+                }
+                Log.d(TAG, msg);
+
+            }
+        });
+
 
         if(response == 0) {
             ref.child("User/" + userKey + "/votedBickerIds/" + key + "/Side Voted").setValue("abstain");
