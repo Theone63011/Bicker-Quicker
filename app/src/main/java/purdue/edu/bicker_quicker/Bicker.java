@@ -11,6 +11,7 @@ public class Bicker {
     private Date create_date;
     private int left_votes;
     private int right_votes;
+    private int total_votes;
     private String code;
     private String category;
     private String senderID;
@@ -25,12 +26,12 @@ public class Bicker {
 
     }
     public Bicker(String title, String left_Side, String right_side,
-                  int left_votes, int right_votes, String category, String key, double seconds) {
-        this(title, null,  left_Side, right_side, null, left_votes, right_votes, null, category, null, null, key , null, null, seconds);
+                  int left_votes, int right_votes, int total, String category, String key, double seconds) {
+        this(title, null,  left_Side, right_side, null, left_votes, right_votes, total, null, category, null, null, key , null, null, seconds);
 
     }
     public Bicker (String title, String description, String left_side, String right_side, Date create_date, int left_votes,
-                   int right_votes, String code, String category, String senderID, String receiverID, String key, ArrayList<String> tags, ArrayList<String> votedUsers, double seconds){
+                   int right_votes, int total, String code, String category, String senderID, String receiverID, String key, ArrayList<String> tags, ArrayList<String> votedUsers, double seconds){
 
         this.title = title;
         this.description = description;
@@ -122,6 +123,10 @@ public class Bicker {
     public void setRight_votes(int right_votes) {
         this.right_votes = right_votes;
     }
+
+    public void setTotal_votes(int total) { total_votes = total; }
+
+    public int getTotal_votes() { return total_votes; }
 
     public String getCode() {
         return code;

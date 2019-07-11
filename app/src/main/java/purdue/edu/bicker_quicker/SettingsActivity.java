@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +17,14 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +39,9 @@ public class SettingsActivity extends AppCompatActivity {
     public Switch closeRequest;
     public Switch closeConfirm;
     public Switch voteOnEnd;
+    public int bitString;
+    public String dbID;
+    public User tempUser;
 
 
     public static final String SHARED_PREFS = "sharedPrefs";
@@ -39,9 +52,13 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String SW_CLOSEREQ = "swCloseReq";
     public static final String SW_CLOSECON = "swCloseCon";
     public static final String SW_VOTEONEND = "swVoteOnEnd";
-
-    public static final String SHARED_TEST = "sharedTest";
-    public static final String TEST_STRING = "testString";
+    public static final int INT_ALLNOT = (int)    0b10000000;
+    public static final int INT_BEENRESP = (int)  0b01000000;
+    public static final int INT_VOTEEND = (int)   0b00100000;
+    public static final int INT_BICKCAN = (int)   0b00010000;
+    public static final int INT_CLOSEREQ = (int)  0b00001000;
+    public static final int INT_CLOSECON = (int)  0b00000100;
+    public static final int INT_VOTEONEND = (int) 0b00000010;
 
     public void saveData() {
         SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
@@ -84,6 +101,34 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    public void setBitString() {
+        int n = 0b00000000;
+        if (allNotifications.isChecked()) {
+            n = (n | INT_ALLNOT);
+        }
+        if (beenResponded.isChecked()) {
+            n = (n | INT_BEENRESP);
+        }
+        if (bickerCanceled.isChecked()) {
+            n = (n | INT_BICKCAN);
+        }
+        if (closeConfirm.isChecked()) {
+            n = (n | INT_CLOSECON);
+        }
+        if (closeRequest.isChecked()) {
+            n = (n | INT_CLOSEREQ);
+        }
+        if (votingEnded.isChecked()) {
+            n = (n | INT_VOTEEND);
+        }
+        if (voteOnEnd.isChecked()) {
+            n = (n | INT_VOTEONEND);
+        }
+
+        bitString = n;
+        sendSettingsUpdateToDatabase();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,11 +142,16 @@ public class SettingsActivity extends AppCompatActivity {
         closeRequest = findViewById(R.id.closeRequest);
         closeConfirm = findViewById(R.id.closeConfirm);
         voteOnEnd = findViewById(R.id.voteFinished);
+        loadData();
+        setBitString();
+        dbID = null; // Will get set to null
+        retrieveDBID(); // Set dbID whenever callback occurs
 
         allNotifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 setAllNotifications(isChecked);
+                setBitString();
             }
         });
 
@@ -113,6 +163,7 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putBoolean(SW_BEENRESP, isChecked);
                     editor.commit();
+                    setBitString();
                 }
             }
         });
@@ -125,6 +176,7 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putBoolean(SW_VOTEEND, isChecked);
                     editor.commit();
+                    setBitString();
                 }
             }
         });
@@ -137,6 +189,7 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putBoolean(SW_BICKCAN, isChecked);
                     editor.commit();
+                    setBitString();
                 }
             }
         });
@@ -149,6 +202,7 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putBoolean(SW_CLOSEREQ, isChecked);
                     editor.commit();
+                    setBitString();
                 }
             }
         });
@@ -161,6 +215,7 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putBoolean(SW_CLOSECON, isChecked);
                     editor.commit();
+                    setBitString();
                 }
             }
         });
@@ -173,6 +228,7 @@ public class SettingsActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putBoolean(SW_VOTEONEND, isChecked);
                     editor.commit();
+                    setBitString();
                 }
             }
         });
@@ -192,8 +248,33 @@ public class SettingsActivity extends AppCompatActivity {
                 leave();
             }
         });
+    }
 
-        loadData();
+    public void retrieveDBID() {
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference ref = db.getReference("User");
+
+        Query getID = ref.orderByChild("userId").equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        getID.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Iterable<DataSnapshot> ds = dataSnapshot.getChildren();
+
+                // Iterate to get the child of the DataSnapshot
+                for (DataSnapshot userSnap : ds) {
+                    dbID = userSnap.getKey();
+                    tempUser = userSnap.getValue(User.class);
+                    sendSettingsUpdateToDatabase(); // Update settings incase things have changed since call happened
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     public boolean setAllNotifications(boolean isChecked) {
@@ -240,6 +321,22 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
 
+    public void sendSettingsUpdateToDatabase() {
+
+        if (dbID == null) // Don't send update if not ready
+            return;
+
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference ref = db.getReference("User/"+dbID);
+        tempUser.setNotificationSettings(bitString);
+        ref.setValue(tempUser);
+        //ref.setValue(tempUser);
+    }
+
+    // Get the id of the data with the user id so we can update the db without having to constantly
+    public void setID() {
+
+    }
 
     public void leave() {
         Intent intent = new Intent(this, ProfileActivity.class);

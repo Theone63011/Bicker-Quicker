@@ -11,6 +11,20 @@ public class User {
     private boolean moderator;
     private String token;
     private List<String> votedBickerIds = new ArrayList<String>();
+    private int notificationSettings;
+
+    public void setNotificationSettings(int newSettings) {
+        notificationSettings = newSettings;
+    }
+
+    public int getNotSettings() {
+        return notificationSettings;
+    }
+
+    public User() {
+        // Init settings for notifications
+        notificationSettings = 0b11111100;
+    }
 
     public void setBickerId(String bickerId){this.bickerId.add(bickerId);}
 
