@@ -49,18 +49,21 @@ public class PastBickersActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
         bickers = new ArrayList<Bicker>();
+        System.out.println("Beginning past bickers activity");
         ref.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String currId = currUser.getUid();
                 for (DataSnapshot bickerSnapshot : dataSnapshot.child("Bicker").getChildren()) {
-                    if (bickerSnapshot != null && bickerSnapshot.child("senderID").equals(currId)) {
+                    if (bickerSnapshot != null && bickerSnapshot.child("senderID").getValue().toString().equals(currId)) {
                         //if the sender is the current user, add the bicker to the list
                         bickers.add(bickerSnapshot.getValue(Bicker.class));
+                        System.out.println("Bicker added: " + bickerSnapshot.getValue(Bicker.class));
                     }
                 }
                 for (DataSnapshot expBickerSnapshot : dataSnapshot.child("ExpiredBicker").getChildren()) {
-                    if (expBickerSnapshot != null && expBickerSnapshot.child("senderID").equals(currId)) {
+                    if (expBickerSnapshot != null && expBickerSnapshot.child("senderID").getValue().toString().equals(currId)) {
                         bickers.add(expBickerSnapshot.getValue(Bicker.class));
+                        System.out.println("Expired bicker added: " + expBickerSnapshot.getValue(Bicker.class));
                     }
                 }
                 ArrayAdapter<Bicker> adapter = new PastBickersActivity.bickerArrayAdapter(getApplicationContext(), 0, bickers);
@@ -71,8 +74,9 @@ public class PastBickersActivity extends AppCompatActivity {
                 //We can't set visibility to GONE until after all list elements are loaded or they will overlap
                 for ( int i=0; i < listView.getAdapter().getCount(); i++) {
                     View child = listView.getAdapter().getView(i, null, null);
+                    //child is null ref?? Need getView().child...?
                     LinearLayout open_bicker = child.findViewById(R.id.open_bicker_holder);
-                    //open_bicker.setVisibility(View.GONE);
+                    open_bicker.setVisibility(View.GONE);
                 }
             }
             public void onCancelled(DatabaseError databaseError) {
