@@ -177,8 +177,7 @@ public class PastBickersActivity extends AppCompatActivity {
 
             }
 
-            closed_category.setBackground(catDraw);
-            closed_category.setPadding(8, 8, 8, 8);
+
             open_category.setBackground(catDraw);
             open_category.setPadding(8, 8, 8, 8);
 
@@ -188,6 +187,7 @@ public class PastBickersActivity extends AppCompatActivity {
             TextView open_vote_count = view.findViewById(R.id.open_vote_count_text);
             open_vote_count.setText(total_votes);
 
+            return convertView;
         }
     }
 }
