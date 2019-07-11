@@ -28,6 +28,7 @@
         <activity android:name=".ProfileActivity" />
         <activity android:name=".CreateActivity" />
         <activity android:name=".ViewVoting" />
+        <activity android:name=".PastBickersActivity" />
         <activity
             android:name=".BickerActivity"
             android:label="@string/title_activity_bicker"

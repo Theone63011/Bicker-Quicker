@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PastBickersActivity extends AppCompatActivity {
-    /*
+
     private ArrayList<Bicker> bickers;
     private static ArrayList<LinearLayout> open_bicker_layout_list;
 
@@ -43,8 +43,6 @@ public class PastBickersActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_past_bickers);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
 
         FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -55,18 +53,18 @@ public class PastBickersActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String currId = currUser.getUid();
                 for (DataSnapshot bickerSnapshot : dataSnapshot.child("Bicker").getChildren()) {
-                    if (bickerSnapshot.child("senderID").equals(currId)) {
+                    if (bickerSnapshot != null && bickerSnapshot.child("senderID").equals(currId)) {
                         //if the sender is the current user, add the bicker to the list
                         bickers.add(bickerSnapshot.getValue(Bicker.class));
                     }
                 }
                 for (DataSnapshot expBickerSnapshot : dataSnapshot.child("ExpiredBicker").getChildren()) {
-                    if (expBickerSnapshot.child("senderID").equals(currId)) {
+                    if (expBickerSnapshot != null && expBickerSnapshot.child("senderID").equals(currId)) {
                         bickers.add(expBickerSnapshot.getValue(Bicker.class));
                     }
                 }
                 ArrayAdapter<Bicker> adapter = new PastBickersActivity.bickerArrayAdapter(getApplicationContext(), 0, bickers);
-                ListView listView = getView().findViewById(R.id.unvotedListView);
+                ListView listView = findViewById(R.id.bickerListView);
                 listView.setAdapter(adapter);
                 int count = listView.getAdapter().getCount();
 
@@ -103,12 +101,12 @@ public class PastBickersActivity extends AppCompatActivity {
             total_votes += " Votes";
 
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.layout_voted_bicker, null);
+            View view = inflater.inflate(R.layout.layout_unvoted_bicker, null);
 
             TextView leftLabel = view.findViewById(R.id.left_label);
             TextView rightLabel = view.findViewById(R.id.right_label);
-            TextView leftVotes = view.findViewById(R.id.left_votes);
-            TextView rightVotes = view.findViewById(R.id.right_votes);
+            TextView leftVotes = view.findViewById(R.id.leftVotes);
+            TextView rightVotes = view.findViewById(R.id.rightVotes);
             TextView open_title = view.findViewById(R.id.open_title);
             TextView open_category = view.findViewById(R.id.open_category);
 
@@ -190,7 +188,7 @@ public class PastBickersActivity extends AppCompatActivity {
             return convertView;
         }
     }
-    */
+
 }
 
 
