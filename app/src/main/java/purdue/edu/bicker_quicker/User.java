@@ -9,6 +9,7 @@ public class User {
     private String username;
     private String userId;
     private boolean moderator;
+    private String token;
     private List<String> votedBickerIds = new ArrayList<String>();
     private int notificationSettings;
 
@@ -16,7 +17,7 @@ public class User {
         notificationSettings = newSettings;
     }
 
-    public int getNotSettings() {
+    public int getNotificationSettings() {
         return notificationSettings;
     }
 
@@ -49,13 +50,8 @@ public class User {
 
     public List<String> getVotedBickerIds(){ return votedBickerIds;}
 
-    public String toString() {
-        String res = "";
-        res += username + "\n";
-        res += email + "\n";
-        res += userId + "\n";
-        res += moderator + "\n";
-        return res;
-    }
+    public String getToken(){ return token;}
+
+    public void setToken(String token){ this.token = token;}
 
 }

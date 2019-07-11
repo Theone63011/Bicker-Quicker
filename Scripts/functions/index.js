@@ -59,3 +59,41 @@ exports.moveOldItems = functions.database.ref('/Bicker/{pushId}').onUpdate(async
   //return expBickRef.set(exp_updates);
   // return expBickRef.update(exp_updates);
 });
+
+exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate((change, context) => {
+    // Grab the current value of what was written to the Realtime Database.
+
+    const original = change.after.val();
+    var id = context.params.pushId;
+
+    console.log('ID: ', id);
+    console.log('BICKER UPDATE: ', original);
+
+   var time = original.seconds_until_expired;
+
+     var message = {
+      notification: {
+        title: 'Voting period ended for: ',
+        body: original.title
+      },
+      topic: id
+    };
+
+    var deadline = time * 1000;
+    var delay = setTimeout((deadline)=> {
+
+     admin.messaging().send(message)
+     .then((response) => {
+        // Response is a message ID string.
+        console.log('Successfully sent message:', response);
+        return;
+      })
+      .catch((error) => {
+        console.log('Error sending message:', error);
+      });
+
+    }, deadline);
+
+
+    return;
+});
