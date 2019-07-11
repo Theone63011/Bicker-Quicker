@@ -647,6 +647,8 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             Toast.makeText(CreateActivity.this, "Input values missing.", Toast.LENGTH_SHORT).show();
         }
 
+        if (failed) return; // Improper data input. Show bad fields
+
         // get the time for the timer
         int selectedId = radioGroup.getCheckedRadioButtonId();
         RadioButton selectedBtn = (RadioButton) findViewById(selectedId);
@@ -668,13 +670,8 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             Log.d(TAG, "Create_activity ERROR: time selected is neither \'seconds\', \'minutes\' or \'hours\'");
             Toast.makeText(CreateActivity.this,"ERROR: (CreateActivity.java) time selected is ne" +
                     "ither \'seconds\', \'minutes\' or \'hours\'", Toast.LENGTH_LONG).show();
-            failed = true;
+            return;
         }
-
-        Log.d(TAG, "Create_activity: radioText = " + radioText + " hours");
-        Log.d(TAG, "Create_activity: seconds_until_expired = " + seconds_until_expired);
-
-        if (failed) return; // Improper data input. Show bad fields
 
         // Disable all fields
         title.setFocusable(false);

@@ -159,6 +159,7 @@ public class Home_Fragment extends Fragment {
                                 bickerSnapshot.child("right_side").getValue() != null ? bickerSnapshot.child("right_side").getValue().toString() : "No right side",
                                 (int) (long) bickerSnapshot.child("left_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("right_votes").getValue(),
+                                (int) (long) bickerSnapshot.child("total_votes").getValue(),
                                 bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
                                 bickerSnapshot.getKey(),
                                 (double) (long) bickerSnapshot.child("seconds_until_expired").getValue()
@@ -245,6 +246,7 @@ public class Home_Fragment extends Fragment {
                                 bickerSnapshot.child("right_side").getValue() != null ? bickerSnapshot.child("right_side").getValue().toString() : "No right side",
                                 (int) (long) bickerSnapshot.child("left_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("right_votes").getValue(),
+                                (int) (long) bickerSnapshot.child("total_votes").getValue(),
                                 bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
                                 bickerSnapshot.getKey(),
                                 (double) (long) bickerSnapshot.child("seconds_until_expired").getValue()
@@ -331,6 +333,7 @@ public class Home_Fragment extends Fragment {
                                 bickerSnapshot.child("right_side").getValue() != null ? bickerSnapshot.child("right_side").getValue().toString() : "No right side",
                                 (int) (long) bickerSnapshot.child("left_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("right_votes").getValue(),
+                                (int) (long) bickerSnapshot.child("total_votes").getValue(),
                                 bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
                                 bickerSnapshot.getKey(),
                                 (double) (long) bickerSnapshot.child("seconds_until_expired").getValue()
@@ -405,6 +408,10 @@ public class Home_Fragment extends Fragment {
                         try {
                             dataSnapshot.child("left_votes").getRef().setValue(
                                     Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + 1);
+
+                            int total = Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()) + 1;
+
+                            dataSnapshot.child("total_votes").getRef().setValue(total);
                         }
                         catch (Exception e){
                             Log.e(TAG, "ERROR: could not update left_votes for bicker " + dataSnapshot.getKey());
@@ -428,6 +435,10 @@ public class Home_Fragment extends Fragment {
                         try {
                             dataSnapshot.child("right_votes").getRef().setValue(
                                     Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()) + 1);
+
+                            int total = Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()) + 1;
+
+                            dataSnapshot.child("total_votes").getRef().setValue(total);
                         }
                         catch (Exception e){
                             Log.e(TAG, "ERROR: could not update right_votes for bicker " + dataSnapshot.getKey());
