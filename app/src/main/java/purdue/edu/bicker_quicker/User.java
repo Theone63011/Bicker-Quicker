@@ -9,6 +9,7 @@ public class User {
     private String username;
     private String userId;
     private boolean moderator;
+    private String token;
     private List<String> votedBickerIds = new ArrayList<String>();
 
     public void setBickerId(String bickerId){this.bickerId.add(bickerId);}
@@ -34,5 +35,9 @@ public class User {
     public void setVotedBickerIds(String votedBickerIds){this.votedBickerIds.add(votedBickerIds);}
 
     public List<String> getVotedBickerIds(){ return votedBickerIds;}
+
+    public String getToken(){ return token;}
+
+    public void setToken(String token){ this.token = token;}
 
 }

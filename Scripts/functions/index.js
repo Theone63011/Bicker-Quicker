@@ -30,7 +30,30 @@ exports.deleteOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(asyn
 exports.newBicker = functions.database.ref('/Bicker/{pushId}').onCreate((snapshot, context) => {
     // Grab the current value of what was written to the Realtime Database.
     const original = snapshot.val();
+    var keys = Object.keys(original);
     console.log('NEW BICKER: ', context.params.pushId, original);
+
+    var time = original.seconds_until_expired;
+    var id = context.params.pushId;
+    console.log('ID: ', id)
+    var message = {
+      data: {
+        score: '850',
+        time: '2:45'
+      },
+      topic: id
+    };
+
+    // Send a message to devices subscribed to the provided topic.
+    admin.messaging().send(message)
+      .then((response) => {
+        // Response is a message ID string.
+        console.log('Successfully sent message:', response);
+        return;
+      })
+      .catch((error) => {
+        console.log('Error sending message:', error);
+      });
    // const uppercase = original.toUpperCase();
     // You must return a Promise when performing asynchronous tasks inside a Functions such as
     // writing to the Firebase Realtime Database.
