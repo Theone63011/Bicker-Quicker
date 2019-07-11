@@ -409,7 +409,7 @@ public class Home_Fragment extends Fragment {
                             dataSnapshot.child("left_votes").getRef().setValue(
                                     Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + 1);
 
-                            int total = Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString());
+                            int total = Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()) + 1;
 
                             dataSnapshot.child("total_votes").getRef().setValue(total);
                         }
@@ -436,7 +436,7 @@ public class Home_Fragment extends Fragment {
                             dataSnapshot.child("right_votes").getRef().setValue(
                                     Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()) + 1);
 
-                            int total = Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString());
+                            int total = Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()) + 1;
 
                             dataSnapshot.child("total_votes").getRef().setValue(total);
                         }
