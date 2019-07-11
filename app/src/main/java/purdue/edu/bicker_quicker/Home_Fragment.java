@@ -63,6 +63,9 @@ public class Home_Fragment extends Fragment {
     private LinearLayout choice_label_holder;
 
     public static String sortBy = "recent";
+    public static Integer listViewPositionFirstFragment = 0;
+    public static Integer listViewPositionSecondFragment = 0;
+    public static Boolean isFirstFragment = true;
 
     public Home_Fragment() {
         // Required empty public constructor
@@ -106,7 +109,11 @@ public class Home_Fragment extends Fragment {
 
         closed_bicker_layout_list = new ArrayList<LinearLayout>();
         open_bicker_layout_list = new ArrayList<LinearLayout>();
-        
+
+        Log.d("listViewonCreateFirst", Integer.toString(listViewPositionFirstFragment));
+        Log.d("listViewonCreateSecond", Integer.toString(listViewPositionSecondFragment));
+
+
         if (sortBy == "recent") {
             this.sortByRecent();
         } else if (sortBy == "popularity") {
@@ -193,6 +200,12 @@ public class Home_Fragment extends Fragment {
                     View child = listView.getAdapter().getView(i, null, null);
                     LinearLayout open_bicker = child.findViewById(R.id.open_bicker_holder);
                     //open_bicker.setVisibility(View.GONE);
+                }
+
+                if (isFirstFragment) {
+                    listView.setSelection(listViewPositionFirstFragment);
+                } else {
+                    listView.setSelection(listViewPositionSecondFragment);
                 }
             }
 
@@ -282,12 +295,36 @@ public class Home_Fragment extends Fragment {
                     LinearLayout open_bicker = child.findViewById(R.id.open_bicker_holder);
                     //open_bicker.setVisibility(View.GONE);
                 }
+
+                if (isFirstFragment) {
+                    listView.setSelection(listViewPositionFirstFragment);
+                } else {
+                    listView.setSelection(listViewPositionSecondFragment);
+                }
             }
 
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (isFirstFragment) {
+            ListView listView = getView().findViewById(R.id.unvotedListView);
+            listViewPositionFirstFragment = listView.getFirstVisiblePosition();
+        } else {
+            ListView listView = getView().findViewById(R.id.unvotedListView);
+            listViewPositionSecondFragment = listView.getFirstVisiblePosition();
+        }
+
+        Log.d("listViewonStopFirst", Integer.toString(listViewPositionFirstFragment));
+        Log.d("listViewonStopSecond", Integer.toString(listViewPositionSecondFragment));
+        Log.d("isFirstFragment", isFirstFragment.toString());
+        isFirstFragment = !isFirstFragment;
     }
 
     @Override
