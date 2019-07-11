@@ -2,12 +2,14 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +21,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -39,20 +44,28 @@ public class ProfileActivity extends AppCompatActivity {
     Button respondToBicker;
     Button signOut;
     Button toSettings;
+    Button pastBickers;
+    Button deleteAccount;
+    Switch modToggle;
     Toolbar toolbar;
     FirebaseUser user;
 
     ArrayAdapter<DeletionRequest> deletionListAdapter;
+    private static FirebaseAuth mAuth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme_NoActionBar); // Disable action bar (should be by default but this is precautionary)
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
+        mAuth = FirebaseAuth.getInstance();
         toSettings = findViewById(R.id.settingsButton);
         respondToBicker = findViewById(R.id.bickerRespond);
+        pastBickers = findViewById(R.id.pastBickers);
+        deleteAccount = findViewById(R.id.deleteAccount);
         toolbar = findViewById(R.id.toolbarBicker);
+        modToggle = findViewById(R.id.mod);
         setSupportActionBar(toolbar);
         toolbar.setTitle("Your Profile");
         Drawable drawable= getResources().getDrawable(R.drawable.backicon);
@@ -89,8 +102,6 @@ public class ProfileActivity extends AppCompatActivity {
                 signOut();
             }
         });
-
-
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
@@ -137,6 +148,79 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        pastBickers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pastBickers();
+            }
+        });
+
+        deleteAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder bob = new AlertDialog.Builder(ProfileActivity.this);
+                bob.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        deleteAccount();
+                    }
+                });
+                bob.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //hide dialog
+                    }
+                });
+                bob.setMessage("Are you sure you want to delete your account? This action is permanent.");
+                bob.create();
+                bob.show();
+            }
+
+        });
+
+        modToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                String msg = "";
+                if (checked) {
+                    //is checked, activate mod mode
+                    msg = "Moderator mode activated.";
+                } else {
+                    //unchecked, deactivate mod mode
+                    msg = "Moderator mode deactivated.";
+                }
+                System.out.println(msg);
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        //get user info from DB, check if mod. If so, make mod toggle visible
+        //create listener for PastBickers button in user info retrieval; pass User to pastBickers()
+        FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        ref.addListenerForSingleValueEvent( new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
+                    if (userSnapshot.child("userId").getValue().toString().equals(currUser.getUid())) {
+                        //if the userId is that of the current user, check mod status
+                        if (userSnapshot.child("moderator").getValue().toString().equals("true")) {
+                            System.out.println("User is mod");
+                            modToggle.setVisibility(View.VISIBLE);
+                        } else {
+                            System.out.println("User is not mod");
+                        }
+                    }
+                }
+            }
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
+
+    public void pastBickers() {
+        //pass uID from FirebaseAuth for bicker retrieval where child.equals(uId)
+        Intent intent = new Intent(this, PastBickersActivity.class);
+        startActivity(intent);
     }
 
     public void leave() {
@@ -247,11 +331,38 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
+    public void deleteAccount() {
+        //delete entry in auth and db
+        final FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference();
+        ref.addListenerForSingleValueEvent( new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
+                    if (userSnapshot.child("userId").getValue().toString().equals(currUser.getUid())) {
+                        //if the userId is that of the current user, check mod status
+                        System.out.println("Attempting delete calls");
+                        //dataSnapshot.getRef().child("User").orderByChild("userId").equalTo(currUser.getUid());
+                        userSnapshot.getRef().removeValue();
+                        currUser.delete();
+                        //take user back to starting page
+                        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                }
+            }
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+
+    }
+
     private class DeletionRequest {
         String key;
         String title;
 
-        DeletionRequest(String title, String key){
+        DeletionRequest(String title, String key) {
             this.title = title;
             this.key = key;
         }

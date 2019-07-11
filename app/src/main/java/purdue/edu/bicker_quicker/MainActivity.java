@@ -1,9 +1,12 @@
 package purdue.edu.bicker_quicker;
 
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -39,6 +42,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 1;
     private static final String TAG = MainActivity.class.getSimpleName();
     private static FirebaseAuth mAuth;
+    private String FCMtoken;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     static final int GOOGLE_SIGN = 1;
@@ -91,6 +97,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+                        FCMtoken = task.getResult().getToken();
+
+                        // Log and toast
+
+                        Log.d(TAG, "Token: " + FCMtoken);
+
+                    }
+                });
+
 
         google_btn_login = findViewById(R.id.google_sign_in_button);
         custom_google_login_button = (Button)findViewById(R.id.custom_google_login_button);
@@ -293,6 +319,7 @@ public class MainActivity extends AppCompatActivity {
                 user.setUsername(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                 user.setUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 user.setModerator(false);
+                user.setToken(FCMtoken);
                 //user.setBickerId("test1");
                 //user.setBickerId("test2");
                 //user.setVotedBickerIds("test3");
@@ -335,6 +362,7 @@ public class MainActivity extends AppCompatActivity {
                             user.setUsername(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                             user.setUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
                             user.setModerator(false);
+                            user.setToken(FCMtoken);
                             //user.setBickerId("test1");
                             //user.setBickerId("test2");
                             //user.setVotedBickerIds("test3");
@@ -418,6 +446,7 @@ public class MainActivity extends AppCompatActivity {
                                 user.setUsername(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                                 user.setUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
                                 user.setModerator(false);
+                                user.setToken(FCMtoken);
                                 //user.setBickerId("test1");
                                 //user.setBickerId("test2");
                                 //user.setVotedBickerIds("test3");
@@ -465,4 +494,6 @@ public class MainActivity extends AppCompatActivity {
         mAuth.signOut();
         LoginManager.getInstance().logOut();
     }
+
+
 }

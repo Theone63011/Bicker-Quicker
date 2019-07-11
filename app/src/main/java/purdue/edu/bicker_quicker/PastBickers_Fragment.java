@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -20,17 +19,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -39,63 +34,45 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+public class PastBickers_Fragment extends Fragment {
 
-public class Home_Fragment extends Fragment {
-    OnBickerPressedListener callback;
+    private static final String TAG = PastBickersActivity.class.getSimpleName();
 
-    private OnBickerPressedListener mListener;
+    private PastBickers_Fragment.OnBickerPressedListener mListener;
 
-    private FirebaseDatabase database;
+    PastBickers_Fragment.OnBickerPressedListener callback;
+
     private ArrayList<Bicker> bickers;
-
-    private static ArrayList<LinearLayout> closed_bicker_layout_list;
-    private static ArrayList<LinearLayout> open_bicker_layout_list;
-
-
-    private static final String TAG = HomeActivity.class.getSimpleName();
-    private boolean voted;
-    List<String> votedBickerIds;
+    private List<String> votedBickerIds;
     private HashMap<String, String> bickers_votes;
-    FirebaseUser user;
-    String userKey;
-
+    //private static ArrayList<LinearLayout> closed_bicker_layout_list;
+    //private static ArrayList<LinearLayout> open_bicker_layout_list;
+    private LinearLayout choice_label_holder;
+    private TextView choose_side_label;
     private Button leftVote;
     private Button rightVote;
     private Button noVote;
+    FirebaseUser user;
+    private FirebaseDatabase database;
+    String userKey;
 
-    private LinearLayout choice_label_holder;
 
-    public static String sortBy = "recent";
+    public PastBickers_Fragment() {}
 
-    public Home_Fragment() {
-        // Required empty public constructor
-    }
+    public static PastBickers_Fragment newInstance(int param1) {
+        PastBickers_Fragment fragment = new PastBickers_Fragment();
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Home_Fragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Home_Fragment newInstance(String param1, String param2) {
-        Home_Fragment fragment = new Home_Fragment();
-        /*Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);*/
+        //Bundle args = new Bundle();
+        //args.putInt("ARG_PARAM1", param1);
+        //fragment.setArguments(args);
+
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            voted = getArguments().getBoolean("voted");
-        }
+        //setContentView(R.layout.activity_past_bickers);
 
         database = FirebaseDatabase.getInstance();
 
@@ -104,27 +81,12 @@ public class Home_Fragment extends Fragment {
         bickers = new ArrayList<>();
         votedBickerIds = new ArrayList<String>();
         user = FirebaseAuth.getInstance().getCurrentUser();
+        bickers_votes = new HashMap<String, String >();
 
-        bickers_votes = new HashMap<String, String>();
+        //Query user_create_date = database.getReference("User").orderByChild("create_date");
+        //Query bicker_create_date = database.getReference("Bicker").orderByChild("create_date"); //create_date
 
-        closed_bicker_layout_list = new ArrayList<LinearLayout>();
-        open_bicker_layout_list = new ArrayList<LinearLayout>();
-        
-        if (sortBy == "recent") {
-            this.sortByRecent();
-        } else if (sortBy == "popularity") {
-            this.sortByPopularity();
-        }
-    }
-
-    public void sortByRecent() {
-        sortBy = "recent";
-        bickers = new ArrayList<>();
-
-        Query user_create_date = database.getReference("User").orderByChild("create_date");
-        Query bicker_create_date = database.getReference("Bicker").orderByChild("create_date"); //create_date
-
-        user_create_date.addListenerForSingleValueEvent( new ValueEventListener() {
+        databaseRef.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String id = user.getUid();
                 String voted_id;
@@ -132,10 +94,11 @@ public class Home_Fragment extends Fragment {
                 String code;
                 String bicker_id;
 
-                // This loop adds the user's voted on bickers to the votedBickerIds list and bickers_votes map
-                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                // This loop gets the users' created active bickers and adds the user's voted on bickers
+                // to the votedBickerIds list and bickers_votes map
+                for (DataSnapshot userSnapshot : dataSnapshot.child("Bicker").getChildren()) {
                     try {
-                        if (userSnapshot.child("userId") != null && userSnapshot.child("userId").getValue().toString().equals(id)) {
+                        if (userSnapshot.child("userId") != null && userSnapshot.child("senderID").getValue().toString().equals(id)) {
                             userKey = userSnapshot.getKey();
 
                             for (DataSnapshot votedId : userSnapshot.child("votedBickerIds").getChildren()) {
@@ -155,75 +118,12 @@ public class Home_Fragment extends Fragment {
                         Log.w(TAG, "Home_Fragment detected a null user in the database.   " + e);
                     }
                 }
-            }
 
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-
-        bicker_create_date.addListenerForSingleValueEvent( new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                // This loop adds all voted on bickers to the bickers array
-                for (DataSnapshot bickerSnapshot : dataSnapshot.getChildren()) {
-
-                    if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
-                        bickers.add(new Bicker(
-                                bickerSnapshot.child("title").getValue() != null ? bickerSnapshot.child("title").getValue().toString() : "No title",
-                                bickerSnapshot.child("left_side").getValue() != null ? bickerSnapshot.child("left_side").getValue().toString() : "No left side",
-                                bickerSnapshot.child("right_side").getValue() != null ? bickerSnapshot.child("right_side").getValue().toString() : "No right side",
-                                (int) (long) bickerSnapshot.child("left_votes").getValue(),
-                                (int) (long) bickerSnapshot.child("right_votes").getValue(),
-                                (int) (long) bickerSnapshot.child("total_votes").getValue(),
-                                bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
-                                bickerSnapshot.getKey(),
-                                (double) (long) bickerSnapshot.child("seconds_until_expired").getValue()
-                        ));
-                    }
-                }
-
-                Collections.reverse(bickers);
-
-                ArrayAdapter<Bicker> adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, bickers);
-
-                ListView listView = getView().findViewById(R.id.unvotedListView);
-                listView.setAdapter(adapter);
-                int count = listView.getAdapter().getCount();
-
-                //We can't set visibility to GONE until after all list elements are loaded or they will overlap
-                for ( int i=0; i < listView.getAdapter().getCount(); i++) {
-                    View child = listView.getAdapter().getView(i, null, null);
-                    LinearLayout open_bicker = child.findViewById(R.id.open_bicker_holder);
-                    //open_bicker.setVisibility(View.GONE);
-                }
-            }
-
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-    }
-
-    public void sortByPopularity() {
-        sortBy = "popularity";
-        bickers = new ArrayList<>();
-
-        Query user_category = database.getReference("User").orderByChild("total_votes");//total_votes
-        Query bicker_category = database.getReference("Bicker").orderByChild("total_votes"); //create_date
-
-        user_category.addListenerForSingleValueEvent( new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String id = user.getUid();
-                String voted_id;
-                String side;
-                String code;
-                String bicker_id;
-
-                // This loop adds the user's voted on bickers to the votedBickerIds list and bickers_votes map
-                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                // This loop get the users' created expired bickers and adds the user's voted on
+                // bickers to the votedBickerIds list and bickers_votes map
+                for (DataSnapshot userSnapshot : dataSnapshot.child("ExpiredBicker").getChildren()) {
                     try {
-                        if (userSnapshot.child("userId") != null && userSnapshot.child("userId").getValue().toString().equals(id)) {
+                        if (userSnapshot.child("userId") != null && userSnapshot.child("senderID").getValue().toString().equals(id)) {
                             userKey = userSnapshot.getKey();
 
                             for (DataSnapshot votedId : userSnapshot.child("votedBickerIds").getChildren()) {
@@ -243,20 +143,30 @@ public class Home_Fragment extends Fragment {
                         Log.w(TAG, "Home_Fragment detected a null user in the database.   " + e);
                     }
                 }
-            }
 
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
+                // This loop adds all created active bickers to the bickers array
+                for (DataSnapshot bickerSnapshot : dataSnapshot.child("Bicker").getChildren()) {
 
-        bicker_category.addListenerForSingleValueEvent( new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(bickerSnapshot.child("senderID").getValue().toString().equals(id)) {
+                        bickers.add(new Bicker(
+                                bickerSnapshot.child("title").getValue() != null ? bickerSnapshot.child("title").getValue().toString() : "No title",
+                                bickerSnapshot.child("left_side").getValue() != null ? bickerSnapshot.child("left_side").getValue().toString() : "No left side",
+                                bickerSnapshot.child("right_side").getValue() != null ? bickerSnapshot.child("right_side").getValue().toString() : "No right side",
+                                (int) (long) bickerSnapshot.child("left_votes").getValue(),
+                                (int) (long) bickerSnapshot.child("right_votes").getValue(),
+                                (int) (long) bickerSnapshot.child("total_votes").getValue(),
+                                bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
+                                bickerSnapshot.getKey(),
+                                (double) (long) bickerSnapshot.child("seconds_until_expired").getValue()
+                        ));
+                    }
+                }
 
-                // This loop adds all voted on bickers to the bickers array
-                for (DataSnapshot bickerSnapshot : dataSnapshot.getChildren()) {
 
-                    if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
+                // This loop adds all created expired bickers to the bickers array
+                for (DataSnapshot bickerSnapshot : dataSnapshot.child("ExpiredBicker").getChildren()) {
+
+                    if(bickerSnapshot.child("senderID").getValue().toString().equals(id)) {
                         bickers.add(new Bicker(
                                 bickerSnapshot.child("title").getValue() != null ? bickerSnapshot.child("title").getValue().toString() : "No title",
                                 bickerSnapshot.child("left_side").getValue() != null ? bickerSnapshot.child("left_side").getValue().toString() : "No left side",
@@ -273,9 +183,9 @@ public class Home_Fragment extends Fragment {
 
                 Collections.reverse(bickers);
 
-                ArrayAdapter<Bicker> adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, bickers);
+                ArrayAdapter<Bicker> adapter = new PastBickers_Fragment.bickerArrayAdapter(getActivity(), 0, bickers);
 
-                ListView listView = getView().findViewById(R.id.unvotedListView);
+                ListView listView = getView().findViewById(R.id.bickerListView);
                 listView.setAdapter(adapter);
                 int count = listView.getAdapter().getCount();
 
@@ -287,25 +197,26 @@ public class Home_Fragment extends Fragment {
                 }
             }
 
+
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_, container, false);
+        return inflater.inflate(R.layout.fragment_past_bickers, container, false);
     }
-
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnBickerPressedListener) {
-            mListener = (OnBickerPressedListener) context;
+        if (context instanceof PastBickers_Fragment.OnBickerPressedListener) {
+            mListener = (PastBickers_Fragment.OnBickerPressedListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -318,109 +229,7 @@ public class Home_Fragment extends Fragment {
         mListener = null;
     }
 
-    //method to update the vote count for left (1) or right (2)
-    public void vote(String key, int response, int leftSideVotes, int rightSideVotes) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        //access bicker where id == LhrhW1FAWRsJXfopsuR
-        //DatabaseReference ref = response == 1 ? database.getReference("Bicker/-LhrhW1FAWRsJXfopsuR").orderByChild("left_votes") :
-        //        database.getReference("Bicker").child("right_votes");
-        DatabaseReference ref = database.getReference();
-
-        String path = "Bicker/" + key + "/left_votes";
-
-        path.charAt(2);
-
-        if (response == 1) {
-
-            ref.child("Bicker/" + key).addListenerForSingleValueEvent( new ValueEventListener() {
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()){
-                        try {
-                            dataSnapshot.child("left_votes").getRef().setValue(
-                                    Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + 1);
-                            dataSnapshot.child("total_votes").getRef().setValue(
-                                    Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + 1 +
-                                            Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()));
-                        }
-                        catch (Exception e){
-                            Log.e(TAG, "ERROR: could not update left_votes for bicker " + dataSnapshot.getKey());
-                        }
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-
-            });
-
-        } else if (response == 2) {
-
-            ref.child("Bicker/" + key).addListenerForSingleValueEvent( new ValueEventListener() {
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()){
-                        try {
-                            dataSnapshot.child("right_votes").getRef().setValue(
-                                    Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()) + 1);
-                            dataSnapshot.child("total_votes").getRef().setValue(
-                                    Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + 1 +
-                                            Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()));
-                        }
-                        catch (Exception e){
-                            Log.e(TAG, "ERROR: could not update right_votes for bicker " + dataSnapshot.getKey());
-                        }
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-
-            });
-        }
-
-        FirebaseMessaging.getInstance().subscribeToTopic(key)
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                String msg = "Notification succeeded";
-                if (!task.isSuccessful()) {
-                    msg = "Notification failed";
-                }
-                Log.d(TAG, msg);
-
-            }
-        });
-
-
-        if(response == 0) {
-            ref.child("User/" + userKey + "/votedBickerIds/" + key + "/Side Voted").setValue("abstain");
-        }
-        else if(response == 1) {
-            ref.child("User/" + userKey + "/votedBickerIds/" + key + "/Side Voted").setValue("left");
-        }
-        else if(response == 2) {
-            ref.child("User/" + userKey + "/votedBickerIds/" + key + "/Side Voted").setValue("right");
-        }
-
-    }
-
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public void setOnBickerPressedListener(OnBickerPressedListener callback) {
+    public void setOnBickerPressedListener(PastBickers_Fragment.OnBickerPressedListener callback) {
         this.callback = callback;
     }
 
@@ -435,6 +244,7 @@ public class Home_Fragment extends Fragment {
         private Context context;
         private List<Bicker> bickers;
         private DecimalFormat df = new DecimalFormat("0.0");
+        private boolean expired;
 
         //constructor
         public bickerArrayAdapter(Context context, int resource, ArrayList<Bicker> bickers) {
@@ -449,6 +259,8 @@ public class Home_Fragment extends Fragment {
 
             //get the property we are displaying
             Bicker bicker = bickers.get(position);
+
+            expired = false;
 
             int total = bicker.getLeft_votes() + bicker.getRight_votes();
             String total_votes = display_votes(Double.valueOf(total));
@@ -534,10 +346,10 @@ public class Home_Fragment extends Fragment {
                     catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Misc), PorterDuff.Mode.MULTIPLY);
                     break;
 
-                    default:
-                        Log.d(TAG, "ERROR: Could not find a corresponding color category. See colors.xml for correct options");
-                        Toast.makeText(getActivity(), "Home_Fragment: ERROR: Could not find a corresponding color category. " +
-                                "See colors.xml for correct options" , Toast.LENGTH_LONG).show();
+                default:
+                    Log.d(TAG, "ERROR: Could not find a corresponding color category. See colors.xml for correct options");
+                    Toast.makeText(getActivity(), "Home_Fragment: ERROR: Could not find a corresponding color category. " +
+                            "See colors.xml for correct options" , Toast.LENGTH_LONG).show();
 
             }
 
@@ -622,51 +434,56 @@ public class Home_Fragment extends Fragment {
             noVote = view.findViewById(R.id.abstain);
 
             choice_label_holder = view.findViewById(R.id.choice_label_holder);
+            choose_side_label = view.findViewById(R.id.choose_side_label);
 
             leftVote.setBackgroundResource(R.drawable.side_prechoice_blue);
             rightVote.setBackgroundResource(R.drawable.side_prechoice_purple);
 
-            leftLabel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    leftLabel.setEnabled(false);
-                    rightLabel.setEnabled(false);
-                    leftSideClick(view, bicker, open_vote_count, closed_vote_count);
+            boolean voted = false;
+
+            if(votedBickerIds.contains(bicker.getCode())) {
+                voted = true;
+            }
+
+            DatabaseReference databaseRef = database.getReference();
+
+            databaseRef.addListenerForSingleValueEvent( new ValueEventListener() {
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String id = user.getUid();
+                    String voted_id;
+                    String side;
+                    String code;
+                    String bicker_id;
+
+                    // This loop determines if the current bicker is expired
+                    for (DataSnapshot userSnapshot : dataSnapshot.child("ExpiredBicker").getChildren()) {
+                        try {
+                            if (userSnapshot.child("userId") != null && userSnapshot.child("userID").getValue().toString().equals(bicker.getCode())) {
+                                expired = true;
+                            }
+                        } catch (Exception e) {
+                            Log.w(TAG, "Home_Fragment detected a null user in the database.   " + e);
+                        }
+                    }
+
+                }
+
+
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("The read failed: " + databaseError.getCode());
                 }
             });
 
-            rightLabel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    rightLabel.setEnabled(false);
-                    leftLabel.setEnabled(false);
-                    rightSideClick(view, bicker, open_vote_count, closed_vote_count);
-                }
-            });
+            if(expired) {
+                choice_label_holder.setVisibility(View.VISIBLE);
+                choose_side_label.setText("Expired");
+                choose_side_label.setTextColor(getResources().getColor(R.color.red));
 
-            leftVote.setOnClickListener(new View.OnClickListener(){
-                public void onClick(View v){
-                    leftLabel.setEnabled(false);
-                    rightLabel.setEnabled(false);
-                    leftSideClick(v, bicker, open_vote_count, closed_vote_count);
-                }
-            });
+            }
+            else {
+                choice_label_holder.setVisibility(View.GONE);
+            }
 
-            rightVote.setOnClickListener(new View.OnClickListener(){
-                public void onClick(View v){
-                    rightLabel.setEnabled(false);
-                    leftLabel.setEnabled(false);
-                    rightSideClick(v, bicker, open_vote_count, closed_vote_count);
-                }
-            });
-
-            noVote.setOnClickListener(new View.OnClickListener(){
-                public void onClick(View v){
-                    rightLabel.setEnabled(false);
-                    leftLabel.setEnabled(false);
-                    noSideClick(v, bicker, open_vote_count, closed_vote_count);
-                }
-            });
 
             if(voted == true){
                 //leftVote.setText(Integer.toString(bicker.getLeft_votes()));
@@ -677,7 +494,6 @@ public class Home_Fragment extends Fragment {
                 rightVote.setText(bicker.getRight_side());
                 noVote.setText("Abstain");
                 noVote.setVisibility(View.GONE);
-                choice_label_holder.setVisibility(View.GONE);
 
                 leftVote.setEnabled(false);
                 rightVote.setEnabled(false);
@@ -709,122 +525,9 @@ public class Home_Fragment extends Fragment {
                     Log.d(TAG, "Home_fragment: ERROR- side_voted not assigned");
                     Toast.makeText(getActivity(), "Home_fragment: ERROR- side_voted not assigned", Toast.LENGTH_LONG).show();
                 }
-
-                // Below reads from the database
-                /*FirebaseDatabase database = FirebaseDatabase.getInstance();
-                //String ref_path  ="User/" + userKey + "/votedBickerIds/" + bickerCode + "/Side Voted";
-                //Log.d(TAG, "Home_fragment: ref_path=" + ref_path);
-                DatabaseReference ref = database.getReference();
-                ref.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String side_voted = dataSnapshot.child("User").child(userKey).child("votedBickerIds").child(bickerCode).child("Side Voted").getValue().toString();
-                        Log.d(TAG, "Home_fragment: side_voted=" + side_voted);
-                        Log.d(TAG, "Home_fragment: title=" + bicker.getTitle());
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });*/
             }
 
             return view;
-        }
-
-        public void leftSideClick(View view, Bicker bicker, TextView open_vote_count, TextView closed_vote_count) {
-            View parentView = (View)view.getParent().getParent().getParent().getParent().getParent();
-            leftVote = parentView.findViewById(R.id.left);
-            rightVote = parentView.findViewById(R.id.right);
-            noVote = parentView.findViewById(R.id.abstain);
-
-            TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
-
-            TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
-
-            TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
-
-            //leftVote.setText(Integer.toString(Integer.parseInt(hiddenLeftVotes.getText().toString()) + 1));
-            //rightVote.setText(hiddenRightVotes.getText().toString());
-            noVote.setText("Blue Side");
-
-            // Not needed now, but may need later
-            leftVote.setEnabled(false);
-            rightVote.setEnabled(false);
-
-
-            noVote.setEnabled(false);
-
-            vote(hiddenKey.getText().toString(), 1, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
-
-            double tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
-            String tot_str = display_votes(tot);
-            open_vote_count.setText(tot_str);
-            closed_vote_count.setText(tot_str);
-
-            AnimationHandler.select_blue(leftVote, rightVote, parentView, getActivity());
-        }
-
-        public void rightSideClick(View view, Bicker bicker, TextView open_vote_count, TextView closed_vote_count) {
-            View parentView = (View)view.getParent().getParent().getParent().getParent().getParent();
-            leftVote = parentView.findViewById(R.id.left);
-            rightVote = parentView.findViewById(R.id.right);
-            noVote = parentView.findViewById(R.id.abstain);
-
-            TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
-
-            TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
-
-            TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
-
-            //leftVote.setText(hiddenLeftVotes.getText().toString());
-            //rightVote.setText(Integer.toString(Integer.parseInt(hiddenRightVotes.getText().toString()) + 1));
-            noVote.setText("Purple Side");
-
-            // Not needed now, but may need later
-            leftVote.setEnabled(false);
-            rightVote.setEnabled(false);
-
-
-            noVote.setEnabled(false);
-
-            vote(hiddenKey.getText().toString(), 2, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
-
-            double tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
-            String tot_str = display_votes(tot);
-            open_vote_count.setText(tot_str);
-            closed_vote_count.setText(tot_str);
-
-            AnimationHandler.select_purple(leftVote, rightVote, parentView, getActivity());
-        }
-
-        public void noSideClick(View view, Bicker bicker, TextView open_vote_count, TextView closed_vote_count) {
-            View parentView = (View)view.getParent().getParent().getParent().getParent().getParent();
-            leftVote = parentView.findViewById(R.id.left);
-            rightVote = parentView.findViewById(R.id.right);
-            noVote = parentView.findViewById(R.id.abstain);
-
-            TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
-
-            TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
-
-            TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
-
-            // Not needed now, but may need later
-            //leftVote.setText(hiddenLeftVotes.getText().toString());
-            //rightVote.setText(hiddenRightVotes.getText().toString());
-
-
-            noVote.setText("Abstain");
-
-            leftVote.setEnabled(false);
-            rightVote.setEnabled(false);
-            noVote.setEnabled(false);
-
-            vote(hiddenKey.getText().toString(), 0, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
-
-            AnimationHandler.select_abstain(leftVote, rightVote, parentView, getActivity());
         }
 
         public void onBickerClick (View view, LinearLayout closed_bicker, LinearLayout open_bicker) {
