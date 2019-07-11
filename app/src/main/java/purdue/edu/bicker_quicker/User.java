@@ -17,7 +17,7 @@ public class User {
         notificationSettings = newSettings;
     }
 
-    public int getNotSettings() {
+    public int getNotificationSettings() {
         return notificationSettings;
     }
 

@@ -41,8 +41,6 @@ public class SettingsActivity extends AppCompatActivity {
     public Switch voteOnEnd;
     public int bitString;
     public String dbID;
-    public User tempUser;
-
 
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String SW_ALLNOT = "swAllNot";
@@ -264,7 +262,6 @@ public class SettingsActivity extends AppCompatActivity {
                 // Iterate to get the child of the DataSnapshot
                 for (DataSnapshot userSnap : ds) {
                     dbID = userSnap.getKey();
-                    tempUser = userSnap.getValue(User.class);
                     sendSettingsUpdateToDatabase(); // Update settings incase things have changed since call happened
                 }
             }
@@ -327,15 +324,8 @@ public class SettingsActivity extends AppCompatActivity {
             return;
 
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        DatabaseReference ref = db.getReference("User/"+dbID);
-        tempUser.setNotificationSettings(bitString);
-        ref.setValue(tempUser);
-        //ref.setValue(tempUser);
-    }
-
-    // Get the id of the data with the user id so we can update the db without having to constantly
-    public void setID() {
-
+        DatabaseReference ref = db.getReference("User/"+dbID+"/notificationSettings");
+        ref.setValue(bitString);
     }
 
     public void leave() {
