@@ -2,195 +2,298 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
-public class PastBickersActivity extends AppCompatActivity {
+public class PastBickersActivity extends AppCompatActivity implements PastBickers_Fragment.OnBickerPressedListener{
 
-    private ArrayList<Bicker> bickers;
-    private static ArrayList<LinearLayout> open_bicker_layout_list;
+    private static final int NUM_PAGES = 1;
+    private ViewPager mPager;
+    private PagerAdapter pagerAdapter;
 
-    public PastBickersActivity() {}
+    private DrawerLayout mDrawer;
+    private Toolbar toolbar;
+    //private NavigationView nvDrawer;
+    private ActionBarDrawerToggle drawerToggle;
+
+    private String sortBy = "recent";
+
+    private Boolean initializeFragment = false;
+
+    //Button recentButton;
+    //Button popularButton;
+
+    PastBickers_Fragment fragment1 = null;
+    PastBickers_Fragment fragment2 = null;
+
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
+
+        if(FirebaseAuth.getInstance().getCurrentUser() == null){
+            Log.d("Error", "NULL USER");
+            startActivity(new Intent(PastBickersActivity.this, MainActivity.class));
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_past_bickers);
 
 
-        FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference();
-        bickers = new ArrayList<Bicker>();
-        System.out.println("Beginning past bickers activity");
-        ref.addListenerForSingleValueEvent( new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String currId = currUser.getUid();
-                for (DataSnapshot bickerSnapshot : dataSnapshot.child("Bicker").getChildren()) {
-                    if (bickerSnapshot != null && bickerSnapshot.child("senderID").getValue().toString().equals(currId)) {
-                        //if the sender is the current user, add the bicker to the list
-                        bickers.add(bickerSnapshot.getValue(Bicker.class));
-                        System.out.println("Bicker added: " + bickerSnapshot.getValue(Bicker.class));
-                    }
-                }
-                for (DataSnapshot expBickerSnapshot : dataSnapshot.child("ExpiredBicker").getChildren()) {
-                    if (expBickerSnapshot != null && expBickerSnapshot.child("senderID").getValue().toString().equals(currId)) {
-                        bickers.add(expBickerSnapshot.getValue(Bicker.class));
-                        System.out.println("Expired bicker added: " + expBickerSnapshot.getValue(Bicker.class));
-                    }
-                }
-                ArrayAdapter<Bicker> adapter = new PastBickersActivity.bickerArrayAdapter(getApplicationContext(), 0, bickers);
-                ListView listView = findViewById(R.id.bickerListView);
-                listView.setAdapter(adapter);
-                int count = listView.getAdapter().getCount();
+        //nvDrawer = findViewById(R.id.nav_view);
+        //setupDrawerContent(nvDrawer);
 
-                //We can't set visibility to GONE until after all list elements are loaded or they will overlap
-                for ( int i=0; i < listView.getAdapter().getCount(); i++) {
-                    View child = listView.getAdapter().getView(i, null, null);
-                    //child is null ref?? Need getView().child...?
-                    LinearLayout open_bicker = child.findViewById(R.id.open_bicker_holder);
-                    open_bicker.setVisibility(View.GONE);
-                }
+        /*FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(PastBickersActivity.this, CreateActivity.class);
+                startActivity(intent);
             }
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
+
+        });*/
+
+
+
+        mPager = (ViewPager) findViewById(R.id.pager);
+        pagerAdapter = new PastBickersActivity.ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(pagerAdapter);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("Your Created Bickers");
+        Drawable drawable= getResources().getDrawable(R.drawable.backicon);
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+        Drawable newdrawable = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 30, 30, true));
+        toolbar.setNavigationIcon(newdrawable);
+        toolbar.setTitle("Your Created Bickers");
+        toolbar.setTitleTextColor(Color.parseColor("#FFFFFF"));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                leave();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu,menu);
+        return true;
+    }
+
+    @Override
+    public void onResume(){
+
+        Log.d("sortBy: ", this.sortBy.toString());
+
+        super.onResume();
+        if(FirebaseAuth.getInstance().getCurrentUser() == null){
+            Log.d("Error", "NULL USER");
+            startActivity(new Intent(PastBickersActivity.this, MainActivity.class));
+        }
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (fragment instanceof PastBickers_Fragment) {
+            PastBickers_Fragment past_fragment = (PastBickers_Fragment) fragment;
+            past_fragment.setOnBickerPressedListener(this);
+
+            /*if (initializeHomeFrag1 == false) {
+                homefrag1 = homeFragment;
+                initializeHomeFrag1 = true;
+            }else if (initializeHomeFrag1 == true) {
+                homefrag2 = homeFragment;
+                initializeHomeFrag1 = false;
+            }*/
+        }
+    }
+
+    @Override
+    public void onBickerPressed(int position) {
+        // Required. Currently does nothing, can be changed and used if fragment needs to communicate with activity
+    }
+
+
+    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            PastBickers_Fragment past_fragment = new PastBickers_Fragment();
+            Bundle args = new Bundle();
+            if(position == 0){
+                args.putBoolean("voted", false);
+            }
+            else{
+                args.putBoolean("voted", true);
+            }
+            past_fragment.setArguments(args);
+
+            return past_fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
+        }
+    }
+
+    /*private void setupDrawerContent(NavigationView navigationView) {
+
+        navigationView.setNavigationItemSelectedListener(
+
+                new NavigationView.OnNavigationItemSelectedListener() {
+
+                    @Override
+
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                        selectDrawerItem(menuItem);
+
+                        return true;
+
+                    }
+
+                });
+
+    }*/
+
+    public void selectDrawerItem(MenuItem menuItem) {
+
+        switch (menuItem.getItemId()) {
+
+            case R.id.profile:
+                Intent intent = new Intent(PastBickersActivity.this, ProfileActivity.class);
+                startActivity(intent);
+
+                break;
+
+            case R.id.settings:
+                //TODO: settings page
+
+                break;
+
+            case R.id.signOut:
+
+                signOut();
+
+                break;
+
+            case  R.id.delete://Temporary until notifications are figured out
+                Intent tempIntent = new Intent(PastBickersActivity.this, TempDeleteActivity.class);
+                startActivity(tempIntent);
+
+                break;
+
+        }
+    }
+
+
+    @Override
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        // The action bar home/up action should open or close the drawer.
+        if (item.getItemId() == R.id.profButton) {
+            Intent intent = new Intent(PastBickersActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        }
+
+
+        switch (item.getItemId()) {
+
+            case android.R.id.home:
+
+                mDrawer.openDrawer(GravityCompat.START);
+
+                return true;
+
+
+        }
+
+        return super.onOptionsItemSelected(item);
 
     }
 
-    class bickerArrayAdapter extends ArrayAdapter<Bicker> {
-        private Context context;
-        private List<Bicker> bickers;
+    public void signOut(){
 
-        //constructor
-        public bickerArrayAdapter(Context context, int resource, ArrayList<Bicker> bickers) {
-            super(context, resource, bickers);
+        // To Sign Out of Facebook, do this:
+        MainActivity.signOut();
 
-            this.context = context;
-            this.bickers = bickers;
-        }
+        //sign out of google and take back to MainActivity on success
+        FirebaseAuth.getInstance().signOut();
+        MainActivity.mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, task -> {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                });
 
-        public View getView(int position, View convertView, ViewGroup parent) {
-            Bicker bicker = bickers.get(position);
-            int total = bicker.getLeft_votes() + bicker.getRight_votes();
-            String total_votes = Integer.toString(total);
-            total_votes += " Votes";
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        startActivity(new Intent(PastBickersActivity.this, MainActivity.class));
+                    }
+                });
+    }
 
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.layout_unvoted_bicker, null);
-
-            TextView leftLabel = view.findViewById(R.id.left_label);
-            TextView rightLabel = view.findViewById(R.id.right_label);
-            TextView leftVotes = view.findViewById(R.id.leftVotes);
-            TextView rightVotes = view.findViewById(R.id.rightVotes);
-            TextView open_title = view.findViewById(R.id.open_title);
-            TextView open_category = view.findViewById(R.id.open_category);
-
-            String catName = bicker.getCategory();
-            leftLabel.setText(bicker.getLeft_side());
-            rightLabel.setText(bicker.getRight_side());
-            leftVotes.setText(bicker.getLeft_votes());
-            rightVotes.setText(bicker.getRight_votes());
-            open_category.setText(catName);
-            open_title.setText(bicker.getTitle());
-            open_category.setTextColor(Color.WHITE);
-            Drawable catDraw = ContextCompat.getDrawable(getApplicationContext(), R.drawable.shape_category);
-
-            //Below sets the correct color of the category icon
-            switch (catName) {
-                case "Art":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Art), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Board Games":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_BoardGames), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Books":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Books), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Comedy":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Comedy), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Food":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Food), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Movies":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Movies), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Music":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Music), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Philosophy":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Philosophy), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Politics":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Politics), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Relationships":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Relationships), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Science":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Science), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Sports":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Sports), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "TV Shows":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_TvShows), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Video Games":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_VideoGames), PorterDuff.Mode.MULTIPLY);
-                    break;
-                case "Miscellaneous":
-                    catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Misc), PorterDuff.Mode.MULTIPLY);
-                    break;
-
-                default:
-                    //Log.d(TAG, "ERROR: Could not find a corresponding color category. See colors.xml for correct options");
-                    Toast.makeText(getApplicationContext(), "Home_Fragment: ERROR: Could not find a corresponding color category. " +
-                            "See colors.xml for correct options" , Toast.LENGTH_LONG).show();
-
-            }
-
-
-            open_category.setBackground(catDraw);
-            open_category.setPadding(8, 8, 8, 8);
-
-            LinearLayout open_bicker_holder = view.findViewById(R.id.open_bicker_holder);
-            LinearLayout open_header = view.findViewById(R.id.open_header);
-            LinearLayout open_voteCountHolder = view.findViewById(R.id.open_voteCount_holder);
-            TextView open_vote_count = view.findViewById(R.id.open_vote_count_text);
-            open_vote_count.setText(total_votes);
-
-            return convertView;
-        }
+    public void leave() {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
     }
 
 }
