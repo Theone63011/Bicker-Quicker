@@ -161,6 +161,9 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
     @Override
     public void onResume(){
+
+        Log.d("sortBy: ", this.sortBy.toString());
+
         super.onResume();
         if(FirebaseAuth.getInstance().getCurrentUser() == null){
             Log.d("Error", "NULL USER");

@@ -62,6 +62,8 @@ public class Home_Fragment extends Fragment {
 
     private LinearLayout choice_label_holder;
 
+    public static String sortBy = "recent";
+
     public Home_Fragment() {
         // Required empty public constructor
     }
@@ -186,9 +188,33 @@ public class Home_Fragment extends Fragment {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
+
+        if (sortBy == "recent") {
+            this.sortByRecent();
+        } else if (sortBy == "popularity") {
+            this.sortByPopularity();
+        }
     }
 
+    /*
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d("homefrag", "onSaveInstanceState");
+        outState.putString("savedText", "test");
+    }
+
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            String test = savedInstanceState.getString("savedText");
+            if (test != null) {
+                Log.d("homefrag", "onRestoreInstanceState: " + test);
+            }
+        }
+    }*/
+
     public void sortByRecent() {
+        sortBy = "recent";
         bickers = new ArrayList<>();
 
         Query user_create_date = database.getReference("User").orderByChild("create_date");
@@ -275,9 +301,10 @@ public class Home_Fragment extends Fragment {
     }
 
     public void sortByPopularity() {
+        sortBy = "popularity";
         bickers = new ArrayList<>();
 
-        Query user_category = database.getReference("User").orderByChild("category");
+        Query user_category = database.getReference("User").orderByChild("category");//total_votes
         Query bicker_category = database.getReference("Bicker").orderByChild("category"); //create_date
 
         user_category.addListenerForSingleValueEvent( new ValueEventListener() {
@@ -405,6 +432,11 @@ public class Home_Fragment extends Fragment {
                         try {
                             dataSnapshot.child("left_votes").getRef().setValue(
                                     Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + 1);
+
+                            //dataSnapshot.child("total_votes").getRef().setValue(
+                            //        Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) + 1 +
+                            //                Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()));
+
                         }
                         catch (Exception e){
                             Log.e(TAG, "ERROR: could not update left_votes for bicker " + dataSnapshot.getKey());
@@ -428,6 +460,10 @@ public class Home_Fragment extends Fragment {
                         try {
                             dataSnapshot.child("right_votes").getRef().setValue(
                                     Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()) + 1);
+
+                            //dataSnapshot.child("total_votes").getRef().setValue(
+                            //        Integer.parseInt(dataSnapshot.child("left_votes").getValue().toString()) +
+                            //                Integer.parseInt(dataSnapshot.child("right_votes").getValue().toString()) + 1);
                         }
                         catch (Exception e){
                             Log.e(TAG, "ERROR: could not update right_votes for bicker " + dataSnapshot.getKey());
