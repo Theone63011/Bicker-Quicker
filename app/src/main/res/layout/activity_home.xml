@@ -37,13 +37,16 @@
                 android:layout_weight="1"/>
 
             <Button
+                android:id="@+id/popular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Popular"/>
+                android:text="Popular" />
+
             <Button
+                android:id="@+id/recent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Recent"/>
+                android:text="Recent" />
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

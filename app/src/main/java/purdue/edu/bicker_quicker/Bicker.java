@@ -1,8 +1,5 @@
 package purdue.edu.bicker_quicker;
 
-import android.os.Parcel;
-import android.provider.ContactsContract;
-
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -22,17 +19,18 @@ public class Bicker {
     private boolean voted;
     private ArrayList<String> tags = new ArrayList<String>();
     private ArrayList<String> votedUsers = new ArrayList<String>();
+    private double seconds_until_expired;
 
     public Bicker (){
 
     }
     public Bicker(String title, String left_Side, String right_side,
-                  int left_votes, int right_votes, String category, String key) {
-        this(title, null,  left_Side, right_side, null, left_votes, right_votes, null, category, null, null, key , null, null);
+                  int left_votes, int right_votes, String category, String key, double seconds) {
+        this(title, null,  left_Side, right_side, null, left_votes, right_votes, null, category, null, null, key , null, null, seconds);
 
     }
     public Bicker (String title, String description, String left_side, String right_side, Date create_date, int left_votes,
-                   int right_votes, String code, String category, String senderID, String receiverID, String key, ArrayList<String> tags, ArrayList<String> votedUsers ){
+                   int right_votes, String code, String category, String senderID, String receiverID, String key, ArrayList<String> tags, ArrayList<String> votedUsers, double seconds){
 
         this.title = title;
         this.description = description;
@@ -50,6 +48,7 @@ public class Bicker {
             this.tags = tags;
         if (votedUsers != null)
             this.votedUsers = votedUsers;
+        seconds_until_expired = seconds;
     }
 
     public ArrayList<String> getTags() { return tags; }
@@ -156,6 +155,10 @@ public class Bicker {
 
     public void setVoted(boolean voted) { this.voted = voted; }
 
+    public void setSeconds_until_expired(double seconds) { seconds_until_expired = seconds; }
+
+    public double getSeconds_until_expired() { return seconds_until_expired; }
+
 
     public String toString() {
         String res = "";
@@ -170,6 +173,7 @@ public class Bicker {
         res += "\nCategory: " + category;
         res += "\nSenderID: " + senderID;
         res += "\nReceiverID: " + receiverID;
+        res += "\nSecondsUntilExpired: " + seconds_until_expired;
         return res;
     }
 
