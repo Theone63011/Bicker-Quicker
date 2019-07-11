@@ -164,7 +164,10 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void pastBickers() {
         //pass uID from FirebaseAuth for bicker retrieval where child.equals(uId)
-        Intent intent = new Intent(this, PastBickersActivity.class);
+        Intent intent = new Intent(this, BasicBickerView.class);
+        Bundle b = new Bundle();
+        b.putBoolean("expBick", false);
+        intent.putExtras(b);
         startActivity(intent);
     }
 
