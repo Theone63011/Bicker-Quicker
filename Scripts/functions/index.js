@@ -91,8 +91,8 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
       //const expBickRef = ref.child('ExpiredBicker'); //reference to parent then expired bicker document
 
 
-      const oldItemsQuery = ref.orderByChild('create_date/time');
-      const snapshot = await oldItemsQuery.once('value');
+      //const oldItemsQuery = ref.orderByChild('create_date/time');
+      //const snapshot = await oldItemsQuery.once('value');
 
       // create a map with all children that need to be removed
       const updates = {};
@@ -150,25 +150,71 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
         console.log('Error sending message:', error);
       });
 
-       snapshot.forEach(function (childSnapshot) {
-            var value = childSnapshot.val();
-            //value.create_date.time gives time bicker was created
-            //now is the current time
-            //value.expiry is the total time, in seconds, the bicker was set to expire after
-            const now = Date.now();
+        var ref2 = admin.database().ref("Bicker/" + id);
+        ref2.once("value")
+          .then(function(snapshot) {
+            var left = snapshot.val().left_votes;
+            var value = snapshot.val();
+            console.log("LEFT VOTES: " + left);
+
+
+             const now = Date.now();
             if ((now - value.create_date.time) > (value.seconds_until_expired * 1000)) {
                 //bicker has expired. Move it to expiredBicker section of DB
-                exp_updates[childSnapshot.key] = value;
-                updates[childSnapshot.key] = null;
+                 console.log("Left votes: " + snapshot.val().left_votes)
+                exp_updates[snapshot.key] = value;
+                updates[snapshot.key] = null;
                 console.log('Bicker has expired:' + value.title);
             }else{
                 console.log("Error: " + (now - value.create_date.time) + " " + (value.seconds_until_expired * 1000));
             }
-          });
 
-        // execute all updates in one go and return the result to end the function
-        expBickRef.update(exp_updates);
-        return ref.update(updates);
+
+            // execute all updates in one go and return the result to end the function
+            expBickRef.update(exp_updates);
+            return ref.update(updates);
+
+
+
+
+
+          }).catch((error) => {
+                    console.log(TAG + 'Error sending message:', error);
+          });
+      /*const ref2 = admin.database.ref();
+      ref2.child("Bickers/" + id).once("value",snapshot => {
+
+       if(snapshot.exists()){
+                    console.log("BICKER EXISTSBICKER EXISTSBICKER EXISTSBICKER EXISTS: " + id);
+                    var value = snapshot.val();
+
+                    //value.create_date.time gives time bicker was created
+                    //now is the current time
+                    //value.expiry is the total time, in seconds, the bicker was set to expire after
+                    const now = Date.now();
+                    if ((now - value.create_date.time) > (value.seconds_until_expired * 1000)) {
+                        //bicker has expired. Move it to expiredBicker section of DB
+                         console.log("Left votes: " + snapshot.val().left_votes)
+                        exp_updates[snapshot.key] = value;
+                        updates[snapshot.key] = null;
+                        console.log('Bicker has expired:' + value.title);
+                    }else{
+                        console.log("Error: " + (now - value.create_date.time) + " " + (value.seconds_until_expired * 1000));
+                    }
+
+
+                // execute all updates in one go and return the result to end the function
+                expBickRef.update(exp_updates);
+                return ref.update(updates);
+
+
+
+
+        }
+
+      });*/
+
+
 
     }, deadline);
     }
