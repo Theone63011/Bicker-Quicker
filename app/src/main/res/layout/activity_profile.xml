@@ -93,7 +93,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Moderator Mode"
-            android:visibility="visible" />
+            android:visibility="invisible" />
 
         <TextView
             android:id="@+id/deletionRequestHeader"
