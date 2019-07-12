@@ -135,6 +135,8 @@ public class Home_Fragment extends Fragment {
         Query bicker_create_date = database.getReference("Bicker").orderByChild("create_date"); //create_date
 
         initialize_view(user_create_date, bicker_create_date);
+
+
     }
 
     public void sortByPopularity() {
@@ -148,7 +150,7 @@ public class Home_Fragment extends Fragment {
 
     public void initialize_view (Query userQuery, Query bickerQuery) {
 
-        //bickers = new ArrayList<>();
+        bickers = new ArrayList<>();
 
         userQuery.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -541,7 +543,7 @@ public class Home_Fragment extends Fragment {
 
             long remainingTime = getRemainingTime(approved_time_milliseconds, (int) bicker.getSeconds_until_expired());
 
-            remainingTime += 3000;
+            //remainingTime += 3000;
 
             long seconds = (long) (remainingTime / 1000) % 60 ;
             long minutes = (long) ((remainingTime / (1000*60)) % 60);
@@ -568,7 +570,7 @@ public class Home_Fragment extends Fragment {
 
                                     long remainingTime = getRemainingTime(approved_time_milliseconds, (int) bicker.getSeconds_until_expired());
 
-                                    remainingTime += 3000;
+                                    //remainingTime += 3000;
 
                                     long seconds = (long) (remainingTime / 1000) % 60 ;
                                     long minutes = (long) ((remainingTime / (1000*60)) % 60);
