@@ -1,33 +1,33 @@
 package purdue.edu.bicker_quicker;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.Switch;
-import android.widget.TextView;
 
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.Map;
-import java.util.Set;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -41,6 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
     public Switch voteOnEnd;
     public int bitString;
     public String dbID;
+    public Button deleteAccount;
 
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String SW_ALLNOT = "swAllNot";
@@ -140,6 +141,7 @@ public class SettingsActivity extends AppCompatActivity {
         closeRequest = findViewById(R.id.closeRequest);
         closeConfirm = findViewById(R.id.closeConfirm);
         voteOnEnd = findViewById(R.id.voteFinished);
+        deleteAccount = findViewById(R.id.statistics);
         loadData();
         setBitString();
         dbID = null; // Will get set to null
@@ -229,6 +231,27 @@ public class SettingsActivity extends AppCompatActivity {
                     setBitString();
                 }
             }
+        });
+
+        deleteAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder bob = new AlertDialog.Builder(SettingsActivity.this);
+                bob.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        deleteAccount();
+                    }
+                });
+                bob.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //hide dialog
+                    }
+                });
+                bob.setMessage("Are you sure you want to delete your account? This action is permanent.");
+                bob.create();
+                bob.show();
+            }
+
         });
 
         toolbar = findViewById(R.id.toolbarSettings);
@@ -331,5 +354,55 @@ public class SettingsActivity extends AppCompatActivity {
     public void leave() {
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
+    }
+
+    public void deleteAccount() {
+        //delete entry in auth and db
+        final FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference();
+        ref.addListenerForSingleValueEvent( new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
+                    if (userSnapshot.child("userId").getValue().toString().equals(currUser.getUid())) {
+                        //if the userId is that of the current user, check mod status
+                        System.out.println("Attempting delete calls");
+                        //dataSnapshot.getRef().child("User").orderByChild("userId").equalTo(currUser.getUid());
+                        userSnapshot.getRef().removeValue();
+                        currUser.delete();
+                        //take user back to starting page
+                        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                }
+            }
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+        signOut();
+    }
+
+    public void signOut(){
+
+        // To Sign Out of Facebook, do this:
+        MainActivity.signOut();
+
+        //sign out of google and take back to MainActivity on success
+        FirebaseAuth.getInstance().signOut();
+        MainActivity.mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, task -> {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                });
+
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                        startActivity(new Intent(SettingsActivity.this, MainActivity.class));
+                    }
+                });
     }
 }

@@ -45,7 +45,9 @@ exports.deleteOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(asyn
       //value.create_date.time gives time bicker was created
       //now is the current time
       //value.expiry is the total time, in seconds, the bicker was set to expire after
-      if ((now - value.create_date.time) > (value.seconds_until_expired * 1000)) {
+      var receiver = "Unknown";
+      if (((now - value.create_date.time) > (value.seconds_until_expired * 1000))
+            && (receiver.localeCompare(value.receiverID) !== 0)) {
           //bicker has expired. Move it to expiredBicker section of DB
           exp_updates[childSnapshot.key] = value;
           updates[childSnapshot.key] = null;

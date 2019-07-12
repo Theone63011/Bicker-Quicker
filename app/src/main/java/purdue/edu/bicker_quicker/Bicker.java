@@ -21,6 +21,7 @@ public class Bicker {
     private ArrayList<String> tags = new ArrayList<String>();
     private ArrayList<String> votedUsers = new ArrayList<String>();
     private double seconds_until_expired;
+    private boolean deletionPending;
 
     public Bicker (){
 
@@ -164,6 +165,10 @@ public class Bicker {
 
     public double getSeconds_until_expired() { return seconds_until_expired; }
 
+    public boolean isDeletionPending() { return deletionPending; }
+
+    public void setDeletionPending(boolean deletionPending) { this.deletionPending = deletionPending; }
+
 
     public String toString() {
         String res = "";
@@ -181,6 +186,7 @@ public class Bicker {
         res += "\nSecondsUntilExpired: " + seconds_until_expired;
         return res;
     }
+
 
 
 }

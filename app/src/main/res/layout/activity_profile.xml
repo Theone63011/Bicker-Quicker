@@ -63,6 +63,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signOutButton" />
 
+
+
+
     <Button
         android:id="@+id/pastBickers"
         android:layout_width="wrap_content"
@@ -85,15 +88,35 @@
         tools:layout_editor_absoluteX="31dp" />
 
     <Button
-        android:id="@+id/deleteAccount"
+        android:id="@+id/statistics"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:text="Delete Account"
+        android:text="Statistics"
         app:layout_constraintStart_toStartOf="@+id/pastBickers"
         app:layout_constraintTop_toBottomOf="@+id/pastBickers" />
+
+    <TextView
+        android:text="Pending bicker deletion requests:"
+        android:id="@+id/deletionRequestHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/statistics" />
+
+    <ListView
+        android:id="@+id/deletionRequests"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deletionRequestHeader" />
 
 
 </android.support.constraint.ConstraintLayout>
