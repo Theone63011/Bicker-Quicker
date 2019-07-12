@@ -324,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
                 //user.setBickerId("test2");
                 //user.setVotedBickerIds("test3");
                 //user.setVotedBickerIds("test4");
-                ref.push().setValue(user);
+                ref.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user);
 
             }
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
                             //user.setBickerId("test2");
                             //user.setVotedBickerIds("test3");
                             //user.setVotedBickerIds("test4");
-                            ref.push().setValue(user);
+                            ref.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user);
 
                         }
                         Intent intent = new Intent(this, HomeActivity.class);
@@ -451,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
                                 //user.setBickerId("test2");
                                 //user.setVotedBickerIds("test3");
                                 //user.setVotedBickerIds("test4");
-                                ref.push().setValue(user);
+                                ref.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user);
 
                             }
 
