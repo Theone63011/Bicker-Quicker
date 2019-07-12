@@ -728,17 +728,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         ref.push().setValue(bicker);
 
         // Subscribe creator to messaging
-        FirebaseMessaging.getInstance().subscribeToTopic(bicker.getKey() + "creatorNotification")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        String msg = "Notification succeeded";
-                        if (!task.isSuccessful()) {
-                            msg = "Notification failed";
-                        }
 
-                    }
-                });
 
 
 
@@ -748,7 +738,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     String key = child.getKey();
                     Log.d(TAG, "PUSHID: " + key);
-                    FirebaseMessaging.getInstance().subscribeToTopic(key + "delete")
+                    /*FirebaseMessaging.getInstance().subscribeToTopic(key + "delete")
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
@@ -757,6 +747,18 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
                                         msg = "Notification failure";
                                     }
                                     Log.d(TAG, msg);
+
+                                }
+                            });*/
+
+                    FirebaseMessaging.getInstance().subscribeToTopic(key + "creatorNotification")
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    String msg = "Notification succeeded";
+                                    if (!task.isSuccessful()) {
+                                        msg = "Notification failed";
+                                    }
 
                                 }
                             });

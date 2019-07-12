@@ -23,6 +23,9 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Date;
+import java.util.Random;
+
+
 
 import static com.facebook.AccessTokenManager.TAG;
 
@@ -49,6 +52,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                    return;
                 }else if(bin.charAt(5) == '0' && remoteMessage.getData().get("type").equals("delete")) {
                     Log.d(TAG, "Delete notif should be blocked.");
+                    return;
+                }else if(bin.charAt(2) == '0' && remoteMessage.getData().get("type").equals("creator")){
+                    Log.d(TAG, "Creator notif should be blocked.");
                     return;
                 }
                 else{
@@ -84,6 +90,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
     private void notification(String messageBody, String messageTitle) {
+        Random rand = new Random();
+        int n = rand.nextInt(1000000000);
         Intent intent = new Intent(this, PastBickersActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -112,7 +120,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify( (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE) /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify( n /* ID of notification */, notificationBuilder.build());
     }
 
 

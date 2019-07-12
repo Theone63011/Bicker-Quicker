@@ -116,6 +116,14 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
       topic: id
     };
 
+      var message2 = {
+                data: {
+                  title: 'Voting period ended for your created bicker: ',
+                  body: original.title,
+                  type: 'creator'
+                },
+              topic: id + 'creatorNotification'
+            };
 
     if(!(change.before.val().code === "code_used") ){
     var deadline = time * 1000;
@@ -131,6 +139,16 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
         console.log('Error sending message:', error);
       });
 
+
+
+      admin.messaging().send(message2).then((response) => {
+        // Response is a message ID string.
+        console.log('Successfully sent message:', response);
+        return;
+      })
+      .catch((error) => {
+        console.log('Error sending message:', error);
+      });
 
        snapshot.forEach(function (childSnapshot) {
             var value = childSnapshot.val();
@@ -159,7 +177,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
 });
 
 
-exports.notifyCreatorsOnExpire = functions.database.ref('/Bicker/{pushId}/approved_date').onUpdate((snapshot, context) => {
+/*exports.notifyCreatorsOnExpire = functions.database.ref('/Bicker/{pushId}/approved_date').onUpdate((snapshot, context) => {
   var TAG = "notifyCreatorsOnExpire: ";
   console.log(TAG + "Inside notifyCreatorsOnExpire");
   var now_date = Date.now();
@@ -271,7 +289,7 @@ exports.notifyCreatorsOnExpire = functions.database.ref('/Bicker/{pushId}/approv
           }
           }
       });
-      */
+
 
 
 
@@ -285,4 +303,4 @@ exports.notifyCreatorsOnExpire = functions.database.ref('/Bicker/{pushId}/approv
   
   return 0;
 
-});
+});*/
