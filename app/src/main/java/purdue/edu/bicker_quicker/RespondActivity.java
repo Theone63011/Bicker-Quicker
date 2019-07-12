@@ -375,7 +375,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     String key = child.getKey();
                     Log.d("Tag: ", "@PUSHID: " + key);
-                    FirebaseMessaging.getInstance().subscribeToTopic(key + "delete")
+                    /*FirebaseMessaging.getInstance().subscribeToTopic(key + "delete")
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
@@ -385,6 +385,18 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
                                     }
                                     Log.d("Tag:", msg);
 
+                                }
+                            });*/
+
+                    FirebaseMessaging.getInstance().subscribeToTopic(key + "creatorNotification")
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    String msg = "Notification succeeded: " + key + "creatorNotification";
+                                    if (!task.isSuccessful()) {
+                                        msg = "Notification failed";
+                                    }
+                                    Log.d("Tag:", msg);
                                 }
                             });
                 }
@@ -399,7 +411,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
 
 
         // Subscribe creators to messaging
-        DatabaseReference ref3 = db.getReference();
+      /* DatabaseReference ref3 = db.getReference();
         ref3.child("Bicker/" + bicker.getKey()).addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
@@ -429,7 +441,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
 
             }
 
-        });
+        });*/
 
         ref.setValue(bicker);
         Toast.makeText(this, "Response Sent", Toast.LENGTH_LONG).show();
