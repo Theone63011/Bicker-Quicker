@@ -11,28 +11,45 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class ProfileActivity extends AppCompatActivity {
 
     Button respondToBicker;
     Button signOut;
     Button toSettings;
+    Button pastBickers;
+    Button statisticsButton;
+    Switch modToggle;
     Toolbar toolbar;
+    private static FirebaseAuth mAuth;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme_NoActionBar); // Disable action bar (should be by default but this is precautionary)
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
+        mAuth = FirebaseAuth.getInstance();
         toSettings = findViewById(R.id.settingsButton);
         respondToBicker = findViewById(R.id.bickerRespond);
+        pastBickers = findViewById(R.id.pastBickers);
+        statisticsButton = findViewById(R.id.statistics);
         toolbar = findViewById(R.id.toolbarBicker);
+        modToggle = findViewById(R.id.mod);
         setSupportActionBar(toolbar);
         toolbar.setTitle("Your Profile");
         Drawable drawable= getResources().getDrawable(R.drawable.backicon);
@@ -70,6 +87,73 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        pastBickers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pastBickers();
+            }
+        });
+
+        statisticsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                statistics();
+            }
+        });
+
+        modToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                String msg = "";
+                if (checked) {
+                    //is checked, activate mod mode
+                    msg = "Moderator mode activated.";
+                } else {
+                    //unchecked, deactivate mod mode
+                    msg = "Moderator mode deactivated.";
+                }
+                System.out.println(msg);
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        //get user info from DB, check if mod. If so, make mod toggle visible
+        //create listener for PastBickers button in user info retrieval; pass User to pastBickers()
+        FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference();
+        ref.addListenerForSingleValueEvent( new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
+                    if (userSnapshot.child("userId").getValue().toString().equals(currUser.getUid())) {
+                        //if the userId is that of the current user, check mod status
+                        if (userSnapshot.child("moderator").getValue().toString().equals("true")) {
+                            System.out.println("User is mod");
+                            modToggle.setVisibility(View.VISIBLE);
+                        } else {
+                            System.out.println("User is not mod");
+                        }
+                    }
+                }
+            }
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+    }
+
+    public void pastBickers() {
+        //pass uID from FirebaseAuth for bicker retrieval where child.equals(uId)
+        /*
+        Intent intent = new Intent(this, BasicBickerView.class);
+        Bundle b = new Bundle();
+        b.putBoolean("expBick", false);
+        intent.putExtras(b);
+        startActivity(intent);
+        */
+        Intent intent = new Intent(this, PastBickersActivity.class);
+        startActivity(intent);
     }
 
     public void leave() {
@@ -85,6 +169,13 @@ public class ProfileActivity extends AppCompatActivity {
     public void goToSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    public void statistics() {
+        /*
+        Intent intent = new Intent(this, StatisticsActivtiy.class);
+        startActivity(intent);
+        */
     }
 
     public void signOut(){
@@ -109,4 +200,5 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
     }
+
 }
