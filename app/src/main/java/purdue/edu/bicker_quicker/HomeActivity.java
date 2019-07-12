@@ -29,8 +29,15 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+
+import static com.facebook.AccessTokenManager.TAG;
 
 
 public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener {
@@ -61,6 +68,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
 
         if(FirebaseAuth.getInstance().getCurrentUser() == null){
             Log.d("Error", "NULL USER");
