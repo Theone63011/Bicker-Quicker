@@ -328,6 +328,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     }
 
     public void onFilterButton() {
+        //update to show expired bickers
         Intent intent = new Intent(this, BasicBickerView.class);
         Bundle b = new Bundle();
         b.putBoolean("expBick", true);

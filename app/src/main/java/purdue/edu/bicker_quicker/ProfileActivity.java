@@ -1,13 +1,11 @@
 package purdue.edu.bicker_quicker;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -28,16 +26,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ProfileActivity extends AppCompatActivity {
 
     Button respondToBicker;
     Button signOut;
     Button toSettings;
     Button pastBickers;
-    Button deleteAccount;
+    Button statisticsButton;
     Switch modToggle;
     Toolbar toolbar;
     private static FirebaseAuth mAuth;
@@ -52,7 +47,7 @@ public class ProfileActivity extends AppCompatActivity {
         toSettings = findViewById(R.id.settingsButton);
         respondToBicker = findViewById(R.id.bickerRespond);
         pastBickers = findViewById(R.id.pastBickers);
-        deleteAccount = findViewById(R.id.deleteAccount);
+        statisticsButton = findViewById(R.id.statistics);
         toolbar = findViewById(R.id.toolbarBicker);
         modToggle = findViewById(R.id.mod);
         setSupportActionBar(toolbar);
@@ -99,25 +94,11 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        deleteAccount.setOnClickListener(new View.OnClickListener() {
+        statisticsButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                AlertDialog.Builder bob = new AlertDialog.Builder(ProfileActivity.this);
-                bob.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        deleteAccount();
-                    }
-                });
-                bob.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //hide dialog
-                    }
-                });
-                bob.setMessage("Are you sure you want to delete your account? This action is permanent.");
-                bob.create();
-                bob.show();
+            public void onClick(View v) {
+                statistics();
             }
-
         });
 
         modToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -164,10 +145,14 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void pastBickers() {
         //pass uID from FirebaseAuth for bicker retrieval where child.equals(uId)
+        /*
         Intent intent = new Intent(this, BasicBickerView.class);
         Bundle b = new Bundle();
         b.putBoolean("expBick", false);
         intent.putExtras(b);
+        startActivity(intent);
+        */
+        Intent intent = new Intent(this, PastBickersActivity.class);
         startActivity(intent);
     }
 
@@ -184,6 +169,13 @@ public class ProfileActivity extends AppCompatActivity {
     public void goToSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    public void statistics() {
+        /*
+        Intent intent = new Intent(this, StatisticsActivtiy.class);
+        startActivity(intent);
+        */
     }
 
     public void signOut(){
@@ -209,29 +201,4 @@ public class ProfileActivity extends AppCompatActivity {
                 });
     }
 
-    public void deleteAccount() {
-        //delete entry in auth and db
-        final FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference();
-        ref.addListenerForSingleValueEvent( new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
-                    if (userSnapshot.child("userId").getValue().toString().equals(currUser.getUid())) {
-                        //if the userId is that of the current user, check mod status
-                        System.out.println("Attempting delete calls");
-                        //dataSnapshot.getRef().child("User").orderByChild("userId").equalTo(currUser.getUid());
-                        userSnapshot.getRef().removeValue();
-                        currUser.delete();
-                        //take user back to starting page
-                        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-                        startActivity(intent);
-                    }
-                }
-            }
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-    }
 }
