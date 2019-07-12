@@ -19,104 +19,94 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="Profile" />
 
-    <Button
-        android:id="@+id/bickerRespond"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Respond to a Bicker"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="This activity currently just portal to accept bicker"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarBicker" />
-
-    <Button
-        android:id="@+id/signOutButton"
-        android:layout_width="wrap_content"
-        android:layout_height="45dp"
-        android:layout_marginTop="8dp"
-        android:text="Sign Out"
-        app:layout_constraintEnd_toEndOf="@+id/bickerRespond"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/bickerRespond"
-        app:layout_constraintTop_toBottomOf="@+id/bickerRespond" />
-
-    <Button
-        android:id="@+id/settingsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Settings"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signOutButton" />
-
-
-
-
-    <Button
-        android:id="@+id/pastBickers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Past Bickers"
-        app:layout_constraintStart_toStartOf="@+id/bickerRespond"
-        app:layout_constraintTop_toBottomOf="@+id/settingsButton" />
-
-    <Switch
-        android:id="@+id/mod"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="Moderator Mode"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="31dp" />
-
-    <Button
-        android:id="@+id/statistics"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Statistics"
-        app:layout_constraintStart_toStartOf="@+id/pastBickers"
-        app:layout_constraintTop_toBottomOf="@+id/pastBickers" />
-
-    <TextView
-        android:text="Pending bicker deletion requests:"
-        android:id="@+id/deletionRequestHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/statistics" />
-
-    <ListView
-        android:id="@+id/deletionRequests"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deletionRequestHeader" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbarBicker"
+        app:layout_constraintVertical_bias="0.0">
+
+        <Button
+            android:id="@+id/bickerRespond"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/standard_button"
+            android:minHeight="20dp"
+            android:text="Respond to a Bicker"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/signOutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/standard_button"
+            android:minHeight="20dp"
+            android:text="Sign Out"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/settingsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/standard_button"
+            android:minHeight="20dp"
+            android:text="Settings"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/pastBickers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/standard_button"
+            android:minHeight="20dp"
+            android:text="Past Bickers"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/statistics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/standard_button"
+            android:minHeight="20dp"
+            android:text="Statistics"
+            android:textColor="@color/white" />
+
+        <Switch
+            android:id="@+id/mod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Moderator Mode"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/deletionRequestHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Pending bicker deletion requests:" />
+
+        <ListView
+            android:id="@+id/deletionRequests"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
 
 </android.support.constraint.ConstraintLayout>
