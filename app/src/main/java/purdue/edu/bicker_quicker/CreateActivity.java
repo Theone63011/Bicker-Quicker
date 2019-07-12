@@ -727,6 +727,21 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setSeconds_until_expired(seconds_until_expired);
         ref.push().setValue(bicker);
 
+        // Subscribe creator to messaging
+        FirebaseMessaging.getInstance().subscribeToTopic(bicker.getKey() + "creatorNotification")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Notification succeeded";
+                        if (!task.isSuccessful()) {
+                            msg = "Notification failed";
+                        }
+
+                    }
+                });
+
+
+
         ref.orderByChild("code").equalTo(c).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

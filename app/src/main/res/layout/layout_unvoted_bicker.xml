@@ -105,7 +105,7 @@
                 android:layout_gravity="bottom|center_vertical"
                 android:layout_marginRight="5dp"
                 android:layout_marginBottom="2dp"
-                android:text="10:00"
+                android:text="00:00:00"
                 android:textColor="@color/timer"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -343,7 +343,7 @@
                     android:layout_gravity="bottom|center_vertical"
                     android:layout_marginRight="5dp"
                     android:layout_marginBottom="2dp"
-                    android:text="10:00"
+                    android:text="00:00:00"
                     android:textColor="@color/timer"
                     android:textSize="12sp"
                     android:textStyle="bold" />

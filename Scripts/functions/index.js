@@ -193,8 +193,7 @@ exports.notifyCreatorsOnExpire = functions.database.ref('/Bicker/{pushId}/approv
               body: title,
               type: 'creator'
             },
-          //topic: bickerID
-          condition: senderID in topics || receiverID in topics
+          topic: bickerID + 'creatorNotification'
         };
 
         console.log(TAG + "time_until_expired = " + time_until_expired);

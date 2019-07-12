@@ -398,7 +398,38 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         });
 
 
+        // Subscribe creators to messaging
+        DatabaseReference ref3 = db.getReference();
+        ref3.child("Bicker/" + bicker.getKey()).addListenerForSingleValueEvent( new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    try {
+                        FirebaseMessaging.getInstance().subscribeToTopic(bicker.getKey() + "creatorNotification")
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        String msg = "Notification succeeded";
+                                        if (!task.isSuccessful()) {
+                                            msg = "Notification failed";
+                                        }
 
+                                    }
+                                });
+
+                    }
+                    catch (Exception e){
+                        //Log.e(TAG, "ERROR: could not update left_votes for bicker " + dataSnapshot.getKey());
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+        });
 
         ref.setValue(bicker);
         Toast.makeText(this, "Response Sent", Toast.LENGTH_LONG).show();
