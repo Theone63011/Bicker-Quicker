@@ -207,6 +207,8 @@ public class Home_Fragment extends Fragment {
                 } else {
                     listView.setSelection(listViewPositionSecondFragment);
                 }
+
+                isFirstFragment = !isFirstFragment;
             }
 
             public void onCancelled(DatabaseError databaseError) {
@@ -301,6 +303,8 @@ public class Home_Fragment extends Fragment {
                 } else {
                     listView.setSelection(listViewPositionSecondFragment);
                 }
+
+                isFirstFragment = !isFirstFragment;
             }
 
             public void onCancelled(DatabaseError databaseError) {
