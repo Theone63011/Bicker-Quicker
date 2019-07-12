@@ -86,7 +86,7 @@
             android:drawableLeft="@drawable/ic_google_icon"
             android:paddingLeft="10dp"
             android:text="Login with Google"
-            android:textColor="#E9F2F9"
+            android:textColor="#FFFFFF"
             android:textSize="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"

@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_centerHorizontal="true"
     android:background="@color/colorPrimary"
     android:elevation="4dp"
-    android:layout_centerHorizontal="true"
+    android:gravity="center"
     android:textAlignment="center"
     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+    app:layout_anchorGravity="center"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fontFamily="@font/bubbler_one"
-        android:foregroundGravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:text="   Bicker Quicker"
+        android:foregroundGravity="center|center_horizontal"
+        android:gravity="clip_horizontal|center|center_horizontal"
+        android:text="Bicker Quicker"
         android:textColor="#FDFDFE"
-        android:textSize="30sp"
+        android:textSize="28sp"
         android:textStyle="bold" />
 
 </android.support.v7.widget.Toolbar>
