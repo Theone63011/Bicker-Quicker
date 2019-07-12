@@ -613,6 +613,8 @@ public class PastBickers_Fragment extends Fragment {
                         receiverId = dataSnapshot.child("Bicker").child(bickerKey).child("senderID").getValue().toString();
                     }
 
+                    //TODO: Send a message to 'receiverId' that the they have a pending bicker deletion request
+
                     for(DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()){
                         if(userSnapshot.child("userId").getValue().toString().equals(receiverId)){
                             DatabaseReference requesterRef = userSnapshot.getRef();

@@ -309,6 +309,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         ref.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
+                //TODO: Send a notification to both of these users that the bicker has been deleted
+                String User1ToNotifyId = dataSnapshot.child("bicker/" + key + "receiverID").getValue().toString();
+                String User2ToNotifyId = dataSnapshot.child("bicker/" + key + "senderID").getValue().toString();
 
                 for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
                     userSnapshot.child("votedBickerIds").child(key).getRef().setValue(null);
