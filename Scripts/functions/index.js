@@ -135,3 +135,133 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
 
     return;
 });
+
+
+exports.notifyCreatorsOnExpire = functions.database.ref('/Bicker/{pushId}/approved_date').onUpdate((snapshot, context) => {
+  var TAG = "notifyCreatorsOnExpire: ";
+  console.log(TAG + "Inside notifyCreatorsOnExpire");
+  var now_date = Date.now();
+  var bickerID = context.params.pushId;
+  var senderID;
+  var receiverID;
+  var deadline;
+  var database = admin.database();
+  var time_until_expired;
+  var approved_time;
+  var timer = null;
+  var title;
+  var message;
+  ref = database.ref();
+
+  ref.child("/Bicker/" + bickerID).once("value",snapshot => {
+      if (snapshot.exists()){
+        
+        // Read variables from database
+        time_until_expired = snapshot.child("seconds_until_expired").val();
+        approved_time = snapshot.child("approved_date").child("time").val();
+        title = snapshot.child("title").val();
+        senderID = snapshot.child("senderID").val();
+        receiverID = snapshot.child("receiverID").val();
+
+        deadline = time_until_expired * 1000;
+
+        var message = {
+            data: {
+              title: 'Voting period ended for your created bicker: ',
+              body: title,
+              type: 'creator'
+            },
+          //topic: bickerID
+          condition: senderID in topics || receiverID in topics
+        };
+
+        console.log(TAG + "time_until_expired = " + time_until_expired);
+        console.log(TAG + "approved_time = " + apprv_time);
+        console.log(TAG + "deadline = " + deadline);
+
+        if(apprv_time === 0) {
+          console.log(TAG + "apprv_time === 0");
+          return 0;
+        }
+      }
+  }).then(() =>{
+
+      console.log(TAG + "Inside .then()");
+
+      if(apprv_time === 0) {
+          console.log(TAG + "apprv_time in .then() === 0");
+          return 0;
+        }
+
+      timer = setTimeout((deadline) => {
+      database = admin.database();
+      ref = database.ref();
+
+
+      admin.messaging().send(message).then((response) => {
+        // Response is a message ID string.
+        console.log(TAG + 'Successfully sent message:', response);
+        return;
+      })
+      .catch((error) => {
+        console.log(TAG + 'Error sending message:', error);
+      });
+
+
+
+      /*ref.child("joinableLobby/normal").once("value",snapshot => {
+          if (snapshot.exists()){
+            var data = snapshot.val();
+            var key = Object.keys(data)[0];
+            var num = data[key].numParticipants;
+            var keys = Object.keys(data['participants']);
+            console.log(data);
+            var playerData = new Array(keys.length);
+            if (num >= 2) {
+            console.log("Start Game");
+            
+            var data3 = {
+              numParticipants : num,
+              difficulty : "normal"
+            }
+
+            var lobbyData = {
+              roomInfo : data3,
+              Participants : 0
+            };
+
+            ref.child('gameLobby/' + key).set(lobbyData);
+            
+            for(var i = 0; i < playerData.length; i++){ 
+              var k = keys[i];
+              var data2 = {
+                playerName: data['participants'][k].playerName
+              }
+              ref.child('gameLobby/' + key + '/Participants/' + data['participants'][k].playerId).set(data2);
+              ref.child('Players/' + data['participants'][k].playerId + '/inGame').set(true);
+            }
+            ref.child("joinableLobby/normal").remove();
+          }else{
+            for(i = 0; i < playerData.length; i++){
+              k = keys[i];
+              ref.child('Players/' + data['participants'][k].playerId + '/currentRoom').set(0);
+            }
+            ref.child("joinableLobby/normal").remove();
+          }
+          }
+      });
+      */
+
+
+
+      //console.log(Date.now());
+    }, deadline);
+    return 0;
+
+  }).catch((error) => {
+    console.log(TAG + 'Error getting bicker snapshot:', error);
+  });
+  
+  return 0;
+
+});
