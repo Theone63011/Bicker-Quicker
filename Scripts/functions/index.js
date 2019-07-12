@@ -116,7 +116,8 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
       topic: id
     };
 
-
+    //why check if code === code_used? Means it will only set bickers to be expired if they haven't
+    //been responded to
     if(!(change.before.val().code === "code_used") ){
     var deadline = time * 1000;
     var delay = setTimeout((deadline)=> {
