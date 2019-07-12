@@ -727,13 +727,18 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setSeconds_until_expired(seconds_until_expired);
         ref.push().setValue(bicker);
 
+        // Subscribe creator to messaging
+
+
+
+
         ref.orderByChild("code").equalTo(c).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     String key = child.getKey();
                     Log.d(TAG, "PUSHID: " + key);
-                    FirebaseMessaging.getInstance().subscribeToTopic(key + "delete")
+                    /*FirebaseMessaging.getInstance().subscribeToTopic(key + "delete")
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
@@ -742,6 +747,18 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
                                         msg = "Notification failure";
                                     }
                                     Log.d(TAG, msg);
+
+                                }
+                            });*/
+
+                    FirebaseMessaging.getInstance().subscribeToTopic(key + "creatorNotification")
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    String msg = "Notification succeeded";
+                                    if (!task.isSuccessful()) {
+                                        msg = "Notification failed";
+                                    }
 
                                 }
                             });

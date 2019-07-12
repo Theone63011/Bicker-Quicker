@@ -309,6 +309,19 @@ public class ProfileActivity extends AppCompatActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
 
+        FirebaseMessaging.getInstance().subscribeToTopic(key + "delete")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Notification success";
+                        if (!task.isSuccessful()) {
+                            msg = "Notification failure";
+                        }
+                        Log.d("Tag", msg);
+
+                    }
+                });
+
         ref.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //TODO: Send a notification to both of these users that the bicker has been deleted
