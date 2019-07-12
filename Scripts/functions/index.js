@@ -87,7 +87,7 @@ exports.deleteNotification = functions.database.ref('/Bicker/{pushId}').onDelete
 exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (change, context) => {
     // Grab the current value of what was written to the Realtime Database.
     const ref = change.after.ref.parent; // reference to the parent
-      const expBickRef =  ref.parent.child('ExpiredBicker');
+      const expBickRef =  ref.parent.child('ExpiredBicker/');
       //const expBickRef = ref.child('ExpiredBicker'); //reference to parent then expired bicker document
 
 
@@ -149,7 +149,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
           });
 
         // execute all updates in one go and return the result to end the function
-        expBickRef.set(exp_updates);
+        expBickRef.update(exp_updates);
         return ref.update(updates);
 
     }, deadline);
