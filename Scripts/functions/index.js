@@ -109,7 +109,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
 
      var message = {
       data: {
-        title: 'Voting period ended for: ',
+        title: 'Voting ended for: ',
         body: original.title,
         type: 'voter'
       },
@@ -118,7 +118,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
 
       var message2 = {
                 data: {
-                  title: 'Voting period ended for your created bicker: ',
+                  title: 'Voting ended for your bicker: ',
                   body: original.title,
                   type: 'creator'
                 },
