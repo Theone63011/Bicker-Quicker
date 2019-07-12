@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,15 +27,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -139,9 +132,9 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         // If you want to modify the timer values, please change below
         // If changing timer options, please use 'seconds', 'minutes' or 'hours' as the 2nd word
         // **************************************************************************************
-        String option1 = "30 seconds";
-        String option2 = "2 minutes";
-        String option3 = "24 hours";
+        String option1 = "45 seconds";
+        String option2 = "24 hours";
+        String option3 = "48 hours";
         radioButton1.setText(option1);
         radioButton2.setText(option2);
         radioButton3.setText(option3);
@@ -707,9 +700,13 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
 
+        Date temp_approved_date = new Date();
+        temp_approved_date.setTime(0);
+
         // Initialize the new bicker for the DB
         bicker.setCode(c);
         bicker.setCreate_date(date);
+        bicker.setApproved_date(temp_approved_date);
         bicker.setDescription(bickDesc.trim());
         bicker.setLeft_side(bickSide);
         bicker.setRight_side("None");

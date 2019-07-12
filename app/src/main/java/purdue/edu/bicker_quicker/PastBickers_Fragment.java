@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -403,6 +404,17 @@ public class PastBickers_Fragment extends Fragment {
 
             LinearLayout closed_bicker_holder = view.findViewById(R.id.closed_bicker_holder);
             LinearLayout open_bicker_holder = view.findViewById(R.id.open_bicker_holder);
+
+            TextView closed_clock = view.findViewById(R.id.closed_clock);
+            TextView open_clock = view.findViewById(R.id.open_clock);
+
+            ImageView closed_timer = view.findViewById(R.id.closed_timer);
+            ImageView open_timer = view.findViewById(R.id.open_timer);
+
+            closed_clock.setVisibility(View.GONE);
+            open_clock.setVisibility(View.GONE);
+            closed_timer.setVisibility(View.GONE);
+            open_timer.setVisibility(View.GONE);
 
             LinearLayout closed_header = view.findViewById(R.id.closed_header);
             LinearLayout open_header = view.findViewById(R.id.open_header);

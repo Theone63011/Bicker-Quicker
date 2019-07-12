@@ -5,29 +5,25 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
-import android.support.constraint.solver.widgets.ConstraintWidgetContainer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
+import java.util.Date;
 
 public class RespondActivity extends AppCompatActivity implements EnterCodeDialog.EnterCodeDialogListener, CancelBickerDialog.CancelBickerDialogListener {
 
@@ -359,6 +355,9 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
             respTags.add(tag_string3);
 
         bicker.setTags(unionTags(recvTags, respTags));
+
+        Date approved_date = new Date();
+        bicker.setApproved_date(approved_date);
 
         ref.setValue(bicker);
         Toast.makeText(this, "Response Sent", Toast.LENGTH_LONG).show();

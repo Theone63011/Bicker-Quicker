@@ -36,6 +36,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,8 +55,13 @@ public class Home_Fragment extends Fragment {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
     private boolean voted;
+
     List<String> votedBickerIds;
     private HashMap<String, String> bickers_votes;
+
+    // This HashMap holds the bickerIDs and their corresponding approved_date time
+    private HashMap<String, Long> bickers_approved_time_milliseconds;
+
     FirebaseUser user;
     String userKey;
 
@@ -108,6 +114,8 @@ public class Home_Fragment extends Fragment {
         votedBickerIds = new ArrayList<String>();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
+        bickers_approved_time_milliseconds = new HashMap<String, Long>();
+
         bickers_votes = new HashMap<String, String>();
 
         closed_bicker_layout_list = new ArrayList<LinearLayout>();
@@ -122,108 +130,27 @@ public class Home_Fragment extends Fragment {
 
     public void sortByRecent() {
         sortBy = "recent";
-        bickers = new ArrayList<>();
 
         Query user_create_date = database.getReference("User").orderByChild("create_date");
         Query bicker_create_date = database.getReference("Bicker").orderByChild("create_date"); //create_date
 
-        user_create_date.addListenerForSingleValueEvent( new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String id = user.getUid();
-                String voted_id;
-                String side;
-                String code;
-                String bicker_id;
-
-                // This loop adds the user's voted on bickers to the votedBickerIds list and bickers_votes map
-                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                    try {
-                        if (userSnapshot.child("userId") != null && userSnapshot.child("userId").getValue().toString().equals(id)) {
-                            userKey = userSnapshot.getKey();
-
-                            for (DataSnapshot votedId : userSnapshot.child("votedBickerIds").getChildren()) {
-                                voted_id = votedId.getKey().toString();
-                                side = votedId.child("Side Voted").getValue().toString();
-                                votedBickerIds.add(voted_id);
-                                if (bickers_votes.isEmpty() == false) {
-                                    if (bickers_votes.containsKey(voted_id) == false) {
-                                        bickers_votes.put(voted_id, side);
-                                    }
-                                } else {
-                                    bickers_votes.put(voted_id, side);
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        Log.w(TAG, "Home_Fragment detected a null user in the database.   " + e);
-                    }
-                }
-            }
-
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-
-        bicker_create_date.addListenerForSingleValueEvent( new ValueEventListener() {
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                // This loop adds all voted on bickers to the bickers array
-                for (DataSnapshot bickerSnapshot : dataSnapshot.getChildren()) {
-
-                    if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
-                        bickers.add(new Bicker(
-                                bickerSnapshot.child("title").getValue() != null ? bickerSnapshot.child("title").getValue().toString() : "No title",
-                                bickerSnapshot.child("left_side").getValue() != null ? bickerSnapshot.child("left_side").getValue().toString() : "No left side",
-                                bickerSnapshot.child("right_side").getValue() != null ? bickerSnapshot.child("right_side").getValue().toString() : "No right side",
-                                (int) (long) bickerSnapshot.child("left_votes").getValue(),
-                                (int) (long) bickerSnapshot.child("right_votes").getValue(),
-                                (int) (long) bickerSnapshot.child("total_votes").getValue(),
-                                bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
-                                bickerSnapshot.getKey(),
-                                (double) (long) bickerSnapshot.child("seconds_until_expired").getValue()
-                        ));
-                    }
-                }
-
-                Collections.reverse(bickers);
-
-                ArrayAdapter<Bicker> adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, bickers);
-
-                ListView listView = getView().findViewById(R.id.unvotedListView);
-                listView.setAdapter(adapter);
-                int count = listView.getAdapter().getCount();
-
-                //We can't set visibility to GONE until after all list elements are loaded or they will overlap
-                for ( int i=0; i < listView.getAdapter().getCount(); i++) {
-                    View child = listView.getAdapter().getView(i, null, null);
-                    LinearLayout open_bicker = child.findViewById(R.id.open_bicker_holder);
-                    //open_bicker.setVisibility(View.GONE);
-                }
-
-                if (isFirstFragment) {
-                    listView.setSelection(listViewPositionFirstFragment);
-                } else {
-                    listView.setSelection(listViewPositionSecondFragment);
-                }
-
-                isFirstFragment = !isFirstFragment;
-            }
-
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
+        initialize_view(user_create_date, bicker_create_date);
     }
 
     public void sortByPopularity() {
         sortBy = "popularity";
-        bickers = new ArrayList<>();
 
         Query user_category = database.getReference("User").orderByChild("total_votes");//total_votes
         Query bicker_category = database.getReference("Bicker").orderByChild("total_votes"); //create_date
 
-        user_category.addListenerForSingleValueEvent( new ValueEventListener() {
+        initialize_view(user_category, bicker_category);
+    }
+
+    public void initialize_view (Query userQuery, Query bickerQuery) {
+
+        //bickers = new ArrayList<>();
+
+        userQuery.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String id = user.getUid();
                 String voted_id;
@@ -261,11 +188,16 @@ public class Home_Fragment extends Fragment {
             }
         });
 
-        bicker_category.addListenerForSingleValueEvent( new ValueEventListener() {
+        bickerQuery.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                // This loop adds all voted on bickers to the bickers array
+                Long temp_time;
+
+                // This loop adds all bickers to the bickers array
                 for (DataSnapshot bickerSnapshot : dataSnapshot.getChildren()) {
+
+                    temp_time = Long.parseLong(bickerSnapshot.child("approved_date").child("time").getValue().toString());
+                    bickers_approved_time_milliseconds.put(bickerSnapshot.getKey(), temp_time);
 
                     if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
                         bickers.add(new Bicker(
@@ -310,6 +242,7 @@ public class Home_Fragment extends Fragment {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
+
     }
 
     @Override
@@ -592,6 +525,30 @@ public class Home_Fragment extends Fragment {
 
             LinearLayout closed_bicker_holder = view.findViewById(R.id.closed_bicker_holder);
             LinearLayout open_bicker_holder = view.findViewById(R.id.open_bicker_holder);
+
+            Long approved_time_milliseconds = bickers_approved_time_milliseconds.get(bicker.getKey());
+
+            boolean isActive = isActive(approved_time_milliseconds, (int) bicker.getSeconds_until_expired());
+
+            if(isActive == false) {
+                open_bicker_holder.setVisibility(View.GONE);
+                closed_bicker_holder.setVisibility(View.GONE);
+                return view;
+            }
+
+            TextView closed_clock = view.findViewById(R.id.closed_clock);
+            TextView open_clock = view.findViewById(R.id.open_clock);
+
+            long remainingTime = getRemainingTime(approved_time_milliseconds, (int) bicker.getSeconds_until_expired());
+
+            long seconds = (long) (remainingTime / 1000) % 60 ;
+            long minutes = (long) ((remainingTime / (1000*60)) % 60);
+            long hours   = (long) ((remainingTime / (1000*60*60)) % 24);
+
+            String clock_time = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+
+            closed_clock.setText(clock_time);
+            open_clock.setText(clock_time);
 
             LinearLayout closed_header = view.findViewById(R.id.closed_header);
             LinearLayout open_header = view.findViewById(R.id.open_header);
@@ -926,6 +883,34 @@ public class Home_Fragment extends Fragment {
                 Log.d(TAG, "Home_fragment- ERROR in display_votes. d = " + d);
                 Toast.makeText(getActivity(), "Home_fragment- ERROR in display_votes", Toast.LENGTH_LONG).show();
             }
+
+            return ret;
+        }
+
+        public boolean isActive(Long approved, int seconds_until_expired) {
+
+            boolean ret = true;
+
+            Date now = new Date();
+
+            if ((now.getTime() - approved) > (seconds_until_expired * 1000)) {
+                //bicker has expired. Move it to expiredBicker section of DB
+                ret = false;
+            }
+
+            return ret;
+        }
+
+        // This returns time remaining in milliseconds
+        public long getRemainingTime(Long approved, int seconds_until_expired) {
+
+            Date now = new Date();
+
+            long time_until_expired = seconds_until_expired * 1000;
+
+            long active_time = now.getTime() - approved;
+
+            long ret = time_until_expired - active_time;
 
             return ret;
         }

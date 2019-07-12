@@ -9,6 +9,7 @@ public class Bicker {
     private String left_side;
     private String right_side;
     private Date create_date;
+    private Date approved_date;
     private int left_votes;
     private int right_votes;
     private int total_votes;
@@ -28,10 +29,10 @@ public class Bicker {
     }
     public Bicker(String title, String left_Side, String right_side,
                   int left_votes, int right_votes, int total, String category, String key, double seconds) {
-        this(title, null,  left_Side, right_side, null, left_votes, right_votes, total, null, category, null, null, key , null, null, seconds);
+        this(title, null,  left_Side, right_side, null, null, left_votes, right_votes, total, null, category, null, null, key , null, null, seconds);
 
     }
-    public Bicker (String title, String description, String left_side, String right_side, Date create_date, int left_votes,
+    public Bicker (String title, String description, String left_side, String right_side, Date create_date, Date appr_date, int left_votes,
                    int right_votes, int total, String code, String category, String senderID, String receiverID, String key, ArrayList<String> tags, ArrayList<String> votedUsers, double seconds){
 
         this.title = title;
@@ -39,6 +40,7 @@ public class Bicker {
         this.right_side = right_side;
         this.left_side = left_side;
         this.create_date = create_date;
+        approved_date = appr_date;
         this.left_votes = left_votes;
         this.right_votes = right_votes;
         this.code = code;
@@ -107,6 +109,14 @@ public class Bicker {
 
     public void setCreate_date(Date create_date) {
         this.create_date = create_date;
+    }
+
+    public Date getApproved_date() {
+        return approved_date;
+    }
+
+    public void setApproved_date(Date d) {
+        approved_date = d;
     }
 
     public int getLeft_votes() {
