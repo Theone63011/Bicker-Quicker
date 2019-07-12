@@ -67,7 +67,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
     const ref = change.after.ref.parent; // reference to the parent
       const expBickRef =  ref.parent.child('ExpiredBicker');
       //const expBickRef = ref.child('ExpiredBicker'); //reference to parent then expired bicker document
-      const now = Date.now();
+
 
       const oldItemsQuery = ref.orderByChild('create_date/time');
       const snapshot = await oldItemsQuery.once('value');
@@ -88,7 +88,8 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
      var message = {
       data: {
         title: 'Voting period ended for: ',
-        body: original.title
+        body: original.title,
+        type: 'voter'
       },
       topic: id
     };
@@ -114,11 +115,14 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
             //value.create_date.time gives time bicker was created
             //now is the current time
             //value.expiry is the total time, in seconds, the bicker was set to expire after
+            const now = Date.now();
             if ((now - value.create_date.time) > (value.seconds_until_expired * 1000)) {
                 //bicker has expired. Move it to expiredBicker section of DB
                 exp_updates[childSnapshot.key] = value;
                 updates[childSnapshot.key] = null;
                 console.log('Bicker has expired:' + value.title);
+            }else{
+                console.log("Error: " + (now - value.create_date.time) + " " + (value.seconds_until_expired * 1000));
             }
           });
 

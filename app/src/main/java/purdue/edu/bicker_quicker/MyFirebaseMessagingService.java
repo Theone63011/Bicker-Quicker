@@ -31,21 +31,49 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
-        Log.d(TAG, "~From: " + remoteMessage.getFrom());
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("/User");
+        ref.child(FirebaseAuth.getInstance().getUid() + "/notificationSettings").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // for (DataSnapshot userSnapshot: dataSnapshot.getChildren()) {
 
-        // Check if message contains a data payload.
-        if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "~Message data payload: " + remoteMessage.getData());
+                String bin = Long.toBinaryString((long)dataSnapshot.getValue());
+                Log.d(TAG, "notificationSettings: " + bin.charAt(6));
+                Log.d(TAG, "binary: " + bin);
+                if(bin.charAt(0) == '0'){
+                    Log.d(TAG, "All notifications blocked.");
+                }
+                else if(bin.charAt(6) == '0' && remoteMessage.getData().get("type").equals("voter")){
+                   Log.d(TAG, "Voter notif should be blocked.");
+                   return;
+                }else{
+                    Log.d(TAG, "~From: " + remoteMessage.getFrom());
 
-        }
+                    // Check if message contains a data payload.
+                    if (remoteMessage.getData().size() > 0) {
+                        Log.d(TAG, "~Message data payload: " + remoteMessage.getData());
 
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "~Message Notification Body: " + remoteMessage.getNotification().getBody());
-        }
+                    }
+
+                    // Check if message contains a notification payload.
+                    if (remoteMessage.getNotification() != null) {
+                        Log.d(TAG, "~Message Notification Body: " + remoteMessage.getNotification().getBody());
+                    }
+
+                    Log.d(TAG, "type: " + remoteMessage.getData().get("type"));
+                    notification(remoteMessage.getData().get("body"), remoteMessage.getData().get("title"));
+                }
+                //}
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
-       notification(remoteMessage.getData().get("body"), remoteMessage.getData().get("title"));
 
     }
 
