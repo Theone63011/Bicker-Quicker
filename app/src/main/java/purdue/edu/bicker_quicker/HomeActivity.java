@@ -54,6 +54,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
     Button recentButton;
     Button popularButton;
+    Button filterButton;
 
     Home_Fragment homefrag1 = null;
     Home_Fragment homefrag2 = null;
@@ -148,6 +149,14 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 sortBy = "recent";
                 homefrag1.sortByRecent();
                 homefrag2.sortByRecent();
+            }
+        });
+
+        this.filterButton = findViewById(R.id.filter);
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onFilterButton();
             }
         });
     }
@@ -316,6 +325,15 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
         return super.onOptionsItemSelected(item);
 
+    }
+
+    public void onFilterButton() {
+        //update to show expired bickers
+        Intent intent = new Intent(this, BasicBickerView.class);
+        Bundle b = new Bundle();
+        b.putBoolean("expBick", true);
+        intent.putExtras(b);
+        startActivity(intent);
     }
 
     public void signOut(){

@@ -47,10 +47,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Recent" />
+
             <Button
+                android:id="@+id/filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Filter"/>
+                android:text="Filter" />
 
             <Space
                 android:layout_width="wrap_content"
