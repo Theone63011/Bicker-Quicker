@@ -572,7 +572,7 @@ public class ExpiredBickers_Fragment extends Fragment {
             }
 
             final Button deleteButton = view.findViewById(R.id.deleteButton);
-            deleteButton.setVisibility(View.INVISIBLE);
+            deleteButton.setVisibility(View.GONE);
             if(bicker.isDeletionPending()){
                 deleteButton.setEnabled(false);
                 deleteButton.setText("Deletion Request Sent");
