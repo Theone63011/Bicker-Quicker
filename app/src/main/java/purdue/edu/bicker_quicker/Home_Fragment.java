@@ -110,10 +110,6 @@ public class Home_Fragment extends Fragment {
         closed_bicker_layout_list = new ArrayList<LinearLayout>();
         open_bicker_layout_list = new ArrayList<LinearLayout>();
 
-        Log.d("listViewonCreateFirst", Integer.toString(listViewPositionFirstFragment));
-        Log.d("listViewonCreateSecond", Integer.toString(listViewPositionSecondFragment));
-
-
         if (sortBy == "recent") {
             this.sortByRecent();
         } else if (sortBy == "popularity") {
@@ -325,9 +321,6 @@ public class Home_Fragment extends Fragment {
             listViewPositionSecondFragment = listView.getFirstVisiblePosition();
         }
 
-        Log.d("listViewonStopFirst", Integer.toString(listViewPositionFirstFragment));
-        Log.d("listViewonStopSecond", Integer.toString(listViewPositionSecondFragment));
-        Log.d("isFirstFragment", isFirstFragment.toString());
         isFirstFragment = !isFirstFragment;
     }
 
