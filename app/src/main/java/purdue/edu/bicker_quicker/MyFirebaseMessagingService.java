@@ -47,7 +47,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 else if(bin.charAt(6) == '0' && remoteMessage.getData().get("type").equals("voter")){
                    Log.d(TAG, "Voter notif should be blocked.");
                    return;
-                }else{
+                }else if(bin.charAt(5) == '0' && remoteMessage.getData().get("type").equals("delete")) {
+                    Log.d(TAG, "Delete notif should be blocked.");
+                    return;
+                }
+                else{
                     Log.d(TAG, "~From: " + remoteMessage.getFrom());
 
                     // Check if message contains a data payload.

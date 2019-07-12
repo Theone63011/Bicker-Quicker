@@ -61,6 +61,28 @@ exports.deleteOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(asyn
   //return expBickRef.set(exp_updates);
   // return expBickRef.update(exp_updates);
 });*/
+exports.deleteNotification = functions.database.ref('/Bicker/{pushId}').onDelete((snapshot, context) => {
+    var id = context.params.pushId;
+    console.log("Delete pushid: " + id);
+    console.log("Title: " + snapshot.val().title);
+     var message = {
+          data: {
+            title: 'Bicker deleted: ',
+            body: snapshot.val().title,
+            type: 'delete'
+          },
+          topic: id + 'delete'
+        };
+         admin.messaging().send(message)
+            .then((response) => {
+               // Response is a message ID string.
+               console.log('Successfully sent message:', response);
+               return;
+             })
+             .catch((error) => {
+               console.log('Error sending message:', error);
+             });
+});
 
 exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (change, context) => {
     // Grab the current value of what was written to the Realtime Database.
