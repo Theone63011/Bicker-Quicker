@@ -36,6 +36,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -310,8 +312,9 @@ public class ProfileActivity extends AppCompatActivity {
         ref.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //TODO: Send a notification to both of these users that the bicker has been deleted
-                String User1ToNotifyId = dataSnapshot.child("bicker/" + key + "receiverID").getValue().toString();
-                String User2ToNotifyId = dataSnapshot.child("bicker/" + key + "senderID").getValue().toString();
+                String User1ToNotifyId = dataSnapshot.child("Bicker/" + key + "/receiverID").getValue().toString();
+                String User2ToNotifyId = dataSnapshot.child("Bicker/" + key + "/senderID").getValue().toString();
+
 
                 for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
                     userSnapshot.child("votedBickerIds").child(key).getRef().setValue(null);
