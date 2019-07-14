@@ -1,11 +1,11 @@
 package purdue.edu.bicker_quicker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
@@ -14,30 +14,21 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.content.Intent;
 import android.view.ViewGroup;
-import android.support.v7.widget.Toolbar;
 import android.widget.Button;
-import android.widget.ImageButton;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-
-import static com.facebook.AccessTokenManager.TAG;
 
 
 public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener {
@@ -172,12 +163,17 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
+        Log.d("HomeActivity", "Inside onCreateOptionsMenu");
+
         getMenuInflater().inflate(R.menu.menu,menu);
         return true;
     }
 
     @Override
     public void onResume(){
+
+        Log.d("HomeActivity", "Inside onResume");
 
         Log.d("sortBy: ", this.sortBy.toString());
 
@@ -190,6 +186,9 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
     @Override
     public void onAttachFragment(Fragment fragment) {
+
+        Log.d("HomeActivity", "Inside onAttachFragment");
+
         if (fragment instanceof Home_Fragment) {
             Home_Fragment homeFragment = (Home_Fragment) fragment;
             homeFragment.setOnBickerPressedListener(this);
@@ -207,6 +206,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     @Override
     public void onBickerPressed(int position) {
         // Required. Currently does nothing, can be changed and used if fragment needs to communicate with activity
+        Log.d("HomeActivity", "Inside onBickerPressed");
     }
 
 
@@ -217,6 +217,9 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
         @Override
         public Fragment getItem(int position) {
+
+            Log.d("HomeActivity", "Inside getItem");
+
             Home_Fragment homeFragment = new Home_Fragment();
             Bundle args = new Bundle();
             if(position == 0){

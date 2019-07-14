@@ -9,14 +9,18 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,6 +73,8 @@ public class Home_Fragment extends Fragment {
     private Button rightVote;
     private Button noVote;
 
+    private Thread timer_thread;
+
     private LinearLayout choice_label_holder;
 
     public static String sortBy = "recent";
@@ -100,6 +106,8 @@ public class Home_Fragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+        Log.d(TAG, "Home_fragment: Inside onCreate");
 
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
@@ -265,6 +273,10 @@ public class Home_Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Log.d(TAG, "Home_fragment: Inside onCreateView");
+
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home_, container, false);
     }
@@ -391,6 +403,8 @@ public class Home_Fragment extends Fragment {
      */
     public void setOnBickerPressedListener(OnBickerPressedListener callback) {
         this.callback = callback;
+
+        Log.d(TAG, "Home_fragment: callback");
     }
 
     public interface OnBickerPressedListener {
@@ -405,12 +419,24 @@ public class Home_Fragment extends Fragment {
         private List<Bicker> bickers;
         private DecimalFormat df = new DecimalFormat("0.0");
 
+        DisplayMetrics dm = new DisplayMetrics();
+        private int windowWidthPixels;
+        private int minimumProgressbarHeight = 85;
+        private int minimumProgressbarWidth = 150;
+        private int maximumProgressbarWidth;
+        private double progressbar1Percent;
+
         //constructor
         public bickerArrayAdapter(Context context, int resource, ArrayList<Bicker> bickers) {
             super(context, resource, bickers);
 
             this.context = context;
             this.bickers = bickers;
+
+            ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(dm);
+            windowWidthPixels = dm.widthPixels;
+            maximumProgressbarWidth = (int)Math.ceil((double) windowWidthPixels * 0.75);
+            progressbar1Percent = (((double)maximumProgressbarWidth - (double)minimumProgressbarWidth) / 100);
         }
 
         //called when rendering the list
@@ -425,6 +451,33 @@ public class Home_Fragment extends Fragment {
             //get the inflater and inflate the XML layout for each item
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.layout_unvoted_bicker, null);
+
+            SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
+
+            /*
+             * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
+             * performs a swipe-to-refresh gesture.
+             */
+            /*swipeRefreshLayout.setOnRefreshListener(
+                    new SwipeRefreshLayout.OnRefreshListener() {
+                        @Override
+                        public void onRefresh() {
+                            Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+
+                            // This method performs the actual data-refresh operation.
+                            // The method calls setRefreshing(false) when it's finished.
+                            try {
+                                //System.out.println("Current Thread: " + Thread.currentThread().getName());
+                                timer_thread.join();
+                            }
+
+                            catch(Exception ex) {
+                                System.out.println("Exception has been caught" + ex);
+                            }
+                            //myUpdateOperation();
+                        }
+                    }
+            );*/
 
             final ViewGroup sideContainer = (ViewGroup) view.findViewById(R.id.side_holder);
 
@@ -527,6 +580,9 @@ public class Home_Fragment extends Fragment {
 
             LinearLayout closed_bicker_holder = view.findViewById(R.id.closed_bicker_holder);
             LinearLayout open_bicker_holder = view.findViewById(R.id.open_bicker_holder);
+            LinearLayout percentage_holder = view.findViewById(R.id.percentage_holder);
+
+            percentage_holder.setVisibility(View.GONE);
 
             Long approved_time_milliseconds = bickers_approved_time_milliseconds.get(bicker.getKey());
 
@@ -558,7 +614,7 @@ public class Home_Fragment extends Fragment {
             closed_clock.setText(clock_time);
             open_clock.setText(clock_time);
 
-            Thread t = new Thread() {
+            timer_thread = new Thread() {
                 @Override
                 public void run() {
                     while(!isInterrupted()) {
@@ -595,7 +651,7 @@ public class Home_Fragment extends Fragment {
                 }
             };
 
-            t.start();
+            timer_thread.start();
 
             LinearLayout closed_header = view.findViewById(R.id.closed_header);
             LinearLayout open_header = view.findViewById(R.id.open_header);
@@ -607,6 +663,18 @@ public class Home_Fragment extends Fragment {
             TextView open_vote_count = view.findViewById(R.id.open_vote_count_text);
             closed_vote_count.setText(total_votes);
             open_vote_count.setText(total_votes);
+
+            Button progressbar_blue = (Button) view.findViewById(R.id.progressbar_blue);
+            Button progressbar_purple = (Button) view.findViewById(R.id.progressbar_purple);
+            ImageView votes_icon_blue = view.findViewById(R.id.votes_icon_blue);
+            ImageView votes_icon_purple = view.findViewById(R.id.votes_icon_purple);
+            TextView votes_count_blue = view.findViewById(R.id.votes_count_blue);
+            TextView votes_count_purple = view.findViewById(R.id.votes_count_purple);
+            Space progressbar_space_blue = (Space) view.findViewById(R.id.progressbar_space_blue);
+            Space progressbar_space_purple = (Space) view.findViewById(R.id.progressbar_space_purple);
+
+            progressbar_blue.setEnabled(false);
+            progressbar_purple.setEnabled(false);
 
             open_bicker_holder.setVisibility(View.GONE);
 
@@ -651,6 +719,63 @@ public class Home_Fragment extends Fragment {
                     onBickerClick(view, closed_bicker_holder, open_bicker_holder);
                 }
             });
+
+            progressbar_blue.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            progressbar_purple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            votes_icon_blue.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            votes_icon_purple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            votes_count_blue.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            votes_count_purple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            progressbar_space_blue.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            progressbar_space_purple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
 
 
             leftVote = view.findViewById(R.id.left);
@@ -716,6 +841,7 @@ public class Home_Fragment extends Fragment {
                 noVote.setText("Abstain");
                 noVote.setVisibility(View.GONE);
                 choice_label_holder.setVisibility(View.GONE);
+                percentage_holder.setVisibility(View.VISIBLE);
 
                 leftVote.setEnabled(false);
                 rightVote.setEnabled(false);
@@ -727,26 +853,70 @@ public class Home_Fragment extends Fragment {
                 String side_voted = bickers_votes.get(bickerCode);
 
                 if(side_voted.equalsIgnoreCase("left")){
-                    Log.d(TAG, "Home_fragment: left vote found");
+                    //Log.d(TAG, "Home_fragment: left vote found");
                     leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_blue);
                     rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
                 }
                 else if(side_voted.equalsIgnoreCase("right")) {
-                    Log.d(TAG, "Home_fragment: right vote found");
+                    //Log.d(TAG, "Home_fragment: right vote found");
                     leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
                     rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_purple);
                 }
                 else if(side_voted.equalsIgnoreCase("abstain")) {
-                    Log.d(TAG, "Home_fragment: abstain vote found");
+                    //Log.d(TAG, "Home_fragment: abstain vote found");
                     leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
                     rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
                     noVote.setVisibility(View.VISIBLE);
                     noVote.setTextColor(getResources().getColor(R.color.blue_purple_mix));
                 }
                 else {
-                    Log.d(TAG, "Home_fragment: ERROR- side_voted not assigned");
+                    //Log.d(TAG, "Home_fragment: ERROR- side_voted not assigned");
                     Toast.makeText(getActivity(), "Home_fragment: ERROR- side_voted not assigned", Toast.LENGTH_LONG).show();
                 }
+
+
+                // Setup the progress bars
+                int left_vote_count = bicker.getLeft_votes();
+                int right_vote_count = bicker.getRight_votes();
+
+                int progressbar_blue_pixel_length = GetProgressBarLength_blue(progressbar1Percent, left_vote_count, right_vote_count);
+                int progressbar_purple_pixel_length = GetProgressBarLength_purple(progressbar1Percent, left_vote_count, right_vote_count);
+
+                double blue_percent = GetProgressBarPercent_blue((double)left_vote_count, (double)right_vote_count);
+                double purple_percent = GetProgressBarPercent_purple((double)left_vote_count, (double)right_vote_count);
+
+                int blue_percent_int = GetProperPercentTotal_blue(blue_percent, purple_percent);
+                int purple_percent_int = GetProperPercentTotal_purple(blue_percent, purple_percent);
+
+                String left_percentage = Integer.toString(blue_percent_int) + "%";
+                String right_percentage = Integer.toString(purple_percent_int) + "%";
+
+                progressbar_blue.setText(left_percentage);
+                progressbar_purple.setText(right_percentage);
+
+                String left_votes = display_votes((double)left_vote_count);
+                String right_votes = display_votes((double)right_vote_count);
+                left_votes = left_votes.substring(0, left_votes.length() - 6);
+                right_votes = right_votes.substring(0, right_votes.length() - 6);
+                votes_count_blue.setText(left_votes);
+                votes_count_purple.setText(right_votes);
+
+                LinearLayout.LayoutParams blue_params = new LinearLayout.LayoutParams(85, 85, 0);
+                blue_params.height = minimumProgressbarHeight;
+                blue_params.width = progressbar_blue_pixel_length;
+                progressbar_blue.setLayoutParams(blue_params);
+
+                LinearLayout.LayoutParams purple_params = new LinearLayout.LayoutParams(85, 85, 0);
+                purple_params.height = minimumProgressbarHeight;
+                purple_params.width = progressbar_purple_pixel_length;
+                progressbar_purple.setLayoutParams(purple_params);
+
+                //Log.d(TAG, "Home_fragment: minimumProgressbarWidth = " + minimumProgressbarWidth);
+                //Log.d(TAG, "Home_fragment: maximumProgressbarWidth = " + maximumProgressbarWidth);
+                //Log.d(TAG, "Home_fragment: onePercentage = " + progressbar1Percent);
+                //Log.d(TAG, "Home_fragment: blue_length = " + blue_length);
+                //Log.d(TAG, "Home_fragment: purple_length = " + purple_length);
+
 
                 // Below reads from the database
                 /*FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -961,5 +1131,76 @@ public class Home_Fragment extends Fragment {
 
             return ret;
         }
+
+        public int GetProgressBarLength_blue (double onePercent, int left_votes, int right_votes) {
+
+            int ret = -1;
+            int total = left_votes + right_votes;
+            double left_percentage = ((double)left_votes / (double)total) * 100;
+            ret = (int)(Math.floor(onePercent * left_percentage));
+
+            if(ret < minimumProgressbarWidth) {
+                return minimumProgressbarWidth;
+            }
+
+            return ret;
+        }
+
+        public int GetProgressBarLength_purple (double onePercent, int left_votes, int right_votes) {
+
+            int ret = -1;
+            int total = left_votes + right_votes;
+            double right_percentage = ((double)right_votes / (double)total) * 100;
+            ret = (int)(Math.floor(onePercent * right_percentage));
+
+            if(ret < minimumProgressbarWidth) {
+                return minimumProgressbarWidth;
+            }
+
+            return ret;
+        }
+
+        public double GetProgressBarPercent_blue (double left_votes, double right_votes) {
+
+            double ret = -1;
+            double total = left_votes + right_votes;
+            ret = (left_votes / total) * 100;
+            return ret;
+        }
+
+        public double GetProgressBarPercent_purple (double left_votes, double right_votes) {
+            double ret = -1;
+            double total = left_votes + right_votes;
+            ret = (right_votes / total) * 100;
+            return ret;
+        }
+
+        public int GetProperPercentTotal_blue (double blue_percent, double purple_percent) {
+
+            if(blue_percent > purple_percent) {
+                return (int)(Math.floor(blue_percent));
+            }
+            else if(blue_percent < purple_percent) {
+                return (int)(Math.ceil(blue_percent));
+            }
+            else {
+                return (int) blue_percent;
+            }
+        }
+
+        public int GetProperPercentTotal_purple (double blue_percent, double purple_percent) {
+
+            if(purple_percent > blue_percent) {
+                return (int)(Math.floor(purple_percent));
+            }
+            else if(purple_percent < blue_percent) {
+                return(int)(Math.ceil(purple_percent));
+            }
+            else {
+                return (int)purple_percent;
+            }
+        }
     }
+
+
 }
