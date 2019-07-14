@@ -422,7 +422,7 @@ public class Home_Fragment extends Fragment {
         DisplayMetrics dm = new DisplayMetrics();
         private int windowWidthPixels;
         private int minimumProgressbarHeight = 85;
-        private int minimumProgressbarWidth = 150;
+        private int minimumProgressbarWidth;
         private int maximumProgressbarWidth;
         private double progressbar1Percent;
 
@@ -437,6 +437,7 @@ public class Home_Fragment extends Fragment {
             windowWidthPixels = dm.widthPixels;
             maximumProgressbarWidth = (int)Math.ceil((double) windowWidthPixels * 0.75);
             progressbar1Percent = (((double)maximumProgressbarWidth - (double)minimumProgressbarWidth) / 100);
+            minimumProgressbarWidth = (int)(Math.ceil((double)windowWidthPixels / 10.0));
         }
 
         //called when rendering the list
