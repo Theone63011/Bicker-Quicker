@@ -25,6 +25,24 @@
         <item>Video Games</item>
         <item>Miscellaneous</item>
     </string-array>
+    <string-array name="categoriesAndNone">
+        <item>None</item>
+        <item>Art</item>
+        <item>Board Games</item>
+        <item>Books</item>
+        <item>Comedy</item>
+        <item>Food</item>
+        <item>Movies</item>
+        <item>Music</item>
+        <item>Philosophy</item>
+        <item>Politics</item>
+        <item>Relationships</item>
+        <item>Science</item>
+        <item>Sports</item>
+        <item>TV Shows</item>
+        <item>Video Games</item>
+        <item>Miscellaneous</item>
+    </string-array>
     <string name="title_activity_home">HomeActivity</string>
 
     <!-- TODO: Remove or change this placeholder text -->

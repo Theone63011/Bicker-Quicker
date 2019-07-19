@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:id="@+id/filter_dialog"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bicker Filter"
+        android:textAlignment="center"
+        android:textColor="@color/purpleAccent1"
+        android:textSize="24sp" />
+
+    <Switch
+        android:id="@+id/show_active_filter"
+        android:layout_width="201dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_alignStart="@+id/textView"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="10dp"
+        android:text="Show Active Bickers      " />
+
+    <Switch
+        android:id="@+id/show_expired_filter"
+        android:layout_width="201dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/show_active_filter"
+        android:layout_alignStart="@+id/show_active_filter"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="6dp"
+        android:text="Show Expired Bickers    " />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/show_expired_filter"
+        android:layout_alignStart="@+id/show_expired_filter"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="8dp"
+        android:text="Filter by Category"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView9"
+        android:layout_alignStart="@+id/textView9"
+        android:layout_marginStart="-1dp"
+        android:layout_marginTop="204dp"
+        android:text="Bicker Keywords"
+        android:textColor="@android:color/primary_text_light" />
+
+    <EditText
+        android:id="@+id/keyword_filter"
+        android:layout_width="385dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView10"
+        android:layout_alignStart="@+id/textView"
+        android:layout_alignEnd="@+id/textView"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="13dp"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/keyword_filter"
+        android:layout_alignStart="@+id/textView"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="3dp"
+        android:text="Seperate keywords by commas"
+        android:textAlignment="center"
+        android:textStyle="italic" />
+
+    <ScrollView
+        android:id="@+id/categories"
+        android:layout_width="358dp"
+        android:layout_height="167dp"
+        android:layout_above="@+id/textView10"
+        android:layout_below="@+id/textView9"
+        android:layout_alignStart="@+id/keyword_filter"
+        android:layout_alignEnd="@+id/keyword_filter"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="-185dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Switch
+                android:id="@+id/artSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Art" />
+
+            <Switch
+                android:id="@+id/boardGamesSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Board Games" />
+
+            <Switch
+                android:id="@+id/booksSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Books" />
+
+
+            <Switch
+                android:id="@+id/comedySwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Comedy" />
+
+
+            <Switch
+                android:id="@+id/foodSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Food" />
+
+
+            <Switch
+                android:id="@+id/moviesSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Movies" />
+
+
+            <Switch
+                android:id="@+id/musicSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Music" />
+
+
+            <Switch
+                android:id="@+id/philosophySwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Philosophy" />
+
+
+            <Switch
+                android:id="@+id/politicsSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Politics" />
+
+            <Switch
+                android:id="@+id/relationshipsSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Relationships" />
+
+            <Switch
+                android:id="@+id/scienceSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Science" />
+
+            <Switch
+                android:id="@+id/sportsSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Sports" />
+
+
+            <Switch
+                android:id="@+id/tvShowsSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="TV Shows" />
+
+            <Switch
+                android:id="@+id/videoGamesSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Video Games" />
+
+            <Switch
+                android:id="@+id/miscSwitch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="6dp"
+                android:paddingRight="6dp"
+                android:paddingBottom="6dp"
+                android:text="Miscellaneous" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <Switch
+        android:id="@+id/allSwitch"
+        android:layout_width="212dp"
+        android:layout_height="30dp"
+        android:layout_alignTop="@+id/textView9"
+        android:layout_alignEnd="@+id/categories"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="-5dp"
+        android:layout_marginEnd="0dp"
+        android:layout_toEndOf="@+id/textView9"
+        android:text="Toggle All"
+        android:textAlignment="center" />
+
+</RelativeLayout>

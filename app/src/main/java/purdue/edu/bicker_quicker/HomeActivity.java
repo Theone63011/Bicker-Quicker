@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import static com.facebook.AccessTokenManager.TAG;
 
 
-public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener {
+public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener, FilterDialog.FilterDialogListener {
 
     //private FirebaseDatabase database;
     //private ArrayList<Bicker> bickers;
@@ -66,9 +66,14 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     Home_Fragment homefrag1 = null;
     Home_Fragment homefrag2 = null;
 
+    // FILTER VARIABLES
+    boolean showActiveBickers;
+    boolean showExpiredBickers;
+    ArrayList<String> categoryFilter; // has list of all categories to filter out (Strings)
+    String keys; // Keywords used for tag searching
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
 
         if(FirebaseAuth.getInstance().getCurrentUser() == null){
             Log.d("Error", "NULL USER");
@@ -164,7 +169,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         filterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onFilterButton();
+                openFilterDialog();
             }
         });
     }
@@ -202,6 +207,11 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 initializeHomeFrag1 = false;
             }
         }
+    }
+
+    public void openFilterDialog() {
+        FilterDialog fd = new FilterDialog();
+        fd.show(getSupportFragmentManager(), "filter dialog");
     }
 
     @Override
@@ -368,5 +378,13 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                         startActivity(new Intent(HomeActivity.this, MainActivity.class));
                     }
                 });
+    }
+
+    @Override
+    public void applyFilter(boolean showActive, boolean showExpired, ArrayList<String> categories, String keywords) {
+        this.showActiveBickers = showActive;
+        this.showExpiredBickers = showExpired;
+        this.categoryFilter = categories; // NOTE THESE ARE DISABLED CATEGORIES
+        this.keys = keywords; // TODO: Put this instead in a separate search bar section. Will work on second pass of filtering
     }
 }
