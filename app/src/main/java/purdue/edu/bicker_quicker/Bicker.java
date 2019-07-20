@@ -21,17 +21,20 @@ public class Bicker {
     private boolean voted;
     private ArrayList<String> tags = new ArrayList<String>();
     private ArrayList<String> votedUsers = new ArrayList<String>();
+    private ArrayList<Keyword> keywords = new ArrayList<Keyword>();
     private double seconds_until_expired;
     private boolean deletionPending;
 
     public Bicker (){
 
     }
+
     public Bicker(String title, String left_Side, String right_side,
                   int left_votes, int right_votes, int total, String category, String key, double seconds) {
         this(title, null,  left_Side, right_side, null, null, left_votes, right_votes, total, null, category, null, null, key , null, null, seconds);
 
     }
+
     public Bicker (String title, String description, String left_side, String right_side, Date create_date, Date appr_date, int left_votes,
                    int right_votes, int total, String code, String category, String senderID, String receiverID, String key, ArrayList<String> tags, ArrayList<String> votedUsers, double seconds){
 
@@ -53,6 +56,14 @@ public class Bicker {
         if (votedUsers != null)
             this.votedUsers = votedUsers;
         seconds_until_expired = seconds;
+    }
+
+    public ArrayList<Keyword> getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(ArrayList<Keyword> k) {
+        keywords = k;
     }
 
     public ArrayList<String> getTags() { return tags; }

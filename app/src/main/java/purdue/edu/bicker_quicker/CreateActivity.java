@@ -577,6 +577,10 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         textView.setTextColor(Color.parseColor(color));
     }
 
+    public ArrayList<String> getKeywords() {
+        return null;
+    }
+
     public void submitNewBicker() {
         // Validate all fields
         String bickTitle = title.getText().toString();
@@ -710,6 +714,11 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         Date temp_approved_date = new Date();
         temp_approved_date.setTime(0);
 
+        // Get keywords for the bicker based on title and content
+        String fulltext = bickTitle.trim() + " " + bickSide;
+        KeywordTokenizer k = new KeywordTokenizer(fulltext);
+        ArrayList<Keyword> keywords = k.getKeywords();
+
         // Initialize the new bicker for the DB
         bicker.setCode(c);
         bicker.setCreate_date(date);
@@ -725,13 +734,10 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setReceiverID("Unknown");
         bicker.setTags(tags);
         bicker.setSeconds_until_expired(seconds_until_expired);
+        bicker.setKeywords(keywords);
         ref.push().setValue(bicker);
 
         // Subscribe creator to messaging
-
-
-
-
         ref.orderByChild("code").equalTo(c).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
