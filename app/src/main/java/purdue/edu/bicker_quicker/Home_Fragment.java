@@ -48,6 +48,7 @@ public class Home_Fragment extends Fragment {
 
     private FirebaseDatabase database;
     private ArrayList<Bicker> bickers;
+    private ArrayList<Bicker> filteredBickers;
 
     private static ArrayList<LinearLayout> closed_bicker_layout_list;
     private static ArrayList<LinearLayout> open_bicker_layout_list;
@@ -75,6 +76,8 @@ public class Home_Fragment extends Fragment {
     public static Integer listViewPositionFirstFragment = 0;
     public static Integer listViewPositionSecondFragment = 0;
     public static Boolean isFirstFragment = true;
+
+    private HomeActivity homeActivityReference = null;
 
     public Home_Fragment() {
         // Required empty public constructor
@@ -111,6 +114,7 @@ public class Home_Fragment extends Fragment {
         DatabaseReference databaseRef = database.getReference();
 
         bickers = new ArrayList<>();
+        filteredBickers = new ArrayList<>();
         votedBickerIds = new ArrayList<String>();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -128,6 +132,36 @@ public class Home_Fragment extends Fragment {
         }
     }
 
+    public ArrayList<Bicker> returnBickerArrayList() {
+        this.filteredBickers = new ArrayList<Bicker>(this.bickers);
+        return this.filteredBickers;
+    }
+
+    public void updateBickerList() {
+        ArrayAdapter<Bicker> adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, filteredBickers);
+
+        ListView listView = getView().findViewById(R.id.unvotedListView);
+        listView.setAdapter(adapter);
+        int count = listView.getAdapter().getCount();
+
+        //We can't set visibility to GONE until after all list elements are loaded or they will overlap
+        for ( int i=0; i < listView.getAdapter().getCount(); i++) {
+            View child = listView.getAdapter().getView(i, null, null);
+            LinearLayout open_bicker = child.findViewById(R.id.open_bicker_holder);
+            //open_bicker.setVisibility(View.GONE);
+        }
+
+        if (isFirstFragment) {
+            listView.setSelection(listViewPositionFirstFragment);
+        } else {
+            listView.setSelection(listViewPositionSecondFragment);
+        }
+    }
+
+    public void setReferenceToHomeActivity(HomeActivity ref) {
+        homeActivityReference = ref;
+    }
+
     public void sortByRecent() {
         sortBy = "recent";
 
@@ -135,8 +169,6 @@ public class Home_Fragment extends Fragment {
         Query bicker_create_date = database.getReference("Bicker").orderByChild("create_date"); //create_date
 
         initialize_view(user_create_date, bicker_create_date);
-
-
     }
 
     public void sortByPopularity() {
@@ -238,13 +270,20 @@ public class Home_Fragment extends Fragment {
                 }
 
                 isFirstFragment = !isFirstFragment;
+
+                if (homeActivityReference != null) {
+                    homeActivityReference.applyFilter(
+                            homeActivityReference.showActiveBickers,
+                            homeActivityReference.showExpiredBickers,
+                            homeActivityReference.categoryFilter,
+                            homeActivityReference.keys);
+                }
             }
 
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
-
     }
 
     @Override

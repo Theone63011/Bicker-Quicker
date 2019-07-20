@@ -152,6 +152,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 sortBy = "popular";
                 homefrag1.sortByPopularity();
                 homefrag2.sortByPopularity();
+                //applyFilter(showActiveBickers, showExpiredBickers, categoryFilter, keys);
             }
         });
 
@@ -162,6 +163,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 sortBy = "recent";
                 homefrag1.sortByRecent();
                 homefrag2.sortByRecent();
+                //applyFilter(showActiveBickers, showExpiredBickers, categoryFilter, keys);
             }
         });
 
@@ -386,5 +388,27 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         this.showExpiredBickers = showExpired;
         this.categoryFilter = categories; // NOTE THESE ARE DISABLED CATEGORIES
         this.keys = keywords; // TODO: Put this instead in a separate search bar section. Will work on second pass of filtering
+
+
+        this.homefrag1.setReferenceToHomeActivity(this);
+        ArrayList<Bicker> bickersHomeFrag1 = this.homefrag1.returnBickerArrayList();
+        for (int i = 0; i < bickersHomeFrag1.size(); i++) {
+            if (this.categoryFilter.contains(bickersHomeFrag1.get(i).getCategory())) {
+                bickersHomeFrag1.remove(i);
+                i--;
+            }
+        }
+        this.homefrag1.updateBickerList();
+
+        this.homefrag2.setReferenceToHomeActivity(this);
+        ArrayList<Bicker> bickersHomeFrag2 = this.homefrag2.returnBickerArrayList();
+        for (int i = 0; i < bickersHomeFrag2.size(); i++) {
+            if (this.categoryFilter.contains(bickersHomeFrag2.get(i).getCategory())) {
+                bickersHomeFrag2.remove(i);
+                i--;
+            }
+        }
+        this.homefrag2.updateBickerList();
+
     }
 }
