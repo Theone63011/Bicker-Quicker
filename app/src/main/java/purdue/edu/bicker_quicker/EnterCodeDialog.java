@@ -103,18 +103,7 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Iterable<DataSnapshot> children = dataSnapshot.getChildren();  // Get bickers
 
-
-
-
-
-
                 // USE THIS BICKER.CLASS FOR FUTURE USE!!!!
-
-
-
-
-
-
                 for (DataSnapshot bicker : children) {
                     Bicker value = bicker.getValue(Bicker.class);
                     if (value.getCode().equals(code)) {
@@ -129,6 +118,7 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
                         bick.setCreate_date(value.getCreate_date());
                         bick.setReceiverID(bicker.getKey());
                         bick.setTags(value.getTags());
+                        bick.setKeywords(value.getKeywords());
                         bick.setSeconds_until_expired(value.getSeconds_until_expired());
                     }
                 }
