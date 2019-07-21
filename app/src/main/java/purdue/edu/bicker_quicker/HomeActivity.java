@@ -67,10 +67,10 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     Home_Fragment homefrag2 = null;
 
     // FILTER VARIABLES
-    boolean showActiveBickers;
-    boolean showExpiredBickers;
-    ArrayList<String> categoryFilter; // has list of all categories to filter out (Strings)
-    String keys; // Keywords used for tag searching
+    public static boolean showActiveBickers;
+    public static boolean showExpiredBickers;
+    public static ArrayList<String> categoryFilter; // has list of all categories to filter out (Strings)
+    public static String keys; // Keywords used for tag searching
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,9 +199,11 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
             if (initializeHomeFrag1 == false) {
                 homefrag1 = homeFragment;
+                this.homefrag1.setReferenceToHomeActivity(this);
                 initializeHomeFrag1 = true;
             }else if (initializeHomeFrag1 == true) {
                 homefrag2 = homeFragment;
+                this.homefrag2.setReferenceToHomeActivity(this);
                 initializeHomeFrag1 = false;
             }
         }
@@ -384,5 +386,33 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         this.showExpiredBickers = showExpired;
         this.categoryFilter = categories; // NOTE THESE ARE DISABLED CATEGORIES
         this.keys = keywords; // TODO: Put this instead in a separate search bar section. Will work on second pass of filtering
+
+        //do not execute filtering if no categoryFilter or keys have been given to filter by
+        if (categoryFilter == null || keys == null) {
+            return;
+        }
+
+        //set reference to this so homefrag1 can call applyFilter after it has fetched the latest list of bickers
+        this.homefrag1.setReferenceToHomeActivity(this);
+        ArrayList<Bicker> bickersHomeFrag1 = this.homefrag1.returnBickerArrayList();
+        for (int i = 0; i < bickersHomeFrag1.size(); i++) {
+            if (this.categoryFilter.contains(bickersHomeFrag1.get(i).getCategory())) {
+                bickersHomeFrag1.remove(i);
+                i--;
+            }
+        }
+        this.homefrag1.updateBickerList(); //update bicker list with filtered bickers
+
+        //set reference to this so homefrag2 can call applyFilter after it has fetched the latest list of bickers
+        this.homefrag2.setReferenceToHomeActivity(this);
+        ArrayList<Bicker> bickersHomeFrag2 = this.homefrag2.returnBickerArrayList();
+        for (int i = 0; i < bickersHomeFrag2.size(); i++) {
+            if (this.categoryFilter.contains(bickersHomeFrag2.get(i).getCategory())) {
+                bickersHomeFrag2.remove(i);
+                i--;
+            }
+        }
+        this.homefrag2.updateBickerList(); //update bicker list with filtered bickers
+
     }
 }
