@@ -44,6 +44,25 @@ public class FilterDialog extends AppCompatDialogFragment {
     private Switch videoGamesSwitch;
     private Switch miscellaneousSwitch;
 
+    private static boolean active = true;
+    private static boolean expired = false;
+    private static boolean all = true;
+    private static boolean art = true;
+    private static boolean boardGames = true;
+    private static boolean books = true;
+    private static boolean comedy = true;
+    private static boolean food = true;
+    private static boolean movies = true;
+    private static boolean music = true;
+    private static boolean philosophy = true;
+    private static boolean politics = true;
+    private static boolean relationships = true;
+    private static boolean science = true;
+    private static boolean sports = true;
+    private static boolean tvShows = true;
+    private static boolean videoGames = true;
+    private static boolean miscellaneous = true;
+
     private FilterDialogListener listener;
 
     public static final String FILTER_PREFS = "filterPrefs";
@@ -115,25 +134,25 @@ public class FilterDialog extends AppCompatDialogFragment {
         SharedPreferences sharedPreferences = getContext().getSharedPreferences(FILTER_PREFS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        allSwitch.setChecked(sharedPreferences.getBoolean(ALL_PREF, true));
-        artSwitch.setChecked(sharedPreferences.getBoolean(ART_PREF, true));
-        boardGamesSwitch.setChecked(sharedPreferences.getBoolean(BOARDGAMES_PREF, true));
-        booksSwitch.setChecked(sharedPreferences.getBoolean(BOOKS_PREF, true));
-        comedySwitch.setChecked(sharedPreferences.getBoolean(COMEDY_PREF, true));
-        foodSwitch.setChecked(sharedPreferences.getBoolean(FOOD_PREF, true));
-        moviesSwitch.setChecked(sharedPreferences.getBoolean(MOVIES_PREF, true));
-        musicSwitch.setChecked(sharedPreferences.getBoolean(MUSIC_PREF, true));
-        philosophySwitch.setChecked(sharedPreferences.getBoolean(PHILOSOPHY_PREF, true));
-        politicsSwitch.setChecked(sharedPreferences.getBoolean(POLITICS_PREF, true));
-        relationshipsSwitch.setChecked(sharedPreferences.getBoolean(RELATIONSHIPS_PREF, true));
-        scienceSwitch.setChecked(sharedPreferences.getBoolean(SCIENCE_PREF, true));
-        sportsSwitch.setChecked(sharedPreferences.getBoolean(SPORTS_PREF, true));
-        tvShowsSwitch.setChecked(sharedPreferences.getBoolean(TVSHOWS_PREF, true));
-        videoGamesSwitch.setChecked(sharedPreferences.getBoolean(VIDEOGAMES_PREF, true));
-        miscellaneousSwitch.setChecked(sharedPreferences.getBoolean(MISCELLANEOUS_PREF, true));
+        allSwitch.setChecked(all);//sharedPreferences.getBoolean(ALL_PREF, true));
+        artSwitch.setChecked(art);//sharedPreferences.getBoolean(ART_PREF, true));
+        boardGamesSwitch.setChecked(boardGames);//sharedPreferences.getBoolean(BOARDGAMES_PREF, true));
+        booksSwitch.setChecked(books);//sharedPreferences.getBoolean(BOOKS_PREF, true));
+        comedySwitch.setChecked(comedy);//sharedPreferences.getBoolean(COMEDY_PREF, true));
+        foodSwitch.setChecked(food);//sharedPreferences.getBoolean(FOOD_PREF, true));
+        moviesSwitch.setChecked(movies);//sharedPreferences.getBoolean(MOVIES_PREF, true));
+        musicSwitch.setChecked(music);//sharedPreferences.getBoolean(MUSIC_PREF, true));
+        philosophySwitch.setChecked(philosophy);//sharedPreferences.getBoolean(PHILOSOPHY_PREF, true));
+        politicsSwitch.setChecked(politics);//sharedPreferences.getBoolean(POLITICS_PREF, true));
+        relationshipsSwitch.setChecked(relationships);//sharedPreferences.getBoolean(RELATIONSHIPS_PREF, true));
+        scienceSwitch.setChecked(science);//sharedPreferences.getBoolean(SCIENCE_PREF, true));
+        sportsSwitch.setChecked(sports);//sharedPreferences.getBoolean(SPORTS_PREF, true));
+        tvShowsSwitch.setChecked(tvShows);//sharedPreferences.getBoolean(TVSHOWS_PREF, true));
+        videoGamesSwitch.setChecked(videoGames);//sharedPreferences.getBoolean(VIDEOGAMES_PREF, true));
+        miscellaneousSwitch.setChecked(miscellaneous);//sharedPreferences.getBoolean(MISCELLANEOUS_PREF, true));
 
-        showActive.setChecked(sharedPreferences.getBoolean(ACTIVE_PREF, true));
-        showExpired.setChecked(sharedPreferences.getBoolean(EXPIRED_PREF, false));
+        showActive.setChecked(active);//sharedPreferences.getBoolean(ACTIVE_PREF, true));
+        showExpired.setChecked(expired);//sharedPreferences.getBoolean(EXPIRED_PREF, false));
 
         showActive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -153,8 +172,6 @@ public class FilterDialog extends AppCompatDialogFragment {
                 edit.commit();
             }
         });
-
-
 
         allSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -310,8 +327,6 @@ public class FilterDialog extends AppCompatDialogFragment {
                 .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        boolean active = showActive.isChecked();
-                        boolean expired = showActive.isChecked();
                         String keys = keywords.getText().toString();
                         ArrayList<String> filteredCategories = new ArrayList<String>();
                         // Add switches turned on to array of switches
@@ -321,9 +336,50 @@ public class FilterDialog extends AppCompatDialogFragment {
                             }
                         }
 
+                        active = showActive.isChecked();
+                        expired = showExpired.isChecked();
+                        all = allSwitch.isChecked();
+                        art = artSwitch.isChecked();
+                        books = booksSwitch.isChecked();
+                        boardGames = boardGamesSwitch.isChecked();
+                        comedy = comedySwitch.isChecked();
+                        food = foodSwitch.isChecked();
+                        movies = moviesSwitch.isChecked();
+                        music = musicSwitch.isChecked();
+                        philosophy = philosophySwitch.isChecked();
+                        politics = politicsSwitch.isChecked();
+                        relationships = relationshipsSwitch.isChecked();
+                        science = scienceSwitch.isChecked();
+                        sports = sportsSwitch.isChecked();
+                        tvShows = tvShowsSwitch.isChecked();
+                        videoGames = videoGamesSwitch.isChecked();
+                        miscellaneous = miscellaneousSwitch.isChecked();
+
                         listener.applyFilter(active, expired, filteredCategories, keys);
                     }
-                });
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        showActive.setChecked(active);
+                        showExpired.setChecked(expired);
+                        allSwitch.setChecked(all);//sharedPreferences.getBoolean(ALL_PREF, true));
+                        artSwitch.setChecked(art);//sharedPreferences.getBoolean(ART_PREF, true));
+                        boardGamesSwitch.setChecked(boardGames);//sharedPreferences.getBoolean(BOARDGAMES_PREF, true));
+                        booksSwitch.setChecked(books);//sharedPreferences.getBoolean(BOOKS_PREF, true));
+                        comedySwitch.setChecked(comedy);//sharedPreferences.getBoolean(COMEDY_PREF, true));
+                        foodSwitch.setChecked(food);//sharedPreferences.getBoolean(FOOD_PREF, true));
+                        moviesSwitch.setChecked(movies);//sharedPreferences.getBoolean(MOVIES_PREF, true));
+                        musicSwitch.setChecked(music);//sharedPreferences.getBoolean(MUSIC_PREF, true));
+                        philosophySwitch.setChecked(philosophy);//sharedPreferences.getBoolean(PHILOSOPHY_PREF, true));
+                        politicsSwitch.setChecked(politics);//sharedPreferences.getBoolean(POLITICS_PREF, true));
+                        relationshipsSwitch.setChecked(relationships);//sharedPreferences.getBoolean(RELATIONSHIPS_PREF, true));
+                        scienceSwitch.setChecked(science);//sharedPreferences.getBoolean(SCIENCE_PREF, true));
+                        sportsSwitch.setChecked(sports);//sharedPreferences.getBoolean(SPORTS_PREF, true));
+                        tvShowsSwitch.setChecked(tvShows);//sharedPreferences.getBoolean(TVSHOWS_PREF, true));
+                        videoGamesSwitch.setChecked(videoGames);//sharedPreferences.getBoolean(VIDEOGAMES_PREF, true));
+                        miscellaneousSwitch.setChecked(miscellaneous);//sharedPreferences.getBoolean(MISCELLANEOUS_PREF, true));
+                    }
+        });
 
         return builder.create();
     }

@@ -127,8 +127,6 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
         });
 
-
-
         mPager = (ViewPager) findViewById(R.id.pager);
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(pagerAdapter);
