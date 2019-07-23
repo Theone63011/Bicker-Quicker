@@ -414,5 +414,9 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         }
         this.homefrag2.updateBickerList(); //update bicker list with filtered bickers
 
+        //will use this for sorting bickers based off of keyword search, Do not delete
+        //ArrayList<Bicker> listOfBickersHomeFrag1 = this.homefrag1.returnBickerArrayList();
+        //double test2 = KeywordTokenizer.similarity(this.keys, listOfBickersHomeFrag1.get(0).getKeywords(), listOfBickersHomeFrag1.get(0).getTags());
+        //double stop = 0;
     }
 }

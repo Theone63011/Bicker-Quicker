@@ -236,13 +236,22 @@ public class Home_Fragment extends Fragment {
                     if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
                         bickers.add(new Bicker(
                                 bickerSnapshot.child("title").getValue() != null ? bickerSnapshot.child("title").getValue().toString() : "No title",
+                                bickerSnapshot.child("description").getValue() != null ? bickerSnapshot.child("description").getValue().toString() : "No description",
                                 bickerSnapshot.child("left_side").getValue() != null ? bickerSnapshot.child("left_side").getValue().toString() : "No left side",
                                 bickerSnapshot.child("right_side").getValue() != null ? bickerSnapshot.child("right_side").getValue().toString() : "No right side",
+                                null, //(we do not use the date property) bickerSnapshot.child("create_date").getValue() != null ? bickerSnapshot.child("create_date").getValue() : "No create_date"
+                                null, //(we do not use the date property) bickerSnapshot.child("approved_date").getValue() != null ? bickerSnapshot.child("approved_date").getValue() : "No approved_date"
                                 (int) (long) bickerSnapshot.child("left_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("right_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("total_votes").getValue(),
+                                bickerSnapshot.child("code").getValue() != null ? bickerSnapshot.child("code").getValue().toString() : "No code",
                                 bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
+                                bickerSnapshot.child("senderID").getValue() != null ? bickerSnapshot.child("senderID").getValue().toString() : "No senderID",
+                                bickerSnapshot.child("receiverID").getValue() != null ? bickerSnapshot.child("receiverID").getValue().toString() : "No receiverID",
                                 bickerSnapshot.getKey(),
+                                bickerSnapshot.child("tags").getValue() != null ? (ArrayList<String>)bickerSnapshot.child("tags").getValue() : null,
+                                bickerSnapshot.child("keywords").getValue() != null ? (ArrayList<String>)bickerSnapshot.child("keywords").getValue() : null,
+                                bickerSnapshot.child("votedUsers").getValue() != null ? (ArrayList<String>)bickerSnapshot.child("votedUsers").getValue() : null,
                                 (double) (long) bickerSnapshot.child("seconds_until_expired").getValue()
                         ));
                     }
