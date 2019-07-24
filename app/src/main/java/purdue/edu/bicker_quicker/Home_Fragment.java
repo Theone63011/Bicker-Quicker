@@ -75,6 +75,8 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
     FirebaseUser user;
     String userKey;
 
+    Boolean allowMatureContent;
+
     private Button leftVote;
     private Button rightVote;
     private Button noVote;
@@ -153,6 +155,23 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
         filteredBickers = new ArrayList<>();
         votedBickerIds = new ArrayList<String>();
         user = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference ref = databaseRef.child("User/" + user.getUid());
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child("matureContent").exists() && (Boolean.parseBoolean(dataSnapshot.child("matureContent").getValue().toString()))) {
+                    allowMatureContent = true;
+                } else {
+                    allowMatureContent = false;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
 
         bickers_approved_time_milliseconds = new HashMap<String, Long>();
 
@@ -346,6 +365,8 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
+
+
 
         bickerQuery.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {

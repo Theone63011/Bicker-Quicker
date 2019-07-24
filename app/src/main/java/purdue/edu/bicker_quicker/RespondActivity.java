@@ -372,6 +372,15 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference ref = db.getReference("Bicker/"+bickerID);
         bicker.setCode("code_used");
+
+        if(censor.getUseMatureWordList()){
+            Censor nonMatureCensor = new Censor(false);
+
+            if(nonMatureCensor.check_words(bicker.getRight_side()) == false) {
+                bicker.setMatureContent(true);
+            }
+        }
+
         ArrayList respTags = new ArrayList();
 
         if (tag_string1 != null && !tag_string1.equals(""))

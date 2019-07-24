@@ -120,6 +120,7 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
                         bick.setTags(value.getTags());
                         bick.setKeywords(value.getKeywords());
                         bick.setSeconds_until_expired(value.getSeconds_until_expired());
+                        bick.setMatureContent(value.isMatureContent());
                     }
                 }
 

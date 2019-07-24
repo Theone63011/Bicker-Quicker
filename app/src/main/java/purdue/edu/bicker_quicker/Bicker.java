@@ -24,6 +24,7 @@ public class Bicker {
     private ArrayList<String> keywords = new ArrayList<String>();
     private double seconds_until_expired;
     private boolean deletionPending;
+    private boolean matureContent;
 
     public Bicker (){
 
@@ -191,6 +192,13 @@ public class Bicker {
     public boolean isDeletionPending() { return deletionPending; }
 
     public void setDeletionPending(boolean deletionPending) { this.deletionPending = deletionPending; }
+
+    public boolean isMatureContent() { return matureContent; }
+
+    public void setMatureContent(boolean matureContent) { this.matureContent = matureContent; }
+
+
+
 
 
     public String toString() {

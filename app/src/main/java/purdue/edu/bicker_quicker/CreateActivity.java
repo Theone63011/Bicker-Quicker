@@ -600,6 +600,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         boolean failed = false;
 
         boolean censor_passed = true;
+        boolean mature_content = false;
         if(censor.check_chars(bickTitle) == false) censor_passed = false;
         if(censor.check_words(bickTitle) == false) censor_passed = false;
         if(censor.check_chars(bickDesc) == false) censor_passed = false;
@@ -611,8 +612,12 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             Toast.makeText(CreateActivity.this, "Invalid Input.", Toast.LENGTH_SHORT).show();
             return;
         }
-        else {
-            //Log.d(TAG, "Censor passed");
+        else if(censor.getUseMatureWordList()) { //This determines if the bicker is "mature content" or not
+            Censor nonMatureCensor =  new Censor(false);
+
+            if(nonMatureCensor.check_words(bickTitle) == false) mature_content = true;
+            if(nonMatureCensor.check_words(bickDesc) == false) mature_content = true;
+            if(nonMatureCensor.check_words(bickSide) == false) mature_content = true;
         }
 
         if(rad1Checked == false && rad2Checked == false && rad3Checked == false) {
@@ -723,6 +728,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setTags(tags);
         bicker.setSeconds_until_expired(seconds_until_expired);
         bicker.setKeywords(skeys);
+        bicker.setMatureContent(mature_content);
         ref.push().setValue(bicker);
 
         // Subscribe creator to messaging
