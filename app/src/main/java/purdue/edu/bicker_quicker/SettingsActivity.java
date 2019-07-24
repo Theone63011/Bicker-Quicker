@@ -43,6 +43,8 @@ public class SettingsActivity extends AppCompatActivity {
     public String dbID;
     public Button deleteAccount;
 
+    public Switch matureContent;
+
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String SW_ALLNOT = "swAllNot";
     public static final String SW_BEENRESP = "swBeenResp";
@@ -58,6 +60,8 @@ public class SettingsActivity extends AppCompatActivity {
     public static final int INT_CLOSEREQ = (int)  0b00001000;
     public static final int INT_CLOSECON = (int)  0b00000100;
     public static final int INT_VOTEONEND = (int) 0b00000010;
+
+    public String userId;
 
     public void saveData() {
         SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
@@ -98,6 +102,24 @@ public class SettingsActivity extends AppCompatActivity {
             closeConfirm.setEnabled(false);
             voteOnEnd.setEnabled(false);
         }
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("User/" + userId);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("matureContent").exists()){
+                    matureContent.setChecked(Boolean.parseBoolean(dataSnapshot.child("matureContent").getValue().toString()));
+                }
+                else {
+                    matureContent.setChecked(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
     }
 
     public void setBitString() {
@@ -142,6 +164,10 @@ public class SettingsActivity extends AppCompatActivity {
         closeConfirm = findViewById(R.id.closeConfirm);
         voteOnEnd = findViewById(R.id.voteFinished);
         deleteAccount = findViewById(R.id.statistics);
+        matureContent = findViewById(R.id.matureContent);
+
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         loadData();
         setBitString();
         dbID = null; // Will get set to null
@@ -252,6 +278,14 @@ public class SettingsActivity extends AppCompatActivity {
                 bob.show();
             }
 
+        });
+
+        matureContent.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
+                FirebaseDatabase.getInstance().getReference().child("User/" + userId + "/matureContent").setValue(isChecked);
+
+            }
         });
 
         toolbar = findViewById(R.id.toolbarSettings);

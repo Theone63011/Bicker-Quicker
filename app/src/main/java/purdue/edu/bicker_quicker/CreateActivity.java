@@ -107,7 +107,24 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         tag_string2 = null;
         tag_string3 = null;
 
-        censor = new Censor();
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("User/" + uid);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child("matureContent").exists() && (Boolean.parseBoolean(dataSnapshot.child("matureContent").getValue().toString()))) {
+                    censor = new Censor(true);
+                } else {
+                    censor = new Censor(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
         bicker_censor = findViewById(R.id.bicker_censor);
         bicker_censor.setVisibility(View.GONE);
         title.addTextChangedListener(titleWatcher);
@@ -354,6 +371,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+
             int valid = 0;
             if(censor.check_chars(s.toString()) == false) valid = 1;
             if(censor.check_words(s.toString()) == false) valid = 2;

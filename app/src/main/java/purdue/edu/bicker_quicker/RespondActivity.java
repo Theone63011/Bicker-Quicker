@@ -95,7 +95,26 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         tag_string3 = null;
         bicker_tag_censor = findViewById(R.id.bicker_tag_censorR);
         bicker_tag_censor.setVisibility(View.GONE);
-        censor = new Censor();
+
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("User/" + userId);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child("matureContent").exists() && (Boolean.parseBoolean(dataSnapshot.child("matureContent").getValue().toString()))) {
+                    censor = new Censor(true);
+                } else {
+                    censor = new Censor(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+
         tag.addTextChangedListener(tagWatcher);
 
         setSupportActionBar(toolbar);

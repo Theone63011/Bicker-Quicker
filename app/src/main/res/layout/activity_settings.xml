@@ -139,6 +139,19 @@
 
         </LinearLayout>
 
+        <Switch
+            android:id="@+id/matureContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:textSize="18sp"
+            android:autoText="true"
+            android:text="Allow mature content" />
+
         <Button
             android:id="@+id/statistics"
             android:layout_width="326dp"
