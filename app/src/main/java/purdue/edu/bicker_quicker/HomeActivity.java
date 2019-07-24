@@ -31,7 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
 
 
-public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener {
+public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener, FilterDialog.FilterDialogListener {
 
     //private FirebaseDatabase database;
     //private ArrayList<Bicker> bickers;
@@ -57,9 +57,14 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     Home_Fragment homefrag1 = null;
     Home_Fragment homefrag2 = null;
 
+    // FILTER VARIABLES
+    public static boolean showActiveBickers;
+    public static boolean showExpiredBickers;
+    public static ArrayList<String> categoryFilter; // has list of all categories to filter out (Strings)
+    public static String keys; // Keywords used for tag searching
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
 
         if(FirebaseAuth.getInstance().getCurrentUser() == null){
             Log.d("Error", "NULL USER");
@@ -113,11 +118,10 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
         });
 
-
-
         mPager = (ViewPager) findViewById(R.id.pager);
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(pagerAdapter);
+        mPager.setOffscreenPageLimit(NUM_PAGES);
 
 /*
         ImageButton profileButton = findViewById(R.id.profButton);
@@ -155,7 +159,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         filterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onFilterButton();
+                openFilterDialog();
             }
         });
     }
@@ -186,21 +190,34 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
     @Override
     public void onAttachFragment(Fragment fragment) {
-
-        Log.d("HomeActivity", "Inside onAttachFragment");
-
         if (fragment instanceof Home_Fragment) {
             Home_Fragment homeFragment = (Home_Fragment) fragment;
+
+            String tag = fragment.getTag();
+
+            homeFragment.set_home_fragment(fragment, tag);
+
             homeFragment.setOnBickerPressedListener(this);
 
             if (initializeHomeFrag1 == false) {
+                //Log.d(TAG, "Home_activity: initializeHomeFrag1 == false");
+
                 homefrag1 = homeFragment;
+                this.homefrag1.setReferenceToHomeActivity(this);
                 initializeHomeFrag1 = true;
             }else if (initializeHomeFrag1 == true) {
+                //Log.d(TAG, "Home_activity: initializeHomeFrag1 == true");
+
                 homefrag2 = homeFragment;
+                this.homefrag2.setReferenceToHomeActivity(this);
                 initializeHomeFrag1 = false;
             }
         }
+    }
+
+    public void openFilterDialog() {
+        FilterDialog fd = new FilterDialog();
+        fd.show(getSupportFragmentManager(), "filter dialog");
     }
 
     @Override
@@ -229,8 +246,12 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 args.putBoolean("voted", true);
             }
             homeFragment.setArguments(args);
-
             return homeFragment;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override
@@ -371,5 +392,45 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                         startActivity(new Intent(HomeActivity.this, MainActivity.class));
                     }
                 });
+    }
+
+    @Override
+    public void applyFilter(boolean showActive, boolean showExpired, ArrayList<String> categories, String keywords) {
+        this.showActiveBickers = showActive;
+        this.showExpiredBickers = showExpired;
+        this.categoryFilter = categories; // NOTE THESE ARE DISABLED CATEGORIES
+        this.keys = keywords; // TODO: Put this instead in a separate search bar section. Will work on second pass of filtering
+
+        //do not execute filtering if no categoryFilter or keys have been given to filter by
+        if (categoryFilter == null || keys == null) {
+            return;
+        }
+
+        //set reference to this so homefrag1 can call applyFilter after it has fetched the latest list of bickers
+        this.homefrag1.setReferenceToHomeActivity(this);
+        ArrayList<Bicker> bickersHomeFrag1 = this.homefrag1.returnBickerArrayList();
+        for (int i = 0; i < bickersHomeFrag1.size(); i++) {
+            if (this.categoryFilter.contains(bickersHomeFrag1.get(i).getCategory())) {
+                bickersHomeFrag1.remove(i);
+                i--;
+            }
+        }
+        this.homefrag1.updateBickerList(); //update bicker list with filtered bickers
+
+        //set reference to this so homefrag2 can call applyFilter after it has fetched the latest list of bickers
+        this.homefrag2.setReferenceToHomeActivity(this);
+        ArrayList<Bicker> bickersHomeFrag2 = this.homefrag2.returnBickerArrayList();
+        for (int i = 0; i < bickersHomeFrag2.size(); i++) {
+            if (this.categoryFilter.contains(bickersHomeFrag2.get(i).getCategory())) {
+                bickersHomeFrag2.remove(i);
+                i--;
+            }
+        }
+        this.homefrag2.updateBickerList(); //update bicker list with filtered bickers
+
+    }
+
+    public void refresh_fragment() {
+        mPager.getAdapter().notifyDataSetChanged();
     }
 }

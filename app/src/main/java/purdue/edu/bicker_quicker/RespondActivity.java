@@ -32,6 +32,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class RespondActivity extends AppCompatActivity implements EnterCodeDialog.EnterCodeDialogListener, CancelBickerDialog.CancelBickerDialogListener {
 
@@ -59,6 +60,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
     EditText tag;
     Censor censor;
     ArrayList<String> recvTags;
+    ArrayList<String> recvKeys;
     private TextView bicker_tag_censor;
 
     @Override
@@ -364,6 +366,14 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
 
         bicker.setTags(unionTags(recvTags, respTags));
 
+        ArrayList<Keyword> keys = KeywordTokenizer.stringsToKeys(recvKeys);
+        String fulltext = bicker.getTitle().trim() + " " + side.getText().toString();
+        KeywordTokenizer k = new KeywordTokenizer(fulltext);
+        ArrayList<Keyword> keywords = k.getKeywords();
+        ArrayList<Keyword> union = unionKeys(keys, keywords);
+
+        bicker.setKeywords(KeywordTokenizer.keysToStrings(unionKeys(keys, keywords)));
+
         Date approved_date = new Date();
         bicker.setApproved_date(approved_date);
 
@@ -457,6 +467,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         description_here.setText(code.getDescription());
         bicker = code;
         recvTags = bicker.getTags();
+        recvKeys = bicker.getKeywords();
     }
 
     public ArrayList<String> unionTags(ArrayList<String> old, ArrayList<String> resp) {
@@ -477,6 +488,27 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         }
 
         return union;
+    }
+
+    public ArrayList<Keyword> unionKeys(ArrayList<Keyword> old, ArrayList<Keyword> resp) {
+
+        HashMap<String, Integer> map = new HashMap<String, Integer>();
+
+        for (Keyword k : old) {
+            map.put(k.word, k.value);
+        }
+
+        for (Keyword k : resp) {
+            if (map.get(k.word) == null) {
+                map.put(k.word, k.value);
+            } else {
+                map.put(k.word, k.value + map.get(k.word));
+            }
+        }
+
+        KeywordTokenizer k = new KeywordTokenizer("");
+        ArrayList<Keyword> sorted = k.mapToList(map);
+        return sorted;
     }
 
     public void openDialog() {

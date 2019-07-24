@@ -21,19 +21,22 @@ public class Bicker {
     private boolean voted;
     private ArrayList<String> tags = new ArrayList<String>();
     private ArrayList<String> votedUsers = new ArrayList<String>();
+    private ArrayList<String> keywords = new ArrayList<String>();
     private double seconds_until_expired;
     private boolean deletionPending;
 
     public Bicker (){
 
     }
+
     public Bicker(String title, String left_Side, String right_side,
                   int left_votes, int right_votes, int total, String category, String key, double seconds) {
-        this(title, null,  left_Side, right_side, null, null, left_votes, right_votes, total, null, category, null, null, key , null, null, seconds);
+        this(title, null,  left_Side, right_side, null, null, left_votes, right_votes, total, null, category, null, null, key , null, null, null, seconds);
 
     }
+
     public Bicker (String title, String description, String left_side, String right_side, Date create_date, Date appr_date, int left_votes,
-                   int right_votes, int total, String code, String category, String senderID, String receiverID, String key, ArrayList<String> tags, ArrayList<String> votedUsers, double seconds){
+                   int right_votes, int total, String code, String category, String senderID, String receiverID, String key, ArrayList<String> tags, ArrayList<String> keywords, ArrayList<String> votedUsers, double seconds){
 
         this.title = title;
         this.description = description;
@@ -50,9 +53,19 @@ public class Bicker {
         this.key = key;
         if (tags != null)
             this.tags = tags;
+        if (keywords != null)
+            this.keywords = keywords;
         if (votedUsers != null)
             this.votedUsers = votedUsers;
         seconds_until_expired = seconds;
+    }
+
+    public ArrayList<String> getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(ArrayList<String> k) {
+        keywords = k;
     }
 
     public ArrayList<String> getTags() { return tags; }

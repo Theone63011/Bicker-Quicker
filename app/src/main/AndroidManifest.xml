@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ExpiredBickers_Fragment"></activity>
+        <!--<activity android:name=".ExpiredBickers_Fragment"></activity>-->
         <activity
             android:name=".ExpiredBickersActivity"
             android:label="@string/title_activity_expired_bickers"
@@ -38,6 +38,10 @@
         <activity android:name=".CreateActivity" />
         <activity android:name=".ViewVoting" />
         <activity android:name=".PastBickersActivity" />
+
+        <activity
+            android:name=".Home_Fragment"
+            android:label="Home_fragment"></activity>
         <activity
             android:name=".BickerActivity"
             android:label="@string/title_activity_bicker"

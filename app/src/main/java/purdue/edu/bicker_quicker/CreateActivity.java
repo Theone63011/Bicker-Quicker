@@ -121,21 +121,6 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         radioButton2 = (RadioButton) findViewById(R.id.radioButton2);
         radioButton3 = (RadioButton) findViewById(R.id.radioButton3);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // If you want to modify the timer values, please change below
         // If changing timer options, please use 'seconds', 'minutes' or 'hours' as the 2nd word
         // **************************************************************************************
@@ -146,22 +131,6 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         radioButton2.setText(option2);
         radioButton3.setText(option3);
         // **************************************************************************************
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         tag1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -577,6 +546,10 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         textView.setTextColor(Color.parseColor(color));
     }
 
+    public ArrayList<String> getKeywords() {
+        return null;
+    }
+
     public void submitNewBicker() {
         // Validate all fields
         String bickTitle = title.getText().toString();
@@ -710,6 +683,12 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         Date temp_approved_date = new Date();
         temp_approved_date.setTime(0);
 
+        // Get keywords for the bicker based on title and content
+        String fulltext = bickTitle.trim() + " " + bickSide;
+        KeywordTokenizer k = new KeywordTokenizer(fulltext);
+        ArrayList<Keyword> keywords = k.getKeywords();
+        ArrayList<String> skeys = KeywordTokenizer.keysToStrings(keywords);
+
         // Initialize the new bicker for the DB
         bicker.setCode(c);
         bicker.setCreate_date(date);
@@ -725,13 +704,10 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setReceiverID("Unknown");
         bicker.setTags(tags);
         bicker.setSeconds_until_expired(seconds_until_expired);
+        bicker.setKeywords(skeys);
         ref.push().setValue(bicker);
 
         // Subscribe creator to messaging
-
-
-
-
         ref.orderByChild("code").equalTo(c).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
