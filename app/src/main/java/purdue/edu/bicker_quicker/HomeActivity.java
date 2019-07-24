@@ -29,6 +29,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 
 public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener, FilterDialog.FilterDialogListener {
@@ -406,17 +411,46 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
             return;
         }
 
+        //*********************filter bickersHomeFrag1 by category***************************************
         //set reference to this so homefrag1 can call applyFilter after it has fetched the latest list of bickers
         this.homefrag1.setReferenceToHomeActivity(this);
         ArrayList<Bicker> bickersHomeFrag1 = this.homefrag1.returnBickerArrayList();
+
+        //filter by category
         for (int i = 0; i < bickersHomeFrag1.size(); i++) {
             if (this.categoryFilter.contains(bickersHomeFrag1.get(i).getCategory())) {
                 bickersHomeFrag1.remove(i);
                 i--;
             }
         }
-        this.homefrag1.updateBickerList(); //update bicker list with filtered bickers
+        //*********************end***************************************
 
+        //*********************filter bickersHomeFrag1 by keywords***************************************
+        ArrayList<Bicker> filteredKeywordList = new ArrayList<>();
+        Map<Bicker, Double> filteredKeywordMap = new HashMap<>();
+
+        if (this.keys != "") {
+            for (int i = 0; i < bickersHomeFrag1.size(); i++) {
+                double similarityNumber = KeywordTokenizer.similarity(this.keys, bickersHomeFrag1.get(i).getKeywords(), bickersHomeFrag1.get(i).getTags());
+
+                if (similarityNumber != 0.0) {
+                    filteredKeywordMap.put(bickersHomeFrag1.get(i), similarityNumber);
+                }
+            }
+        }
+
+        filteredKeywordList = new ArrayList<Bicker>(filteredKeywordMap.keySet());
+
+        Collections.reverse(filteredKeywordList);
+
+        if (this.keys.equals("")) {
+            this.homefrag1.updateBickerList(bickersHomeFrag1); //update bicker list with filtered bickers
+        } else {
+            this.homefrag1.updateBickerList(filteredKeywordList); //update bicker list with filtered bickers
+        }
+        //*********************end***************************************
+
+        //*********************filter bickersHomeFrag2 by category***************************************
         //set reference to this so homefrag2 can call applyFilter after it has fetched the latest list of bickers
         this.homefrag2.setReferenceToHomeActivity(this);
         ArrayList<Bicker> bickersHomeFrag2 = this.homefrag2.returnBickerArrayList();
@@ -426,8 +460,32 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 i--;
             }
         }
-        this.homefrag2.updateBickerList(); //update bicker list with filtered bickers
+        //*********************end***************************************
 
+        //*********************filter bickersHomeFrag2 by keywords***************************************
+        ArrayList<Bicker> filteredKeywordList2 = new ArrayList<>();
+        Map<Bicker, Double> filteredKeywordMap2 = new HashMap<>();
+
+        if (this.keys != "") {
+            for (int i = 0; i < bickersHomeFrag2.size(); i++) {
+                double similarityNumber = KeywordTokenizer.similarity(this.keys, bickersHomeFrag2.get(i).getKeywords(), bickersHomeFrag2.get(i).getTags());
+
+                if (similarityNumber != 0.0) {
+                    filteredKeywordMap2.put(bickersHomeFrag2.get(i), similarityNumber);
+                }
+            }
+        }
+
+        filteredKeywordList2 = new ArrayList<Bicker>(filteredKeywordMap2.keySet());
+
+        Collections.reverse(filteredKeywordList2);
+
+        if (this.keys.equals("")) {
+            this.homefrag2.updateBickerList(bickersHomeFrag2); //update bicker list with filtered bickers
+        } else {
+            this.homefrag2.updateBickerList(filteredKeywordList2); //update bicker list with filtered bickers
+        }
+        //*********************end***************************************
     }
 
     public void refresh_fragment() {

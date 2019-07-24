@@ -103,7 +103,7 @@ public class KeywordTokenizer {
     public ArrayList<Keyword> mapToList(HashMap<String, Integer> map) {
         ArrayList<Keyword> words = new ArrayList<Keyword>();
         for (String s : map.keySet()) {
-            if (map.get(s) > 1 || s.length() > 6)
+            if (map.get(s) > 1 || s.length() > 2)
                 words.add(new Keyword(s, map.get(s)));
         }
 
@@ -150,7 +150,7 @@ public class KeywordTokenizer {
 
     public static double similarity(String query, ArrayList<String> keywords, ArrayList<String> tags) {
         KeywordTokenizer k = new KeywordTokenizer(query);
-        ArrayList<Keyword> qKeys = k.getKeywords();
+        ArrayList<Keyword> qKeys = k.getTagWords();
 
         String tagString = "";
         for (String tag : tags) {
@@ -163,7 +163,7 @@ public class KeywordTokenizer {
         ArrayList<Keyword> union = unionKeys(keys, tagKeys);
 
         double total = 0;
-        for (Keyword tag : tagKeys) {
+        for (Keyword tag : qKeys) {
             for (Keyword word : union) {
                 if (tag.word.equals(word.word) || tag.word.contains(word.word) || word.word.contains(tag.word)) {
                     total += word.value;
@@ -191,7 +191,7 @@ public class KeywordTokenizer {
         }
 
         KeywordTokenizer k = new KeywordTokenizer("");
-        ArrayList<Keyword> sorted = k.mapToList(map);
+        ArrayList<Keyword> sorted = k.mapToListUnbiased(map);
         return sorted;
     }
 }
