@@ -103,7 +103,7 @@ public class KeywordTokenizer {
     public ArrayList<Keyword> mapToList(HashMap<String, Integer> map) {
         ArrayList<Keyword> words = new ArrayList<Keyword>();
         for (String s : map.keySet()) {
-            if (map.get(s) > 1 || s.length() > 6)
+            if (map.get(s) > 1 || s.length() > 2)
                 words.add(new Keyword(s, map.get(s)));
         }
 

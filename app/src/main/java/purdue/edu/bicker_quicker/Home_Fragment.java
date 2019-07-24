@@ -137,7 +137,11 @@ public class Home_Fragment extends Fragment {
         return this.filteredBickers;
     }
 
-    public void updateBickerList() {
+    public void updateBickerList(ArrayList<Bicker> update) {
+        if (update != null) {
+            filteredBickers = update;
+        }
+
         ArrayAdapter<Bicker> adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, filteredBickers);
 
         ListView listView = getView().findViewById(R.id.unvotedListView);
