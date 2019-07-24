@@ -705,7 +705,27 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setTags(tags);
         bicker.setSeconds_until_expired(seconds_until_expired);
         bicker.setKeywords(skeys);
-        ref.push().setValue(bicker);
+        DatabaseReference keyReference = ref.push();
+        keyReference.setValue(bicker);
+
+        keyReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    String key = dataSnapshot.getKey();
+                    bicker.setKey(key);
+                }
+                else {
+                    Log.d(TAG, "Create_activity: keyReference does not exist");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         // Subscribe creator to messaging
         ref.orderByChild("code").equalTo(c).addListenerForSingleValueEvent(new ValueEventListener() {

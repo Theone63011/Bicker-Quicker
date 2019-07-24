@@ -384,6 +384,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     String key = child.getKey();
+                    bicker.setKey(key);
                     Log.d("Tag: ", "@PUSHID: " + key);
                     /*FirebaseMessaging.getInstance().subscribeToTopic(key + "delete")
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -454,6 +455,56 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         });*/
 
         ref.setValue(bicker);
+
+        // Add bicker Category to the Category section of database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        String category = bicker.getCategory();
+        DatabaseReference databaseReference = database.getReference();
+        DatabaseReference categoryRef = database.getReference("Category");
+        DatabaseReference categoryRef2 = database.getReference("Category/" + category);
+
+        categoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists() == false) {
+                    //Log.d(TAG, "Create_activity: categoryRef dataSnapshot does not exists");
+                    categoryRef2.child("IDs").child("1").setValue(bicker.getKey());
+                    categoryRef2.child("count").setValue("1");
+                }
+                else {
+                    //Log.d(TAG, "Create_activity: categoryRef dataSnapshot exists");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        categoryRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists() == false) {
+                    //Log.d(TAG, "Create_activity: ref3 dataSnapshot does not exists");
+                    categoryRef2.child("IDs").child("1").setValue(bicker.getKey());
+                    categoryRef2.child("count").setValue("1");
+                }
+                else {
+                    //Log.d(TAG, "Create_activity: ref3 dataSnapshot exists");
+                    int count = Integer.parseInt(dataSnapshot.child("count").getValue().toString());
+                    count++;
+                    categoryRef2.child("IDs").child(Integer.toString(count)).setValue(bicker.getKey());
+                    categoryRef2.child("count").setValue(count);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         Toast.makeText(this, "Response Sent", Toast.LENGTH_LONG).show();
 
         leave();

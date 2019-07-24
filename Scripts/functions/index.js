@@ -84,6 +84,83 @@ exports.deleteNotification = functions.database.ref('/Bicker/{pushId}').onDelete
              });
 });
 
+exports.deleteCategory = functions.database.ref('/Bicker/{pushId}').onDelete((snapshot, context) => {
+  var id = context.params.pushId;
+  console.log("Delete pushid: " + id);
+  console.log("Title: " + snapshot.val().title);
+  var category = snapshot.val().category;
+  console.log("Category: " + category);
+
+  var count = null;
+  var category_number = null;
+
+  var ref = admin.database().ref('/Bicker');
+  var ref2 = admin.database().ref("/Category");
+  var ref3 = admin.database().ref("Category/" + category);
+  var ref4 = admin.database().ref("/Category/" + category);
+  var ref5 = admin.database().ref("/Category/" + category + "/IDs");
+  const query = ref2.orderByChild('count');
+
+  const snapshot2 = await query.once('value');
+
+
+
+
+  // DO NOT RUN ANYTHING BELOW THIS:
+
+
+
+  ref.once("value")
+    .then(function(snapshot2) {
+      count = snapshot2.val().count;
+      console.log("Count: " + count);
+      return;
+  }).catch((error) => {
+    console.log(TAG + 'Error sending message:', error);
+  });
+
+  snapshot3 = ref3.once('value');
+  snapshot3.forEach(function (childSnapshot) {
+
+    console.log("childSnapshot.key: " + childSnapshot.key);
+    console.log("childSnapshot.val(): " + childSnapshot.val());
+
+
+    //if(childSnapshot.val() === id) {
+    //  category_number = childSnapshot.key;
+    //}
+  });
+
+
+  const oldItemsQuery = ref.orderByChild('create_date/time').endAt(cutoff);
+  const snapshot = await oldItemsQuery.once('value');
+  // create a map with all children that need to be removed
+  const updates = {};
+  
+  snapshot.forEach(function (childSnapshot) {
+      var value = childSnapshot.val();
+      if (value.receiverID === 'Unknown') {
+          updates[childSnapshot.key] = null;
+      }
+    });
+
+
+  
+  //const snapshot4 = ref2.once('value');
+  // create a map with all children that need to be removed
+  //const updates = {};
+  
+  //snapshot4.forEach(function (childSnapshot) {
+  //    if (childSnapshot.key === id) {
+  //        updates[childSnapshot.key] = null;
+  //    }
+  //  });
+
+  // execute all updates in one go and return the result to end the function
+  //return ref2.update(updates);
+  return;
+});
+
 exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (change, context) => {
     // Grab the current value of what was written to the Realtime Database.
     const ref = change.after.ref.parent; // reference to the parent
