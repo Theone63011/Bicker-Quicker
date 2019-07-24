@@ -2,13 +2,19 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class Home_Fragment extends Fragment {
+public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     OnBickerPressedListener callback;
 
     private OnBickerPressedListener mListener;
@@ -79,6 +85,17 @@ public class Home_Fragment extends Fragment {
 
     private HomeActivity homeActivityReference = null;
 
+    private static Fragment home_Fragment = null;
+    private static String home_Fragment_tag = null;
+
+    private static ListView listView;
+
+    private static ArrayAdapter<Bicker> adapter;
+
+    private static SwipeRefreshLayout swipeRefreshLayout;
+
+    private static Thread timerThread;
+
     public Home_Fragment() {
         // Required empty public constructor
     }
@@ -101,8 +118,20 @@ public class Home_Fragment extends Fragment {
         return fragment;
     }
 
+    public static void set_home_fragment (Fragment f, String tag) {
+        Log.d(TAG, "Home_fragment: Inside set_home_Fragment");
+
+        home_Fragment = f;
+        int id = home_Fragment.getId();
+        home_Fragment_tag = tag;
+
+        Log.d(TAG, "Home_fragment: home_fragment_tag: " + home_Fragment_tag);
+        Log.d(TAG, "Home_fragment: home_fragment id: " + id);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "Home_fragment: Inside onCreate");
 
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
@@ -124,12 +153,97 @@ public class Home_Fragment extends Fragment {
 
         closed_bicker_layout_list = new ArrayList<LinearLayout>();
         open_bicker_layout_list = new ArrayList<LinearLayout>();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        // This is called after onCreate
+
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_home_, container, false);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.fragment_home_swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.green),
+                getResources().getColor(R.color.red),
+                getResources().getColor(R.color.blue),
+                getResources().getColor(R.color.orange));
+
+
 
         if (sortBy == "recent") {
             this.sortByRecent();
         } else if (sortBy == "popularity") {
             this.sortByPopularity();
         }
+        return rootView;
+    }
+
+   /* @Override
+    public void onActivityCreated (Bundle savedInstanceState) {
+        // This is called after onCreateView
+
+        Log.d(TAG, "Home_fragment: Inside onActivityCreated");
+
+        super.onActivityCreated(savedInstanceState);
+    }*/
+
+    @Override
+    public void onRefresh() {
+        Log.d(TAG, "Home_fragment: Inside onRefresh");
+
+        //timerThread.interrupt();
+
+        swipeRefreshLayout.setEnabled(false);
+        swipeRefreshLayout.setRefreshing(true);
+
+        refreshContent();
+    }
+
+    private void refreshContent() {
+        Log.d(TAG, "Home_fragment: Inside refreshContent");
+
+        Handler h = new Handler();
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "Home_fragment: Inside Run");
+
+                //updateBickerList();
+                swipeRefreshLayout.setEnabled(true);
+                swipeRefreshLayout.setRefreshing(false);
+
+                //Fragment currentFragment = getActivity().getSupportFragmentManager().findFragmentByTag("home_fragment");
+
+                Fragment currentFragment = home_Fragment;
+
+                if(currentFragment == null) {
+                    Log.d(TAG, "Home_fragment: ERROR- currentFragment is NULL");
+                    return;
+                }
+
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.setReorderingAllowed(false);
+                fragmentTransaction.detach(currentFragment);
+                fragmentTransaction.attach(currentFragment);
+                fragmentTransaction.commitNow();
+
+                //fragmentTransaction.hide(currentFragment);
+                //fragmentTransaction.hide(getActivity().getSupportFragmentManager().getPrimaryNavigationFragment());
+                homeActivityReference.refresh_fragment();
+
+
+                /*Intent intent = new Intent(getActivity(), Home_Fragment.class);
+                getActivity().finish();
+                getActivity().overridePendingTransition(0, 0);
+                startActivity(intent);
+                getActivity().overridePendingTransition(0, 0);*/
+
+                Log.d(TAG, "Home_fragment: end of run()");
+            }
+        }, 500);
     }
 
     public ArrayList<Bicker> returnBickerArrayList() {
@@ -138,9 +252,15 @@ public class Home_Fragment extends Fragment {
     }
 
     public void updateBickerList() {
-        ArrayAdapter<Bicker> adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, filteredBickers);
+        Log.d(TAG, "Home_fragment: Inside updateBickerList");
 
-        ListView listView = getView().findViewById(R.id.unvotedListView);
+        if(getActivity() == null) {
+            return;
+        }
+
+        adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, filteredBickers);
+
+        listView = getView().findViewById(R.id.unvotedListView);
         listView.setAdapter(adapter);
         int count = listView.getAdapter().getCount();
 
@@ -181,6 +301,10 @@ public class Home_Fragment extends Fragment {
     }
 
     public void initialize_view (Query userQuery, Query bickerQuery) {
+
+        if(getActivity() == null) {
+            return;
+        }
 
         bickers = new ArrayList<>();
 
@@ -250,9 +374,13 @@ public class Home_Fragment extends Fragment {
 
                 Collections.reverse(bickers);
 
-                ArrayAdapter<Bicker> adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, bickers);
+                if(getActivity() == null) {
+                    return;
+                }
 
-                ListView listView = getView().findViewById(R.id.unvotedListView);
+                adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, bickers);
+
+                listView = getView().findViewById(R.id.unvotedListView);
                 listView.setAdapter(adapter);
                 int count = listView.getAdapter().getCount();
 
@@ -291,21 +419,14 @@ public class Home_Fragment extends Fragment {
         super.onStop();
 
         if (isFirstFragment) {
-            ListView listView = getView().findViewById(R.id.unvotedListView);
+            listView = getView().findViewById(R.id.unvotedListView);
             listViewPositionFirstFragment = listView.getFirstVisiblePosition();
         } else {
-            ListView listView = getView().findViewById(R.id.unvotedListView);
+            listView = getView().findViewById(R.id.unvotedListView);
             listViewPositionSecondFragment = listView.getFirstVisiblePosition();
         }
 
         isFirstFragment = !isFirstFragment;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_, container, false);
     }
 
 
@@ -455,6 +576,10 @@ public class Home_Fragment extends Fragment {
         //called when rendering the list
         public View getView(int position, View convertView, ViewGroup parent) {
 
+            if(getActivity() == null) {
+                return null;
+            }
+
             //get the property we are displaying
             Bicker bicker = bickers.get(position);
 
@@ -597,12 +722,17 @@ public class Home_Fragment extends Fragment {
             closed_clock.setText(clock_time);
             open_clock.setText(clock_time);
 
-            Thread t = new Thread() {
+            timerThread = new Thread() {
                 @Override
                 public void run() {
                     while(!isInterrupted()) {
                         try {
                             Thread.sleep(1000);
+
+                            if(getActivity() == null) {
+                                return;
+                            }
+
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -627,14 +757,17 @@ public class Home_Fragment extends Fragment {
 
                                 }
                             });
-                        } catch (Exception e) {
+                        } catch (InterruptedException e) {
                             e.printStackTrace();
+                            Log.d(TAG, "Home_fragment: timerThread interrupted");
+                            //Thread.currentThread().interrupt();
+                            //break;
                         }
                     }
                 }
             };
 
-            t.start();
+            timerThread.start();
 
             LinearLayout closed_header = view.findViewById(R.id.closed_header);
             LinearLayout open_header = view.findViewById(R.id.open_header);

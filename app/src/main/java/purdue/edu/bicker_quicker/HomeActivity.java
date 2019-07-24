@@ -130,6 +130,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         mPager = (ViewPager) findViewById(R.id.pager);
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(pagerAdapter);
+        mPager.setOffscreenPageLimit(NUM_PAGES);
 
 /*
         ImageButton profileButton = findViewById(R.id.profButton);
@@ -193,15 +194,25 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
     @Override
     public void onAttachFragment(Fragment fragment) {
+
         if (fragment instanceof Home_Fragment) {
             Home_Fragment homeFragment = (Home_Fragment) fragment;
+
+            String tag = fragment.getTag();
+
+            homeFragment.set_home_fragment(fragment, tag);
+
             homeFragment.setOnBickerPressedListener(this);
 
             if (initializeHomeFrag1 == false) {
+                //Log.d(TAG, "Home_activity: initializeHomeFrag1 == false");
+
                 homefrag1 = homeFragment;
                 this.homefrag1.setReferenceToHomeActivity(this);
                 initializeHomeFrag1 = true;
             }else if (initializeHomeFrag1 == true) {
+                //Log.d(TAG, "Home_activity: initializeHomeFrag1 == true");
+
                 homefrag2 = homeFragment;
                 this.homefrag2.setReferenceToHomeActivity(this);
                 initializeHomeFrag1 = false;
@@ -236,8 +247,12 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 args.putBoolean("voted", true);
             }
             homeFragment.setArguments(args);
-
             return homeFragment;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override
@@ -414,5 +429,9 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         }
         this.homefrag2.updateBickerList(); //update bicker list with filtered bickers
 
+    }
+
+    public void refresh_fragment() {
+        mPager.getAdapter().notifyDataSetChanged();
     }
 }
