@@ -379,7 +379,12 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     temp_time = Long.parseLong(bickerSnapshot.child("approved_date").child("time").getValue().toString());
                     bickers_approved_time_milliseconds.put(bickerSnapshot.getKey(), temp_time);
 
-                    if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
+                    Boolean isBickerMature = false;
+                    if(bickerSnapshot.child("matureContent").exists()) {
+                        isBickerMature = Boolean.parseBoolean(bickerSnapshot.child("matureContent").getValue().toString());
+                    }
+
+                    if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted && (isBickerMature == false || allowMatureContent == true)) {
                         bickers.add(new Bicker(
                                 bickerSnapshot.child("title").getValue() != null ? bickerSnapshot.child("title").getValue().toString() : "No title",
                                 bickerSnapshot.child("description").getValue() != null ? bickerSnapshot.child("description").getValue().toString() : "No description",
