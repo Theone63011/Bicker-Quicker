@@ -72,8 +72,8 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     Home_Fragment homefrag2 = null;
 
     // FILTER VARIABLES
-    public static boolean showActiveBickers;
-    public static boolean showExpiredBickers;
+    public static boolean showActiveBickers = true;
+    public static boolean showExpiredBickers = false;
     public static ArrayList<String> categoryFilter; // has list of all categories to filter out (Strings)
     public static String keys; // Keywords used for tag searching
 
@@ -455,8 +455,8 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
     @Override
     public void applyFilter(boolean showActive, boolean showExpired, ArrayList<String> categories, String keywords) {
-        this.showActiveBickers = showActive;
-        this.showExpiredBickers = showExpired;
+        //this.showActiveBickers = showActive;
+        //this.showExpiredBickers = showExpired;
         this.categoryFilter = categories; // NOTE THESE ARE DISABLED CATEGORIES
         this.keys = keywords; // TODO: Put this instead in a separate search bar section. Will work on second pass of filtering
 
@@ -464,6 +464,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         if (categoryFilter == null || keys == null) {
             return;
         }
+
 
             //*********************filter bickersHomeFrag1 by category***************************************
             //set reference to this so homefrag1 can call applyFilter after it has fetched the latest list of bickers
@@ -479,7 +480,26 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
             }
             //*********************end***************************************
 
-            //*********************filter bickersHomeFrag1 by keywords***************************************
+        //*********************filter bickersHomeFrag1 by active/expired**************************************
+        //if what was previously set isn't what was applied, update the list
+        if (this.showActiveBickers != showActive || this.showExpiredBickers != showExpired) {
+            //update the showActive and showExpired values
+            this.showActiveBickers = showActive;
+            this.showExpiredBickers = showExpired;
+            if (this.sortBy.equals("recent")) {
+                this.homefrag1.sortByRecent();
+                this.homefrag2.sortByRecent();
+            } else if (this.sortBy.equals("popular")) {
+                this.homefrag1.sortByPopularity();
+                this.homefrag2.sortByPopularity();
+            }
+            this.homefrag1.updateBickerList(bickersHomeFrag1);
+        }
+
+        //*********************end***************************************
+
+
+        //*********************filter bickersHomeFrag1 by keywords***************************************
             ArrayList<Bicker> filteredKeywordList = new ArrayList<>();
             Map<Bicker, Double> filteredKeywordMap = new HashMap<>();
 
@@ -540,6 +560,8 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 this.homefrag2.updateBickerList(filteredKeywordList2); //update bicker list with filtered bickers
             }
             //*********************end***************************************
+
+
     }
 
     public void refresh_fragment() {
