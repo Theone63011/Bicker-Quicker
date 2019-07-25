@@ -239,6 +239,7 @@ public class ProfileActivity extends AppCompatActivity {
         toggle = pref.getBoolean("toggle", false);
         if(toggle){
             modToggle.setChecked(true);
+            reportedButton.setVisibility(View.VISIBLE);
         }
         super.onResume();
     }
