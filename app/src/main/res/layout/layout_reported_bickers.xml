@@ -260,41 +260,24 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/delete_holder"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:weightSum="4.0">
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="1.0" >
 
                     <Button
-                        android:id="@+id/removeButton"
-                        android:layout_width="150dp"
+                        android:id="@+id/removedBicker"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:background="#d11a2a"
-                        android:clickable="true"
-                        android:gravity="center"
-                        android:text="Remove bicker"
-                        android:textColor="#FFFFFF"
-                        android:layout_weight="1.0"
-                        android:layout_marginLeft="10dp"
-                        />
+                        android:layout_weight=".50"
+                        android:text="Remove Bicker" />
+
 
                     <Button
-                        android:id="@+id/cancelButton"
-                        android:layout_width="150dp"
+                        android:id="@+id/cancelReport"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:background="#d11a2a"
-                        android:clickable="true"
-                        android:gravity="center"
-                        android:text="Cancel report"
-                        android:textColor="#FFFFFF"
-                        android:layout_weight="1.0"
-                        android:layout_marginLeft="60dp"
-                        />
-
-
+                        android:layout_weight=".50"
+                        android:text="Cancel Report" />
                 </LinearLayout>
 
 

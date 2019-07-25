@@ -53,7 +53,7 @@ public class ReportedBickersActivity extends AppCompatActivity implements Report
             startActivity(new Intent(ReportedBickersActivity.this, MainActivity.class));
         }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_expired_bickers);
+        setContentView(R.layout.activity_reported_bickers);
 
 
 

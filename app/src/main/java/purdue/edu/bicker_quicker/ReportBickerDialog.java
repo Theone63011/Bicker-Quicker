@@ -16,7 +16,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import static com.facebook.AccessTokenManager.TAG;
 
-public class ReportBickerFragment extends AppCompatDialogFragment {
+public class ReportBickerDialog extends AppCompatDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

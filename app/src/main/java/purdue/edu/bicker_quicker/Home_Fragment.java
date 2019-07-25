@@ -2,7 +2,6 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -10,8 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -396,6 +393,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                                 (int) (long) bickerSnapshot.child("left_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("right_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("total_votes").getValue(),
+                                bickerSnapshot.child("reportCount").getValue() != null ? (int) (long) bickerSnapshot.child("reportCount").getValue() : 0,
                                 bickerSnapshot.child("code").getValue() != null ? bickerSnapshot.child("code").getValue().toString() : "No code",
                                 bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
                                 bickerSnapshot.child("senderID").getValue() != null ? bickerSnapshot.child("senderID").getValue().toString() : "No senderID",
@@ -1005,7 +1003,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
             report.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ReportBickerFragment reportBicker = new ReportBickerFragment();
+                    ReportBickerDialog reportBicker = new ReportBickerDialog();
                     Bundle reportBundle = new Bundle(1);
                     reportBundle.putString("key", bicker.getKey());
                     reportBicker.setArguments(reportBundle);

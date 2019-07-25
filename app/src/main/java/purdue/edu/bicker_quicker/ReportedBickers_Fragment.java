@@ -29,6 +29,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -58,6 +59,8 @@ public class ReportedBickers_Fragment extends Fragment {
     private Button leftVote;
     private Button rightVote;
     private Button noVote;
+    private Button remove;
+    private Button cancel;
     FirebaseUser user;
     private FirebaseDatabase database;
     String bickerKey;
@@ -84,6 +87,8 @@ public class ReportedBickers_Fragment extends Fragment {
 
         DatabaseReference databaseRef = database.getReference();
 
+        Query sort = database.getReference("Bicker").orderByChild("reportCount");
+
         bickers = new ArrayList<>();
         votedBickerIds = new ArrayList<String>();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -92,14 +97,14 @@ public class ReportedBickers_Fragment extends Fragment {
         //Query user_create_date = database.getReference("User").orderByChild("create_date");
         //Query bicker_create_date = database.getReference("Bicker").orderByChild("create_date"); //create_date
 
-        databaseRef.addListenerForSingleValueEvent( new ValueEventListener() {
+        sort.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String id = user.getUid();
 
 
 
                 // This loop adds all created expired bickers to the bickers array
-                for (DataSnapshot bickerSnapshot : dataSnapshot.child("Bicker").getChildren()) {
+                for (DataSnapshot bickerSnapshot : dataSnapshot.getChildren()) {
                     if (bickerSnapshot.child("reported").getValue() != null && bickerSnapshot.child("reported").getValue().toString().equals("true")){
                         Bicker newBicker = new Bicker(
                                 bickerSnapshot.child("title").getValue() != null ? bickerSnapshot.child("title").getValue().toString() : "No title",
@@ -108,6 +113,7 @@ public class ReportedBickers_Fragment extends Fragment {
                                 (int) (long) bickerSnapshot.child("left_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("right_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("total_votes").getValue(),
+                                bickerSnapshot.child("reportCount").getValue() != null ? (int) (long) bickerSnapshot.child("reportCount").getValue() : 0,
                                 bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
                                 bickerSnapshot.getKey(),
                                 (double) (long) bickerSnapshot.child("seconds_until_expired").getValue()
@@ -327,7 +333,8 @@ public class ReportedBickers_Fragment extends Fragment {
 
             TextView closed_vote_count = view.findViewById(R.id.closed_vote_count_text);
             //TextView open_vote_count = view.findViewById(R.id.open_vote_count_text);
-            closed_vote_count.setText(total_votes);
+            closed_vote_count.setText(Integer.toString(bicker.getReportCount()) + " Reports");
+            Log.d(TAG, "Report count: " + bicker.getReportCount());
             //open_vote_count.setText(total_votes);
 
             open_bicker_holder.setVisibility(View.GONE);
@@ -386,6 +393,44 @@ public class ReportedBickers_Fragment extends Fragment {
 
             leftVote.setBackgroundResource(R.drawable.side_prechoice_blue);
             rightVote.setBackgroundResource(R.drawable.side_prechoice_purple);
+
+            remove = view.findViewById(R.id.removedBicker);
+            cancel = view.findViewById(R.id.cancelReport);
+
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference ref = database.getReference();
+
+            remove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ref.child("Bicker/" + bicker.getKey()).setValue(null);
+
+                   ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                       @Override
+                       public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                           for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
+                               userSnapshot.child("votedBickerIds").child(bicker.getKey()).getRef().setValue(null);
+                               userSnapshot.child("sentDeletionRequests").child(bicker.getKey()).getRef().setValue(null);
+                               userSnapshot.child("receivedDeletionRequests").child(bicker.getKey()).getRef().setValue(null);
+
+                           }
+                       }
+
+                       @Override
+                       public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                       }
+                   });
+                }
+            });
+
+            cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ref.child("Bicker/" + bicker.getKey() + "/reported").setValue(false);
+                    ref.child("Bicker/" + bicker.getKey() + "/reportCount").setValue(0);
+                }
+            });
 
             boolean voted = false;
 
@@ -475,25 +520,6 @@ public class ReportedBickers_Fragment extends Fragment {
                 }
             }
 
-            final Button deleteButton = view.findViewById(R.id.deleteButton);
-            deleteButton.setVisibility(View.GONE);
-            if(bicker.isDeletionPending()){
-                deleteButton.setEnabled(false);
-                deleteButton.setText("Deletion Request Sent");
-                deleteButton.setBackgroundColor(Color.parseColor("#A9A9A9"));
-            }
-            else {
-
-                deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        requestDelete(bicker.getKey());
-                        deleteButton.setEnabled(false);
-                        deleteButton.setText("Deletion Request Sent");
-                        deleteButton.setBackgroundColor(Color.parseColor("#A9A9A9"));
-                    }
-                });
-            }
 
 
             return view;
