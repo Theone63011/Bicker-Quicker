@@ -4,6 +4,7 @@ package purdue.edu.bicker_quicker;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -50,6 +51,9 @@ public class ProfileActivity extends AppCompatActivity {
     Switch modToggle;
     Toolbar toolbar;
     FirebaseUser user;
+    boolean toggle;
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
 
     ArrayAdapter<DeletionRequest> deletionListAdapter;
     private static FirebaseAuth mAuth;
@@ -57,6 +61,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        pref = getApplicationContext().getSharedPreferences("MyPref", 0);
+       editor = pref.edit();
+
+        toggle = pref.getBoolean("toggle", false);
+
         setTheme(R.style.AppTheme_NoActionBar); // Disable action bar (should be by default but this is precautionary)
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
@@ -68,6 +77,10 @@ public class ProfileActivity extends AppCompatActivity {
         reportedButton = findViewById(R.id.reports);
         toolbar = findViewById(R.id.toolbarBicker);
         modToggle = findViewById(R.id.mod);
+
+        if(toggle){
+            modToggle.setChecked(true);
+        }
         setSupportActionBar(toolbar);
         toolbar.setTitle("Your Profile");
         Drawable drawable= getResources().getDrawable(R.drawable.backicon);
@@ -180,16 +193,22 @@ public class ProfileActivity extends AppCompatActivity {
                     //is checked, activate mod mode
                     reportedButton.setVisibility(View.VISIBLE);
                     msg = "Moderator mode activated.";
+                    editor.putBoolean("toggle", true);
                 } else {
                     //unchecked, deactivate mod mode
                     reportedButton.setVisibility(View.GONE);
                     msg = "Moderator mode deactivated.";
+                    editor.putBoolean("toggle", false);
                 }
+                editor.commit();
                 System.out.println(msg);
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
 
             }
+
         });
+
+
 
         //get user info from DB, check if mod. If so, make mod toggle visible
         //create listener for PastBickers button in user info retrieval; pass User to pastBickers()
@@ -213,6 +232,15 @@ public class ProfileActivity extends AppCompatActivity {
                 System.out.println("The read failed: " + databaseError.getCode());
             }
         });
+    }
+
+    @Override
+    protected void onResume(){
+        toggle = pref.getBoolean("toggle", false);
+        if(toggle){
+            modToggle.setChecked(true);
+        }
+        super.onResume();
     }
 
     public void pastBickers() {
