@@ -111,6 +111,8 @@ public class ProfileActivity extends AppCompatActivity {
                 reports();
             }
         });
+
+        reportedButton.setVisibility(View.GONE);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
 

@@ -429,8 +429,21 @@ public class ReportedBickers_Fragment extends Fragment {
             cancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ref.child("Bicker/" + bicker.getKey() + "/reported").setValue(false);
-                    ref.child("Bicker/" + bicker.getKey() + "/reportCount").setValue(0);
+                    ref.child("Bicker/" + bicker.getKey() + "/reported").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.getValue().toString().equals("true")){
+                                ref.child("Bicker/" + bicker.getKey() + "/reported").setValue(false);
+                                ref.child("Bicker/" + bicker.getKey() + "/reportCount").setValue(0);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
                 }
             });
 

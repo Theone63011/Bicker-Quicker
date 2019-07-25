@@ -768,9 +768,10 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
         bicker.setReported(false);
         bicker.setReportCount(0);
-        ref.push().setValue(bicker);
-
         bicker.setMatureContent(mature_content);
+
+
+
         DatabaseReference keyReference = ref.push();
         keyReference.setValue(bicker);
 
