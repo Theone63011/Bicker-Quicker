@@ -178,6 +178,13 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
                     return;
                 }
 
+                if (bick.isMatureContent() && !matureContentAllowed) {    // Bicker with given code not found
+                    enterBelow.setText("This bicker contains mature content. Enable mature content in the settings menu to continue.");
+                    enterBelow.setTextColor(Color.parseColor("#FF758C"));
+                    submitButton.setText("Get Bicker");
+                    return;
+                }
+
                 else if (allowTalkingToSelf == false && bick.getSenderID().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // Check if the person is talking with themselves
                     enterBelow.setText("Stop Talking to Yourself");
                     enterBelow.setTextColor(Color.parseColor("#FF758C"));
