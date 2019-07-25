@@ -62,6 +62,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
     ArrayList<String> recvTags;
     ArrayList<String> recvKeys;
     private TextView bicker_tag_censor;
+    TextView side_censor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +84,8 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         send_side = findViewById(R.id.submitResponse);
         cancelBicker = findViewById(R.id.cancelbutton);
         toolbar = findViewById(R.id.toolbarRespond);
+        side_censor = findViewById(R.id.bicker_side_censor);
+        side_censor.setVisibility(View.GONE);
 
         tag = findViewById(R.id.tagFieldR);
         addTag = findViewById(R.id.fabAddTagR);
@@ -95,7 +98,28 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         tag_string3 = null;
         bicker_tag_censor = findViewById(R.id.bicker_tag_censorR);
         bicker_tag_censor.setVisibility(View.GONE);
-        censor = new Censor();
+
+        side.addTextChangedListener(sideWatcher);
+
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("User/" + userId);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child("matureContent").exists() && (Boolean.parseBoolean(dataSnapshot.child("matureContent").getValue().toString()))) {
+                    censor = new Censor(true);
+                } else {
+                    censor = new Censor(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+
         tag.addTextChangedListener(tagWatcher);
 
         setSupportActionBar(toolbar);
@@ -267,6 +291,48 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         return true;
     }
 
+    private final TextWatcher sideWatcher = new TextWatcher() {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            int valid = 0;
+            if(censor.check_chars(s.toString()) == false) valid = 1;
+            if(censor.check_words(s.toString()) == false) valid = 2;
+            if(valid > 0) {
+                side_censor.setVisibility(View.VISIBLE);
+                if(valid == 1) {
+                    side_censor.setText("Invalid Character");
+                }
+                if(valid == 2) {
+                    side_censor.setText("Inappropriate Input");
+                }
+            }
+            else {
+                side_censor.setVisibility(View.GONE);
+            }
+        }
+
+        public void afterTextChanged(Editable s) {
+            int valid = 0;
+            if(censor.check_chars(s.toString()) == false) valid = 1;
+            if(censor.check_words(s.toString()) == false) valid = 2;
+            if(valid > 0) {
+                side_censor.setVisibility(View.VISIBLE);
+                if(valid == 1) {
+                    side_censor.setText("Invalid Character");
+                }
+                if(valid == 2) {
+                    side_censor.setText("Inappropriate Input");
+                }
+            }
+            else {
+                side_censor.setVisibility(View.GONE);
+            }
+        }
+    };
+
     private final TextWatcher tagWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -342,6 +408,8 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
     }
 
 
+
+
     public void failEntry() {
         title_side.setTextColor(Color.parseColor("#FF758C"));
     }
@@ -353,6 +421,23 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference ref = db.getReference("Bicker/"+bickerID);
         bicker.setCode("code_used");
+
+        Boolean censor_passed = true;
+        if(censor.check_chars(bicker.getRight_side()) == false) censor_passed = false;
+        if(censor.check_words(bicker.getRight_side()) == false) censor_passed = false;
+        if(censor_passed == false) {
+            //Log.d(TAG, "Censor not passed");
+            Toast.makeText(RespondActivity.this, "Invalid Input.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(censor.getUseMatureWordList()){
+            Censor nonMatureCensor = new Censor(false);
+
+            if(nonMatureCensor.check_words(bicker.getRight_side()) == false) {
+                bicker.setMatureContent(true);
+            }
+        }
+
         ArrayList respTags = new ArrayList();
 
         if (tag_string1 != null && !tag_string1.equals(""))
@@ -384,6 +469,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     String key = child.getKey();
+                    bicker.setKey(key);
                     Log.d("Tag: ", "@PUSHID: " + key);
                     /*FirebaseMessaging.getInstance().subscribeToTopic(key + "delete")
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -454,6 +540,56 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         });*/
 
         ref.setValue(bicker);
+
+        // Add bicker Category to the Category section of database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        String category = bicker.getCategory();
+        DatabaseReference databaseReference = database.getReference();
+        DatabaseReference categoryRef = database.getReference("Category");
+        DatabaseReference categoryRef2 = database.getReference("Category/" + category);
+
+        categoryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists() == false) {
+                    //Log.d(TAG, "Create_activity: categoryRef dataSnapshot does not exists");
+                    categoryRef2.child("IDs").child("1").setValue(bicker.getKey());
+                    categoryRef2.child("count").setValue(1);
+                }
+                else {
+                    //Log.d(TAG, "Create_activity: categoryRef dataSnapshot exists");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        categoryRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists() == false) {
+                    //Log.d(TAG, "Create_activity: ref3 dataSnapshot does not exists");
+                    categoryRef2.child("IDs").child("1").setValue(bicker.getKey());
+                    categoryRef2.child("count").setValue(1);
+                }
+                else {
+                    //Log.d(TAG, "Create_activity: ref3 dataSnapshot exists");
+                    int count = Integer.parseInt(dataSnapshot.child("count").getValue().toString());
+                    count++;
+                    categoryRef2.child("IDs").child(Integer.toString(count)).setValue(bicker.getKey());
+                    categoryRef2.child("count").setValue(count);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         Toast.makeText(this, "Response Sent", Toast.LENGTH_LONG).show();
 
         leave();

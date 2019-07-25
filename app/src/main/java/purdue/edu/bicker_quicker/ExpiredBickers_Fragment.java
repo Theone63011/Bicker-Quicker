@@ -5,11 +5,11 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -279,12 +280,24 @@ public class ExpiredBickers_Fragment extends Fragment {
         private DecimalFormat df = new DecimalFormat("0.0");
         private boolean expired;
 
+        DisplayMetrics dm = new DisplayMetrics();
+        private int windowWidthPixels;
+        private int minimumProgressbarHeight = 85;
+        private int minimumProgressbarWidth = 150;
+        private int maximumProgressbarWidth;
+        private double progressbar1Percent;
+
         //constructor
         public bickerArrayAdapter(Context context, int resource, ArrayList<Bicker> bickers) {
             super(context, resource, bickers);
 
             this.context = context;
             this.bickers = bickers;
+
+            ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(dm);
+            windowWidthPixels = dm.widthPixels;
+            maximumProgressbarWidth = (int)Math.ceil((double) windowWidthPixels * 0.75);
+            progressbar1Percent = (((double)maximumProgressbarWidth - (double)minimumProgressbarWidth) / 100);
         }
 
         //called when rendering the list
@@ -426,6 +439,18 @@ public class ExpiredBickers_Fragment extends Fragment {
             closed_vote_count.setText(total_votes);
             open_vote_count.setText(total_votes);
 
+            Button progressbar_blue = (Button) view.findViewById(R.id.progressbar_blue);
+            Button progressbar_purple = (Button) view.findViewById(R.id.progressbar_purple);
+            ImageView votes_icon_blue = view.findViewById(R.id.votes_icon_blue);
+            ImageView votes_icon_purple = view.findViewById(R.id.votes_icon_purple);
+            TextView votes_count_blue = view.findViewById(R.id.votes_count_blue);
+            TextView votes_count_purple = view.findViewById(R.id.votes_count_purple);
+            Space progressbar_space_blue = (Space) view.findViewById(R.id.progressbar_space_blue);
+            Space progressbar_space_purple = (Space) view.findViewById(R.id.progressbar_space_purple);
+
+            progressbar_blue.setEnabled(false);
+            progressbar_purple.setEnabled(false);
+
             open_bicker_holder.setVisibility(View.GONE);
 
             closed_bicker_holder.setOnClickListener(new View.OnClickListener() {
@@ -479,6 +504,9 @@ public class ExpiredBickers_Fragment extends Fragment {
 
             choice_label_holder = view.findViewById(R.id.choice_label_holder);
             choose_side_label = view.findViewById(R.id.choose_side_label);
+
+            choice_label_holder.setVisibility(View.GONE);
+            choose_side_label.setVisibility(View.GONE);
 
             leftVote.setBackgroundResource(R.drawable.side_prechoice_blue);
             rightVote.setBackgroundResource(R.drawable.side_prechoice_purple);
@@ -571,6 +599,42 @@ public class ExpiredBickers_Fragment extends Fragment {
                 }
             }
 
+            // Setup the progress bars
+            int left_vote_count = bicker.getLeft_votes();
+            int right_vote_count = bicker.getRight_votes();
+
+            int progressbar_blue_pixel_length = GetProgressBarLength_blue(progressbar1Percent, left_vote_count, right_vote_count);
+            int progressbar_purple_pixel_length = GetProgressBarLength_purple(progressbar1Percent, left_vote_count, right_vote_count);
+
+            double blue_percent = GetProgressBarPercent_blue((double)left_vote_count, (double)right_vote_count);
+            double purple_percent = GetProgressBarPercent_purple((double)left_vote_count, (double)right_vote_count);
+
+            int blue_percent_int = GetProperPercentTotal_blue(blue_percent, purple_percent);
+            int purple_percent_int = GetProperPercentTotal_purple(blue_percent, purple_percent);
+
+            String left_percentage = Integer.toString(blue_percent_int) + "%";
+            String right_percentage = Integer.toString(purple_percent_int) + "%";
+
+            progressbar_blue.setText(left_percentage);
+            progressbar_purple.setText(right_percentage);
+
+            String left_votes = display_votes((double)left_vote_count);
+            String right_votes = display_votes((double)right_vote_count);
+            left_votes = left_votes.substring(0, left_votes.length() - 6);
+            right_votes = right_votes.substring(0, right_votes.length() - 6);
+            votes_count_blue.setText(left_votes);
+            votes_count_purple.setText(right_votes);
+
+            LinearLayout.LayoutParams blue_params = new LinearLayout.LayoutParams(85, 85, 0);
+            blue_params.height = minimumProgressbarHeight;
+            blue_params.width = progressbar_blue_pixel_length;
+            progressbar_blue.setLayoutParams(blue_params);
+
+            LinearLayout.LayoutParams purple_params = new LinearLayout.LayoutParams(85, 85, 0);
+            purple_params.height = minimumProgressbarHeight;
+            purple_params.width = progressbar_purple_pixel_length;
+            progressbar_purple.setLayoutParams(purple_params);
+
             final Button deleteButton = view.findViewById(R.id.deleteButton);
             deleteButton.setVisibility(View.GONE);
             if(bicker.isDeletionPending()){
@@ -590,7 +654,6 @@ public class ExpiredBickers_Fragment extends Fragment {
                     }
                 });
             }
-
 
             return view;
         }
@@ -719,6 +782,75 @@ public class ExpiredBickers_Fragment extends Fragment {
             }
 
             return ret;
+        }
+
+        public int GetProgressBarLength_blue (double onePercent, int left_votes, int right_votes) {
+
+            int ret = -1;
+            int total = left_votes + right_votes;
+            double left_percentage = ((double)left_votes / (double)total) * 100;
+            ret = (int)(Math.floor(onePercent * left_percentage));
+
+            if(ret < minimumProgressbarWidth) {
+                return minimumProgressbarWidth;
+            }
+
+            return ret;
+        }
+
+        public int GetProgressBarLength_purple (double onePercent, int left_votes, int right_votes) {
+
+            int ret = -1;
+            int total = left_votes + right_votes;
+            double right_percentage = ((double)right_votes / (double)total) * 100;
+            ret = (int)(Math.floor(onePercent * right_percentage));
+
+            if(ret < minimumProgressbarWidth) {
+                return minimumProgressbarWidth;
+            }
+
+            return ret;
+        }
+
+        public double GetProgressBarPercent_blue (double left_votes, double right_votes) {
+
+            double ret = -1;
+            double total = left_votes + right_votes;
+            ret = (left_votes / total) * 100;
+            return ret;
+        }
+
+        public double GetProgressBarPercent_purple (double left_votes, double right_votes) {
+            double ret = -1;
+            double total = left_votes + right_votes;
+            ret = (right_votes / total) * 100;
+            return ret;
+        }
+
+        public int GetProperPercentTotal_blue (double blue_percent, double purple_percent) {
+
+            if(blue_percent > purple_percent) {
+                return (int)(Math.floor(blue_percent));
+            }
+            else if(blue_percent < purple_percent) {
+                return (int)(Math.ceil(blue_percent));
+            }
+            else {
+                return (int) blue_percent;
+            }
+        }
+
+        public int GetProperPercentTotal_purple (double blue_percent, double purple_percent) {
+
+            if(purple_percent > blue_percent) {
+                return (int)(Math.floor(purple_percent));
+            }
+            else if(purple_percent < blue_percent) {
+                return(int)(Math.ceil(purple_percent));
+            }
+            else {
+                return (int)purple_percent;
+            }
         }
     }
 }

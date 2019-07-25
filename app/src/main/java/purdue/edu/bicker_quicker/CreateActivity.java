@@ -107,7 +107,24 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         tag_string2 = null;
         tag_string3 = null;
 
-        censor = new Censor();
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("User/" + uid);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child("matureContent").exists() && (Boolean.parseBoolean(dataSnapshot.child("matureContent").getValue().toString()))) {
+                    censor = new Censor(true);
+                } else {
+                    censor = new Censor(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
         bicker_censor = findViewById(R.id.bicker_censor);
         bicker_censor.setVisibility(View.GONE);
         title.addTextChangedListener(titleWatcher);
@@ -354,6 +371,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+
             int valid = 0;
             if(censor.check_chars(s.toString()) == false) valid = 1;
             if(censor.check_words(s.toString()) == false) valid = 2;
@@ -582,6 +600,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         boolean failed = false;
 
         boolean censor_passed = true;
+        boolean mature_content = false;
         if(censor.check_chars(bickTitle) == false) censor_passed = false;
         if(censor.check_words(bickTitle) == false) censor_passed = false;
         if(censor.check_chars(bickDesc) == false) censor_passed = false;
@@ -593,8 +612,12 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
             Toast.makeText(CreateActivity.this, "Invalid Input.", Toast.LENGTH_SHORT).show();
             return;
         }
-        else {
-            //Log.d(TAG, "Censor passed");
+        else if(censor.getUseMatureWordList()) { //This determines if the bicker is "mature content" or not
+            Censor nonMatureCensor =  new Censor(false);
+
+            if(nonMatureCensor.check_words(bickTitle) == false) mature_content = true;
+            if(nonMatureCensor.check_words(bickDesc) == false) mature_content = true;
+            if(nonMatureCensor.check_words(bickSide) == false) mature_content = true;
         }
 
         if(rad1Checked == false && rad2Checked == false && rad3Checked == false) {
@@ -705,9 +728,33 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setTags(tags);
         bicker.setSeconds_until_expired(seconds_until_expired);
         bicker.setKeywords(skeys);
+
         bicker.setReported(false);
         bicker.setReportCount(0);
         ref.push().setValue(bicker);
+
+        bicker.setMatureContent(mature_content);
+        DatabaseReference keyReference = ref.push();
+        keyReference.setValue(bicker);
+
+        keyReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    String key = dataSnapshot.getKey();
+                    bicker.setKey(key);
+                }
+                else {
+                    Log.d(TAG, "Create_activity: keyReference does not exist");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         // Subscribe creator to messaging
         ref.orderByChild("code").equalTo(c).addListenerForSingleValueEvent(new ValueEventListener() {

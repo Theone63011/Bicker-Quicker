@@ -3,16 +3,14 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,10 +18,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.CompoundButton;
+import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -37,7 +35,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -236,10 +233,8 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void statistics() {
-        /*
-        Intent intent = new Intent(this, StatisticsActivtiy.class);
+        Intent intent = new Intent(this, StatisticsActivity.class);
         startActivity(intent);
-        */
     }
 
     public void signOut(){

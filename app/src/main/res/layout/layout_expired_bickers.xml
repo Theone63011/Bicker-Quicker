@@ -166,6 +166,111 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/percentage_holder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/blue_percentage_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/progressbar_blue"
+                    android:layout_width="85px"
+                    android:layout_height="85px"
+                    android:layout_gravity="center"
+                    android:background="@drawable/progressbar_shape_blue"
+                    android:gravity="center|left"
+                    android:paddingStart="5dp"
+                    android:paddingBottom="2dp"
+                    android:shadowColor="#878787"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="4"
+                    android:text="0%"
+                    android:textColor="@color/white" />
+
+                <ImageView
+                    android:id="@+id/votes_icon_blue"
+                    android:layout_width="21dp"
+                    android:layout_height="21dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/profile_icon_blue" />
+
+                <TextView
+                    android:id="@+id/votes_count_blue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="votes"
+                    android:textColor="@color/blueAccent3"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:id="@+id/progressbar_space_blue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/purple_percentage_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/progressbar_purple"
+                    android:layout_width="85px"
+                    android:layout_height="85px"
+                    android:layout_gravity="center"
+                    android:background="@drawable/progressbar_shape_purple"
+                    android:gravity="center|left"
+                    android:paddingStart="5dp"
+                    android:paddingBottom="2dp"
+                    android:shadowColor="#878787"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="4"
+                    android:text="0%"
+                    android:textColor="@color/white" />
+
+                <ImageView
+                    android:id="@+id/votes_icon_purple"
+                    android:layout_width="21dp"
+                    android:layout_height="21dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/profile_icon_purple" />
+
+                <TextView
+                    android:id="@+id/votes_count_purple"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="votes"
+                    android:textColor="@color/purpleAccent1"
+                    android:textStyle="bold" />
+
+                <Space
+                    android:id="@+id/progressbar_space_purple"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1" />
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/open_dropdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -2,21 +2,30 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class Home_Fragment extends Fragment {
+public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     OnBickerPressedListener callback;
 
     private OnBickerPressedListener mListener;
@@ -66,10 +75,14 @@ public class Home_Fragment extends Fragment {
     FirebaseUser user;
     String userKey;
 
+    Boolean allowMatureContent;
+
     private Button leftVote;
     private Button rightVote;
     private Button noVote;
     private Button report;
+
+    private Thread timer_thread;
 
     private LinearLayout choice_label_holder;
 
@@ -79,6 +92,17 @@ public class Home_Fragment extends Fragment {
     public static Boolean isFirstFragment = true;
 
     private HomeActivity homeActivityReference = null;
+
+    private static Fragment home_Fragment = null;
+    private static String home_Fragment_tag = null;
+
+    private static ListView listView;
+
+    private static ArrayAdapter<Bicker> adapter;
+
+    private static SwipeRefreshLayout swipeRefreshLayout;
+
+    private static Thread timerThread;
 
     public Home_Fragment() {
         // Required empty public constructor
@@ -102,8 +126,22 @@ public class Home_Fragment extends Fragment {
         return fragment;
     }
 
+    public static void set_home_fragment (Fragment f, String tag) {
+        Log.d(TAG, "Home_fragment: Inside set_home_Fragment");
+
+        home_Fragment = f;
+        int id = home_Fragment.getId();
+        home_Fragment_tag = tag;
+
+        Log.d(TAG, "Home_fragment: home_fragment_tag: " + home_Fragment_tag);
+        Log.d(TAG, "Home_fragment: home_fragment id: " + id);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "Home_fragment: Inside onCreate");
+
+        Log.d(TAG, "Home_fragment: Inside onCreate");
 
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
@@ -119,18 +157,111 @@ public class Home_Fragment extends Fragment {
         votedBickerIds = new ArrayList<String>();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
+        DatabaseReference ref = databaseRef.child("User/" + user.getUid());
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child("matureContent").exists() && (Boolean.parseBoolean(dataSnapshot.child("matureContent").getValue().toString()))) {
+                    allowMatureContent = true;
+                } else {
+                    allowMatureContent = false;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
         bickers_approved_time_milliseconds = new HashMap<String, Long>();
 
         bickers_votes = new HashMap<String, String>();
 
         closed_bicker_layout_list = new ArrayList<LinearLayout>();
         open_bicker_layout_list = new ArrayList<LinearLayout>();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        // This is called after onCreate
+
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_home_, container, false);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.fragment_home_swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.green),
+                getResources().getColor(R.color.red),
+                getResources().getColor(R.color.blue),
+                getResources().getColor(R.color.orange));
+
+
 
         if (sortBy == "recent") {
             this.sortByRecent();
         } else if (sortBy == "popularity") {
             this.sortByPopularity();
         }
+        return rootView;
+    }
+
+    @Override
+    public void onRefresh() {
+        Log.d(TAG, "Home_fragment: Inside onRefresh");
+
+        //timerThread.interrupt();
+
+        swipeRefreshLayout.setEnabled(false);
+        swipeRefreshLayout.setRefreshing(true);
+
+        refreshContent();
+    }
+
+    private void refreshContent() {
+        Log.d(TAG, "Home_fragment: Inside refreshContent");
+
+        Handler h = new Handler();
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "Home_fragment: Inside Run");
+
+                //updateBickerList();
+                swipeRefreshLayout.setEnabled(true);
+                swipeRefreshLayout.setRefreshing(false);
+
+                //Fragment currentFragment = getActivity().getSupportFragmentManager().findFragmentByTag("home_fragment");
+
+                Fragment currentFragment = home_Fragment;
+
+                if(currentFragment == null) {
+                    Log.d(TAG, "Home_fragment: ERROR- currentFragment is NULL");
+                    return;
+                }
+
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.setReorderingAllowed(false);
+                fragmentTransaction.detach(currentFragment);
+                fragmentTransaction.attach(currentFragment);
+                fragmentTransaction.commitNow();
+
+                //fragmentTransaction.hide(currentFragment);
+                //fragmentTransaction.hide(getActivity().getSupportFragmentManager().getPrimaryNavigationFragment());
+                homeActivityReference.refresh_fragment();
+
+
+                /*Intent intent = new Intent(getActivity(), Home_Fragment.class);
+                getActivity().finish();
+                getActivity().overridePendingTransition(0, 0);
+                startActivity(intent);
+                getActivity().overridePendingTransition(0, 0);*/
+
+                Log.d(TAG, "Home_fragment: end of run()");
+            }
+        }, 500);
     }
 
     public ArrayList<Bicker> returnBickerArrayList() {
@@ -138,10 +269,19 @@ public class Home_Fragment extends Fragment {
         return this.filteredBickers;
     }
 
-    public void updateBickerList() {
-        ArrayAdapter<Bicker> adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, filteredBickers);
+    public void updateBickerList(ArrayList<Bicker> update) {
+        if (update != null) {
+            filteredBickers = update;
+        }
 
-        ListView listView = getView().findViewById(R.id.unvotedListView);
+        if(getActivity() == null) {
+            return;
+        }
+
+        ArrayAdapter<Bicker> adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, filteredBickers);
+        adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, filteredBickers);
+
+        listView = getView().findViewById(R.id.unvotedListView);
         listView.setAdapter(adapter);
         int count = listView.getAdapter().getCount();
 
@@ -183,6 +323,10 @@ public class Home_Fragment extends Fragment {
 
     public void initialize_view (Query userQuery, Query bickerQuery) {
 
+        if(getActivity() == null) {
+            return;
+        }
+
         bickers = new ArrayList<>();
 
         userQuery.addListenerForSingleValueEvent( new ValueEventListener() {
@@ -223,6 +367,8 @@ public class Home_Fragment extends Fragment {
             }
         });
 
+
+
         bickerQuery.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -234,7 +380,12 @@ public class Home_Fragment extends Fragment {
                     temp_time = Long.parseLong(bickerSnapshot.child("approved_date").child("time").getValue().toString());
                     bickers_approved_time_milliseconds.put(bickerSnapshot.getKey(), temp_time);
 
-                    if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted) {
+                    Boolean isBickerMature = false;
+                    if(bickerSnapshot.child("matureContent").exists()) {
+                        isBickerMature = Boolean.parseBoolean(bickerSnapshot.child("matureContent").getValue().toString());
+                    }
+
+                    if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted && (isBickerMature == false || allowMatureContent == true)) {
                         bickers.add(new Bicker(
                                 bickerSnapshot.child("title").getValue() != null ? bickerSnapshot.child("title").getValue().toString() : "No title",
                                 bickerSnapshot.child("description").getValue() != null ? bickerSnapshot.child("description").getValue().toString() : "No description",
@@ -260,9 +411,13 @@ public class Home_Fragment extends Fragment {
 
                 Collections.reverse(bickers);
 
-                ArrayAdapter<Bicker> adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, bickers);
+                if(getActivity() == null) {
+                    return;
+                }
 
-                ListView listView = getView().findViewById(R.id.unvotedListView);
+                adapter = new Home_Fragment.bickerArrayAdapter(getActivity(), 0, bickers);
+
+                listView = getView().findViewById(R.id.unvotedListView);
                 listView.setAdapter(adapter);
                 int count = listView.getAdapter().getCount();
 
@@ -301,23 +456,15 @@ public class Home_Fragment extends Fragment {
         super.onStop();
 
         if (isFirstFragment) {
-            ListView listView = getView().findViewById(R.id.unvotedListView);
+            listView = getView().findViewById(R.id.unvotedListView);
             listViewPositionFirstFragment = listView.getFirstVisiblePosition();
         } else {
-            ListView listView = getView().findViewById(R.id.unvotedListView);
+            listView = getView().findViewById(R.id.unvotedListView);
             listViewPositionSecondFragment = listView.getFirstVisiblePosition();
         }
 
         isFirstFragment = !isFirstFragment;
     }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_, container, false);
-    }
-
 
     @Override
     public void onAttach(Context context) {
@@ -440,6 +587,8 @@ public class Home_Fragment extends Fragment {
      */
     public void setOnBickerPressedListener(OnBickerPressedListener callback) {
         this.callback = callback;
+
+        Log.d(TAG, "Home_fragment: callback");
     }
 
     public interface OnBickerPressedListener {
@@ -454,16 +603,33 @@ public class Home_Fragment extends Fragment {
         private List<Bicker> bickers;
         private DecimalFormat df = new DecimalFormat("0.0");
 
+        DisplayMetrics dm = new DisplayMetrics();
+        private int windowWidthPixels;
+        private int minimumProgressbarHeight = 85;
+        private int minimumProgressbarWidth;
+        private int maximumProgressbarWidth;
+        private double progressbar1Percent;
+
         //constructor
         public bickerArrayAdapter(Context context, int resource, ArrayList<Bicker> bickers) {
             super(context, resource, bickers);
 
             this.context = context;
             this.bickers = bickers;
+
+            ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(dm);
+            windowWidthPixels = dm.widthPixels;
+            maximumProgressbarWidth = (int)Math.ceil((double) windowWidthPixels * 0.75);
+            progressbar1Percent = (((double)maximumProgressbarWidth - (double)minimumProgressbarWidth) / 100);
+            minimumProgressbarWidth = (int)(Math.ceil((double)windowWidthPixels / 10.0));
         }
 
         //called when rendering the list
         public View getView(int position, View convertView, ViewGroup parent) {
+
+            if(getActivity() == null) {
+                return null;
+            }
 
             //get the property we are displaying
             Bicker bicker = bickers.get(position);
@@ -576,6 +742,9 @@ public class Home_Fragment extends Fragment {
 
             LinearLayout closed_bicker_holder = view.findViewById(R.id.closed_bicker_holder);
             LinearLayout open_bicker_holder = view.findViewById(R.id.open_bicker_holder);
+            LinearLayout percentage_holder = view.findViewById(R.id.percentage_holder);
+
+            percentage_holder.setVisibility(View.GONE);
 
             Long approved_time_milliseconds = bickers_approved_time_milliseconds.get(bicker.getKey());
 
@@ -607,12 +776,17 @@ public class Home_Fragment extends Fragment {
             closed_clock.setText(clock_time);
             open_clock.setText(clock_time);
 
-            Thread t = new Thread() {
+            timer_thread = new Thread() {
                 @Override
                 public void run() {
                     while(!isInterrupted()) {
                         try {
                             Thread.sleep(1000);
+
+                            if(getActivity() == null) {
+                                return;
+                            }
+
                             getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -637,14 +811,17 @@ public class Home_Fragment extends Fragment {
 
                                 }
                             });
-                        } catch (Exception e) {
+                        } catch (InterruptedException e) {
                             e.printStackTrace();
+                            Log.d(TAG, "Home_fragment: timerThread interrupted");
+                            //Thread.currentThread().interrupt();
+                            //break;
                         }
                     }
                 }
             };
 
-            t.start();
+            timer_thread.start();
 
             LinearLayout closed_header = view.findViewById(R.id.closed_header);
             LinearLayout open_header = view.findViewById(R.id.open_header);
@@ -656,6 +833,18 @@ public class Home_Fragment extends Fragment {
             TextView open_vote_count = view.findViewById(R.id.open_vote_count_text);
             closed_vote_count.setText(total_votes);
             open_vote_count.setText(total_votes);
+
+            Button progressbar_blue = (Button) view.findViewById(R.id.progressbar_blue);
+            Button progressbar_purple = (Button) view.findViewById(R.id.progressbar_purple);
+            ImageView votes_icon_blue = view.findViewById(R.id.votes_icon_blue);
+            ImageView votes_icon_purple = view.findViewById(R.id.votes_icon_purple);
+            TextView votes_count_blue = view.findViewById(R.id.votes_count_blue);
+            TextView votes_count_purple = view.findViewById(R.id.votes_count_purple);
+            Space progressbar_space_blue = (Space) view.findViewById(R.id.progressbar_space_blue);
+            Space progressbar_space_purple = (Space) view.findViewById(R.id.progressbar_space_purple);
+
+            progressbar_blue.setEnabled(false);
+            progressbar_purple.setEnabled(false);
 
             open_bicker_holder.setVisibility(View.GONE);
 
@@ -700,6 +889,63 @@ public class Home_Fragment extends Fragment {
                     onBickerClick(view, closed_bicker_holder, open_bicker_holder);
                 }
             });
+
+            progressbar_blue.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            progressbar_purple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            votes_icon_blue.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            votes_icon_purple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            votes_count_blue.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            votes_count_purple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            progressbar_space_blue.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
+            progressbar_space_purple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBickerClick(view, closed_bicker_holder, open_bicker_holder);
+                }
+            });
+
 
 
             leftVote = view.findViewById(R.id.left);
@@ -779,6 +1025,7 @@ public class Home_Fragment extends Fragment {
                 noVote.setText("Abstain");
                 noVote.setVisibility(View.GONE);
                 choice_label_holder.setVisibility(View.GONE);
+                percentage_holder.setVisibility(View.VISIBLE);
 
                 leftVote.setEnabled(false);
                 rightVote.setEnabled(false);
@@ -790,26 +1037,70 @@ public class Home_Fragment extends Fragment {
                 String side_voted = bickers_votes.get(bickerCode);
 
                 if(side_voted.equalsIgnoreCase("left")){
-                    Log.d(TAG, "Home_fragment: left vote found");
+                    //Log.d(TAG, "Home_fragment: left vote found");
                     leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_blue);
                     rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
                 }
                 else if(side_voted.equalsIgnoreCase("right")) {
-                    Log.d(TAG, "Home_fragment: right vote found");
+                    //Log.d(TAG, "Home_fragment: right vote found");
                     leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
                     rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_purple);
                 }
                 else if(side_voted.equalsIgnoreCase("abstain")) {
-                    Log.d(TAG, "Home_fragment: abstain vote found");
+                    //Log.d(TAG, "Home_fragment: abstain vote found");
                     leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
                     rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
                     noVote.setVisibility(View.VISIBLE);
                     noVote.setTextColor(getResources().getColor(R.color.blue_purple_mix));
                 }
                 else {
-                    Log.d(TAG, "Home_fragment: ERROR- side_voted not assigned");
+                    //Log.d(TAG, "Home_fragment: ERROR- side_voted not assigned");
                     Toast.makeText(getActivity(), "Home_fragment: ERROR- side_voted not assigned", Toast.LENGTH_LONG).show();
                 }
+
+
+                // Setup the progress bars
+                int left_vote_count = bicker.getLeft_votes();
+                int right_vote_count = bicker.getRight_votes();
+
+                int progressbar_blue_pixel_length = GetProgressBarLength_blue(progressbar1Percent, left_vote_count, right_vote_count);
+                int progressbar_purple_pixel_length = GetProgressBarLength_purple(progressbar1Percent, left_vote_count, right_vote_count);
+
+                double blue_percent = GetProgressBarPercent_blue((double)left_vote_count, (double)right_vote_count);
+                double purple_percent = GetProgressBarPercent_purple((double)left_vote_count, (double)right_vote_count);
+
+                int blue_percent_int = GetProperPercentTotal_blue(blue_percent, purple_percent);
+                int purple_percent_int = GetProperPercentTotal_purple(blue_percent, purple_percent);
+
+                String left_percentage = Integer.toString(blue_percent_int) + "%";
+                String right_percentage = Integer.toString(purple_percent_int) + "%";
+
+                progressbar_blue.setText(left_percentage);
+                progressbar_purple.setText(right_percentage);
+
+                String left_votes = display_votes((double)left_vote_count);
+                String right_votes = display_votes((double)right_vote_count);
+                left_votes = left_votes.substring(0, left_votes.length() - 6);
+                right_votes = right_votes.substring(0, right_votes.length() - 6);
+                votes_count_blue.setText(left_votes);
+                votes_count_purple.setText(right_votes);
+
+                LinearLayout.LayoutParams blue_params = new LinearLayout.LayoutParams(85, 85, 0);
+                blue_params.height = minimumProgressbarHeight;
+                blue_params.width = progressbar_blue_pixel_length;
+                progressbar_blue.setLayoutParams(blue_params);
+
+                LinearLayout.LayoutParams purple_params = new LinearLayout.LayoutParams(85, 85, 0);
+                purple_params.height = minimumProgressbarHeight;
+                purple_params.width = progressbar_purple_pixel_length;
+                progressbar_purple.setLayoutParams(purple_params);
+
+                //Log.d(TAG, "Home_fragment: minimumProgressbarWidth = " + minimumProgressbarWidth);
+                //Log.d(TAG, "Home_fragment: maximumProgressbarWidth = " + maximumProgressbarWidth);
+                //Log.d(TAG, "Home_fragment: onePercentage = " + progressbar1Percent);
+                //Log.d(TAG, "Home_fragment: blue_length = " + blue_length);
+                //Log.d(TAG, "Home_fragment: purple_length = " + purple_length);
+
 
                 // Below reads from the database
                 /*FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -1024,5 +1315,76 @@ public class Home_Fragment extends Fragment {
 
             return ret;
         }
+
+        public int GetProgressBarLength_blue (double onePercent, int left_votes, int right_votes) {
+
+            int ret = -1;
+            int total = left_votes + right_votes;
+            double left_percentage = ((double)left_votes / (double)total) * 100;
+            ret = (int)(Math.floor(onePercent * left_percentage));
+
+            if(ret < minimumProgressbarWidth) {
+                return minimumProgressbarWidth;
+            }
+
+            return ret;
+        }
+
+        public int GetProgressBarLength_purple (double onePercent, int left_votes, int right_votes) {
+
+            int ret = -1;
+            int total = left_votes + right_votes;
+            double right_percentage = ((double)right_votes / (double)total) * 100;
+            ret = (int)(Math.floor(onePercent * right_percentage));
+
+            if(ret < minimumProgressbarWidth) {
+                return minimumProgressbarWidth;
+            }
+
+            return ret;
+        }
+
+        public double GetProgressBarPercent_blue (double left_votes, double right_votes) {
+
+            double ret = -1;
+            double total = left_votes + right_votes;
+            ret = (left_votes / total) * 100;
+            return ret;
+        }
+
+        public double GetProgressBarPercent_purple (double left_votes, double right_votes) {
+            double ret = -1;
+            double total = left_votes + right_votes;
+            ret = (right_votes / total) * 100;
+            return ret;
+        }
+
+        public int GetProperPercentTotal_blue (double blue_percent, double purple_percent) {
+
+            if(blue_percent > purple_percent) {
+                return (int)(Math.floor(blue_percent));
+            }
+            else if(blue_percent < purple_percent) {
+                return (int)(Math.ceil(blue_percent));
+            }
+            else {
+                return (int) blue_percent;
+            }
+        }
+
+        public int GetProperPercentTotal_purple (double blue_percent, double purple_percent) {
+
+            if(purple_percent > blue_percent) {
+                return (int)(Math.floor(purple_percent));
+            }
+            else if(purple_percent < blue_percent) {
+                return(int)(Math.ceil(purple_percent));
+            }
+            else {
+                return (int)purple_percent;
+            }
+        }
     }
+
+
 }

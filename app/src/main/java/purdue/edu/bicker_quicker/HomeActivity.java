@@ -1,11 +1,11 @@
 package purdue.edu.bicker_quicker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
@@ -14,16 +14,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.content.Intent;
 import android.view.ViewGroup;
-import android.support.v7.widget.Toolbar;
 import android.widget.Button;
-import android.widget.ImageButton;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -36,8 +34,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-
-import static com.facebook.AccessTokenManager.TAG;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener, FilterDialog.FilterDialogListener {
@@ -81,6 +80,41 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+
+
+        /*************************************************************************************
+         * Below are a list of general settings added (or updated) to the database at the start
+         * of the app.
+         *
+         * Some of these settings include:
+         *  allowTalkingToSelf- default value is false. Can be changed by moderator.
+         *
+         *************************************************************************************/
+        // Add bicker Category to the Category section of database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference();
+        DatabaseReference databaseReference2 = database.getReference("Database_Settings");
+
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists() == false) {
+                    //This means that the Database_Settings section IS NOT in the database
+                    databaseReference.child("Database_Settings").child("allowTalkingToSelf").setValue(false);
+                }
+                else {
+                    //This means that the Database_Settings section IS in the database
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
 
         toolbar = findViewById(R.id.toolbarHome);
         setSupportActionBar(toolbar);
@@ -130,6 +164,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         mPager = (ViewPager) findViewById(R.id.pager);
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(pagerAdapter);
+        mPager.setOffscreenPageLimit(NUM_PAGES);
 
 /*
         ImageButton profileButton = findViewById(R.id.profButton);
@@ -175,12 +210,17 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
+        Log.d("HomeActivity", "Inside onCreateOptionsMenu");
+
         getMenuInflater().inflate(R.menu.menu,menu);
         return true;
     }
 
     @Override
     public void onResume(){
+
+        Log.d("HomeActivity", "Inside onResume");
 
         Log.d("sortBy: ", this.sortBy.toString());
 
@@ -195,13 +235,22 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof Home_Fragment) {
             Home_Fragment homeFragment = (Home_Fragment) fragment;
+
+            String tag = fragment.getTag();
+
+            homeFragment.set_home_fragment(fragment, tag);
+
             homeFragment.setOnBickerPressedListener(this);
 
             if (initializeHomeFrag1 == false) {
+                //Log.d(TAG, "Home_activity: initializeHomeFrag1 == false");
+
                 homefrag1 = homeFragment;
                 this.homefrag1.setReferenceToHomeActivity(this);
                 initializeHomeFrag1 = true;
             }else if (initializeHomeFrag1 == true) {
+                //Log.d(TAG, "Home_activity: initializeHomeFrag1 == true");
+
                 homefrag2 = homeFragment;
                 this.homefrag2.setReferenceToHomeActivity(this);
                 initializeHomeFrag1 = false;
@@ -217,6 +266,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     @Override
     public void onBickerPressed(int position) {
         // Required. Currently does nothing, can be changed and used if fragment needs to communicate with activity
+        Log.d("HomeActivity", "Inside onBickerPressed");
     }
 
 
@@ -227,6 +277,9 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
         @Override
         public Fragment getItem(int position) {
+
+            Log.d("HomeActivity", "Inside getItem");
+
             Home_Fragment homeFragment = new Home_Fragment();
             Bundle args = new Bundle();
             if(position == 0){
@@ -236,8 +289,12 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 args.putBoolean("voted", true);
             }
             homeFragment.setArguments(args);
-
             return homeFragment;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override
@@ -392,17 +449,46 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
             return;
         }
 
+        //*********************filter bickersHomeFrag1 by category***************************************
         //set reference to this so homefrag1 can call applyFilter after it has fetched the latest list of bickers
         this.homefrag1.setReferenceToHomeActivity(this);
         ArrayList<Bicker> bickersHomeFrag1 = this.homefrag1.returnBickerArrayList();
+
+        //filter by category
         for (int i = 0; i < bickersHomeFrag1.size(); i++) {
             if (this.categoryFilter.contains(bickersHomeFrag1.get(i).getCategory())) {
                 bickersHomeFrag1.remove(i);
                 i--;
             }
         }
-        this.homefrag1.updateBickerList(); //update bicker list with filtered bickers
+        //*********************end***************************************
 
+        //*********************filter bickersHomeFrag1 by keywords***************************************
+        ArrayList<Bicker> filteredKeywordList = new ArrayList<>();
+        Map<Bicker, Double> filteredKeywordMap = new HashMap<>();
+
+        if (this.keys != "") {
+            for (int i = 0; i < bickersHomeFrag1.size(); i++) {
+                double similarityNumber = KeywordTokenizer.similarity(this.keys, bickersHomeFrag1.get(i).getKeywords(), bickersHomeFrag1.get(i).getTags());
+
+                if (similarityNumber != 0.0) {
+                    filteredKeywordMap.put(bickersHomeFrag1.get(i), similarityNumber);
+                }
+            }
+        }
+
+        filteredKeywordList = new ArrayList<Bicker>(filteredKeywordMap.keySet());
+
+        Collections.reverse(filteredKeywordList);
+
+        if (this.keys.equals("")) {
+            this.homefrag1.updateBickerList(bickersHomeFrag1); //update bicker list with filtered bickers
+        } else {
+            this.homefrag1.updateBickerList(filteredKeywordList); //update bicker list with filtered bickers
+        }
+        //*********************end***************************************
+
+        //*********************filter bickersHomeFrag2 by category***************************************
         //set reference to this so homefrag2 can call applyFilter after it has fetched the latest list of bickers
         this.homefrag2.setReferenceToHomeActivity(this);
         ArrayList<Bicker> bickersHomeFrag2 = this.homefrag2.returnBickerArrayList();
@@ -412,11 +498,35 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 i--;
             }
         }
-        this.homefrag2.updateBickerList(); //update bicker list with filtered bickers
+        //*********************end***************************************
 
-        //will use this for sorting bickers based off of keyword search, Do not delete
-        //ArrayList<Bicker> listOfBickersHomeFrag1 = this.homefrag1.returnBickerArrayList();
-        //double test2 = KeywordTokenizer.similarity(this.keys, listOfBickersHomeFrag1.get(0).getKeywords(), listOfBickersHomeFrag1.get(0).getTags());
-        //double stop = 0;
+        //*********************filter bickersHomeFrag2 by keywords***************************************
+        ArrayList<Bicker> filteredKeywordList2 = new ArrayList<>();
+        Map<Bicker, Double> filteredKeywordMap2 = new HashMap<>();
+
+        if (this.keys != "") {
+            for (int i = 0; i < bickersHomeFrag2.size(); i++) {
+                double similarityNumber = KeywordTokenizer.similarity(this.keys, bickersHomeFrag2.get(i).getKeywords(), bickersHomeFrag2.get(i).getTags());
+
+                if (similarityNumber != 0.0) {
+                    filteredKeywordMap2.put(bickersHomeFrag2.get(i), similarityNumber);
+                }
+            }
+        }
+
+        filteredKeywordList2 = new ArrayList<Bicker>(filteredKeywordMap2.keySet());
+
+        Collections.reverse(filteredKeywordList2);
+
+        if (this.keys.equals("")) {
+            this.homefrag2.updateBickerList(bickersHomeFrag2); //update bicker list with filtered bickers
+        } else {
+            this.homefrag2.updateBickerList(filteredKeywordList2); //update bicker list with filtered bickers
+        }
+        //*********************end***************************************
+    }
+
+    public void refresh_fragment() {
+        mPager.getAdapter().notifyDataSetChanged();
     }
 }

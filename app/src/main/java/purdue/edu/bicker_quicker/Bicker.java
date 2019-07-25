@@ -26,6 +26,8 @@ public class Bicker {
     private boolean deletionPending;
     private boolean reported;
     private int reportCount;
+    private boolean matureContent;
+
 
     public Bicker (){
 
@@ -180,7 +182,9 @@ public class Bicker {
 
     public String getKey() { return key; }
 
-    public void setKey(String key) { this.key = key; }
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public boolean isVoted() { return voted; }
 
@@ -194,6 +198,7 @@ public class Bicker {
 
     public void setDeletionPending(boolean deletionPending) { this.deletionPending = deletionPending; }
 
+
     public boolean isReported(){return reported;}
 
     public void setReported(boolean bool){reported = bool;}
@@ -201,6 +206,14 @@ public class Bicker {
     public int getReportCount(){return reportCount;}
 
     public void setReportCount(int count){reportCount = count;}
+
+    public boolean isMatureContent() { return matureContent; }
+
+    public void setMatureContent(boolean matureContent) { this.matureContent = matureContent; }
+
+
+
+
 
 
     public String toString() {
