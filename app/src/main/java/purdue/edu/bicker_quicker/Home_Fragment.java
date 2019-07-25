@@ -306,10 +306,14 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
         sortBy = "recent";
 
         Query user_create_date = database.getReference("User").orderByChild("create_date");
-        Query bicker_create_date = database.getReference("Bicker").orderByChild("create_date"); //create_date
-
-            //bicker_create_date = database.getReference("ExpiredBicker").orderByChild("create_date"); //create_date
-
+        Query bicker_create_date = null;
+        if (HomeActivity.showActiveBickers) {
+            System.out.println("Sorting recent active bickers");
+            bicker_create_date = database.getReference("Bicker").orderByChild("create_date"); //create_date
+        } else {
+            System.out.println("Sorting recent expired bickers");
+            bicker_create_date = database.getReference("ExpiredBicker").orderByChild("create_date"); //create_date
+        }
 
         initialize_view(user_create_date, bicker_create_date);
     }
@@ -318,8 +322,14 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
         sortBy = "popularity";
 
         Query user_category = database.getReference("User").orderByChild("total_votes");//total_votes
-        Query bicker_category = database.getReference("Bicker").orderByChild("total_votes"); //total votes
-        //bicker_category = database.getReference("ExpiredBicker").orderByChild("total_votes"); //total votes
+        Query bicker_category = null;
+        if (HomeActivity.showActiveBickers) {
+            System.out.println("Sorting popular active bickers");
+            bicker_category = database.getReference("Bicker").orderByChild("total_votes"); //total votes
+        } else {
+            System.out.println("Sorting popular expired bickers");
+            bicker_category = database.getReference("ExpiredBicker").orderByChild("total_votes"); //total votes
+        }
         initialize_view(user_category, bicker_category);
     }
 
@@ -382,10 +392,12 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     temp_time = Long.parseLong(bickerSnapshot.child("approved_date").child("time").getValue().toString());
                     bickers_approved_time_milliseconds.put(bickerSnapshot.getKey(), temp_time);
 
+
                     Boolean isBickerMature = false;
                     if(bickerSnapshot.child("matureContent").exists()) {
                         isBickerMature = Boolean.parseBoolean(bickerSnapshot.child("matureContent").getValue().toString());
                     }
+
 
                     if(bickerSnapshot.child("code").getValue().toString().equals("code_used") && votedBickerIds.contains(bickerSnapshot.getKey()) == voted && (isBickerMature == false || allowMatureContent == true)) {
                         bickers.add(new Bicker(
@@ -408,6 +420,10 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                                 bickerSnapshot.child("votedUsers").getValue() != null ? (ArrayList<String>)bickerSnapshot.child("votedUsers").getValue() : null,
                                 (double) (long) bickerSnapshot.child("seconds_until_expired").getValue()
                         ));
+                        if (HomeActivity.showExpiredBickers) {
+                            System.out.println("Expired bicker added");
+                            System.out.println(bickers);
+                        }
                     }
                 }
 
@@ -751,12 +767,14 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
             Long approved_time_milliseconds = bickers_approved_time_milliseconds.get(bicker.getKey());
 
-            boolean isActive = isActive(approved_time_milliseconds, (int) bicker.getSeconds_until_expired());
+            if (HomeActivity.showActiveBickers) {
+                boolean isActive = isActive(approved_time_milliseconds, (int) bicker.getSeconds_until_expired());
 
-            if(isActive == false) {
-                open_bicker_holder.setVisibility(View.GONE);
-                closed_bicker_holder.setVisibility(View.GONE);
-                return view;
+                if (isActive == false) {
+                    open_bicker_holder.setVisibility(View.GONE);
+                    closed_bicker_holder.setVisibility(View.GONE);
+                    return view;
+                }
             }
 
             TextView closed_clock = view.findViewById(R.id.closed_clock);
@@ -1004,7 +1022,8 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                 }
             });
 
-            if(voted == true){
+            //or HomeActivity.showExpired == true
+            if(voted == true || HomeActivity.showExpiredBickers){
                 //leftVote.setText(Integer.toString(bicker.getLeft_votes()));
                 //rightVote.setText(Integer.toString(bicker.getRight_votes()));
                 //noVote.setText("Already Voted");
