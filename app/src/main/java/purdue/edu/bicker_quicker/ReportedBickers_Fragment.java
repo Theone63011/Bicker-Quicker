@@ -2,6 +2,7 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -414,6 +415,7 @@ public class ReportedBickers_Fragment extends Fragment {
                                userSnapshot.child("receivedDeletionRequests").child(bicker.getKey()).getRef().setValue(null);
 
                            }
+
                        }
 
                        @Override
