@@ -130,6 +130,76 @@ exports.deleteCategory = functions.database.ref('/Bicker/{pushId}').onDelete(asy
   }
 });
 
+exports.deleteCategory_Expired = functions.database.ref('/ExpiredBicker/{pushId}').onDelete(async (snapshot, context) => {
+  console.log("INSIDE deleteCategory_Expired");
+  var id = context.params.pushId;
+  console.log("Delete pushid: " + id);
+  console.log("Title: " + snapshot.val().title);
+  var category = snapshot.val().category;
+  var category_to_delete = null;
+  console.log("Category: " + category);
+
+  var count = null;
+  var category_number = null;
+  const updates = {};
+  const updates2 = {};
+  var updates2_position = 1;
+  const updates2_toRemove = {};
+  const updates3 = {};
+
+  var ref = admin.database().ref('/Bicker');
+  var ref2 = admin.database().ref("/Category");
+  var ref3 = admin.database().ref("Category/" + category);
+  var ref4 = admin.database().ref("/Category/" + category + "/count");
+  var ref5 = admin.database().ref("/Category/" + category + "/Expired_IDs");
+
+  try {
+    var snapshot4 = await ref4.once('value');
+    var snapshot5 = await ref5.once('value');
+
+    count = snapshot4.val();
+    count--;
+
+    if (count < 0) {
+      count = 0;
+    }
+
+    updates3['count'] = count;
+    console.log("new count: " + count);
+
+    snapshot5.forEach((child) => {
+      var key = child.key;
+      var data = child.val();
+
+      if (id === data) {
+        console.log("match to delete found: " + data);
+        category_number = key;
+        updates[category_number] = null;
+
+        // Remove the bicker Id from the Category
+        ref5.update(updates)
+      }
+      else {
+        updates2_toRemove[key] = null;
+        updates2[updates2_position] = data;
+        updates2_position++;
+      }
+    });
+
+    // Remove all bicker IDs to be added again with correct number
+    ref5.update(updates2_toRemove);
+
+    // Decrement all bicker ID numbers by 1 and add back
+    ref5.update(updates2);
+
+    return ref3.update(updates3);
+  }
+  catch (err) {
+    console.log("ERROR: deleteCategory caught an error: " + err);
+    return "ERROR: " + err;
+  }
+});
+
 exports.addExpiredBackToCategory = functions.database.ref('/ExpiredBicker/{pushId}').onCreate(async (snapshot, context) => {
   console.log("INSIDE addExpiredBackToCategory");
   var id = context.params.pushId;
