@@ -109,4 +109,11 @@
         android:fitsSystemWindows="true"
         app:menu="@menu/home_drawer" />
 
+    <TextView
+        android:id="@+id/nofilteredresultsfound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Filtered Results Found"
+        android:gravity="center"/>
+
 </android.support.v4.widget.DrawerLayout>

@@ -138,17 +138,6 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         radioButton2 = (RadioButton) findViewById(R.id.radioButton2);
         radioButton3 = (RadioButton) findViewById(R.id.radioButton3);
 
-        // If you want to modify the timer values, please change below
-        // If changing timer options, please use 'seconds', 'minutes' or 'hours' as the 2nd word
-        // **************************************************************************************
-        String option1 = "45 seconds";
-        String option2 = "24 hours";
-        String option3 = "48 hours";
-        radioButton1.setText(option1);
-        radioButton2.setText(option2);
-        radioButton3.setText(option3);
-        // **************************************************************************************
-
         tag1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -256,6 +245,54 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+        // If you want to modify the timer values, please change the values IN THE DATABASE
+        // NOTE: If changing timer options, please use 'seconds', 'minutes' or 'hours' as the 2nd word
+        // **************************************************************************************
+        // **************************************************************************************
+        // **************************************************************************************
+        // **************************************************************************************
+        // **************************************************************************************
+        // **************************************************************************************
+
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference();
+        DatabaseReference databaseReference2 = database.getReference("Database_Settings");
+
+        // This is used to find the boolean value of allowTalkingToSelf in database and set variable
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                String option1 = null;
+                String option2 = null;
+                String option3 = null;
+
+                if(dataSnapshot.exists() == false) {
+                    //This means that the Database_Settings section IS NOT in the database
+                    Log.d(TAG, "Create_activity: databaseReference2 does not exist.");
+                }
+                else {
+                    //This means that the Database_Settings section IS in the database
+                    option1 = dataSnapshot.child("Timer_option_1").getValue().toString();
+                    option2 = dataSnapshot.child("Timer_option_2").getValue().toString();
+                    option3 = dataSnapshot.child("Timer_option_3").getValue().toString();
+                }
+
+                Log.d(TAG, "Create_activity: timer options: 1-" + option1 + ", 2-" + option2 + ", 3-" + option3);
+
+                radioButton1.setText(option1);
+                radioButton2.setText(option2);
+                radioButton3.setText(option3);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });

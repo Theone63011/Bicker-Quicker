@@ -553,7 +553,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists() == false) {
                     //Log.d(TAG, "Create_activity: categoryRef dataSnapshot does not exists");
-                    categoryRef2.child("IDs").child("1").setValue(bicker.getKey());
+                    categoryRef2.child("Active_IDs").child("1").setValue(bicker.getKey());
                     categoryRef2.child("count").setValue(1);
                 }
                 else {
@@ -572,7 +572,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists() == false) {
                     //Log.d(TAG, "Create_activity: ref3 dataSnapshot does not exists");
-                    categoryRef2.child("IDs").child("1").setValue(bicker.getKey());
+                    categoryRef2.child("Active_IDs").child("1").setValue(bicker.getKey());
                     categoryRef2.child("count").setValue(1);
                 }
                 else {
