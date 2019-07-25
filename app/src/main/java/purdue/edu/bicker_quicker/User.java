@@ -12,6 +12,31 @@ public class User {
     private String token;
     private List<String> votedBickerIds = new ArrayList<String>();
     private int notificationSettings;
+    private int totalVoteCount;
+    private int totalCreateCount;
+
+    public User() {
+        // Init settings for notifications
+        notificationSettings = 0b11111100;
+        totalVoteCount = 0;
+        totalCreateCount = 0;
+    }
+
+    public void setTotalVoteCount (int i) {
+        totalVoteCount = i;
+    }
+
+    public int getTotalVoteCount () {
+        return totalVoteCount;
+    }
+
+    public void setTotalCreateCount(int i) {
+        totalCreateCount = i;
+    }
+
+    public int getTotalCreateCount () {
+        return totalCreateCount;
+    }
 
     public void setNotificationSettings(int newSettings) {
         notificationSettings = newSettings;
@@ -19,11 +44,6 @@ public class User {
 
     public int getNotificationSettings() {
         return notificationSettings;
-    }
-
-    public User() {
-        // Init settings for notifications
-        notificationSettings = 0b11111100;
     }
 
     public void setBickerId(String bickerId){this.bickerId.add(bickerId);}
