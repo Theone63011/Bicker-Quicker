@@ -620,7 +620,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
 
                             Map<String, Object> updates = new HashMap<String, Object>();
                             updates.put(bickerID + "/category", bicker.getCategory());
-                            updates.put(bickerID + "/Winning Side", "still active");
+                            updates.put(bickerID + "/Winning_Side", "still active");
                             senderRef2.updateChildren(updates);
 
                             Log.d(TAG, "Respond_activity: added bicker to CreatedBickers in database");
@@ -653,7 +653,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
 
                                 Map<String, Object> updates = new HashMap<String, Object>();
                                 updates.put(bickerID + "/category", bicker.getCategory());
-                                updates.put(bickerID + "/Winning Side", "still active");
+                                updates.put(bickerID + "/Winning_Side", "still active");
                                 receiverRef2.updateChildren(updates);
 
                                 Log.d(TAG, "Respond_activity: added bicker to CreatedBickers in database");

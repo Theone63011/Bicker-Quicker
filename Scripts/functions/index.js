@@ -310,6 +310,9 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
         var senderCreatedSnapshot = null;
         var receiverVotedSnapshot = null;
         var receiverCreatedSnapshot = null;
+        var userSnapshot = null;
+
+        userSnapshot = await userRef.once('value');
 
         if (senderID === null || receiverID === null) {
           console.log("senderID or receiverID is null");
@@ -371,7 +374,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
           senderCreatedSnapshot.forEach((child) => {
             var createdID = child.key;
             if(createdID === id) {
-              child.val().child("Winning Side").set(winner);
+              child.val().child("Winning_Side").set(winner);
               createdIDFound = true;
             }
           });
@@ -390,7 +393,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
           receiverCreatedSnapshot.forEach((child) => {
             var createdID = child.key;
             if(createdID === id) {
-              child.val().child("Winning Side").set(winner);
+              child.val().child("Winning_Side").set(winner);
               createdIDFound = true;
             }
           });
@@ -401,7 +404,21 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
         }
 
         // Loop through all users' 'votedOnBickers' and udpate the 'Status' and 'Winning Side'
-
+        userSnapshot.forEach((child) => {
+          var userID = child.key;
+          var voted_ref = child.ref().child("votedOnBickers");
+          if(voted_ref === null) {
+            console.log("voted_ref is null");
+          }
+          else {
+            var voted_snapshot = await voted_ref.once('value');
+            voted_snapshot.forEach((child2) => {
+              if(child2.key === id) {
+                child2.val().Winning_Side.set()
+              }
+            });
+          }
+        });
 
 
 

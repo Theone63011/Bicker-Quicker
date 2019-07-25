@@ -2,7 +2,6 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -10,8 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -596,9 +593,9 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
         ref.child("User/" + userKey + "/votedOnBickers/" + key + "/Status").setValue("Active");
 
-        ref.child("User/" + userKey + "/votedOnBickers/" + key + "/Winning Side").setValue(null);
+        ref.child("User/" + userKey + "/votedOnBickers/" + key + "/Winning_Side").setValue(null);
 
-        ref.child("User/" + userKey + "/votedOnBickers/" + key + "/Winning Side").setValue("still active");
+        ref.child("User/" + userKey + "/votedOnBickers/" + key + "/Winning_Side").setValue("still active");
 
         //Increment the totalVoteCount
         DatabaseReference voteRef = database.getReference("/User/" + userKey + "/totalVoteCount");
