@@ -105,7 +105,7 @@ public class ReportedBickers_Fragment extends Fragment implements SwipeRefreshLa
         //Query user_create_date = database.getReference("User").orderByChild("create_date");
         //Query bicker_create_date = database.getReference("Bicker").orderByChild("create_date"); //create_date
 
-        setReferenceToRepBickersActivity();
+        //setReferenceToRepBickersActivity();
 
         sort.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -198,6 +198,10 @@ public class ReportedBickers_Fragment extends Fragment implements SwipeRefreshLa
         refreshContent();
     }
 
+    public void set_repBicker_fragment(Fragment f) {
+        repBickers_Fragment = f;
+    }
+
     private void refreshContent() {
         Log.d(TAG, "Home_fragment: Inside refreshContent");
 
@@ -242,8 +246,8 @@ public class ReportedBickers_Fragment extends Fragment implements SwipeRefreshLa
         }, 500);
     }
 
-    public void setReferenceToRepBickersActivity() {
-        repBickersActivityRef = (ReportedBickersActivity) getActivity(); //ref;
+    public void setReferenceToRepBickersActivity(ReportedBickersActivity ref) {
+        repBickersActivityRef = (ReportedBickersActivity) ref;
     }
 
     public interface OnBickerPressedListener {

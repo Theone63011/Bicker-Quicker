@@ -37,7 +37,7 @@ public class ReportedBickersActivity extends AppCompatActivity implements Report
     private Toolbar toolbar;
     //private NavigationView nvDrawer;
     private ActionBarDrawerToggle drawerToggle;
-
+    private ReportedBickers_Fragment reportedBickers_fragment = null;
     private String sortBy = "recent";
 
     @Override
@@ -102,6 +102,12 @@ public class ReportedBickersActivity extends AppCompatActivity implements Report
         if (fragment instanceof ReportedBickers_Fragment) {
             ReportedBickers_Fragment rep_fragment = (ReportedBickers_Fragment) fragment;
             rep_fragment.setOnBickerPressedListener(this);
+
+            rep_fragment.set_repBicker_fragment(fragment);
+
+            this.reportedBickers_fragment = rep_fragment;
+
+            this.reportedBickers_fragment.setReferenceToRepBickersActivity(this);
 
             /*if (initializeHomeFrag1 == false) {
                 homefrag1 = homeFragment;
