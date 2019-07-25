@@ -46,6 +46,7 @@ public class ProfileActivity extends AppCompatActivity {
     Button toSettings;
     Button pastBickers;
     Button statisticsButton;
+    Button reportedButton;
     Switch modToggle;
     Toolbar toolbar;
     FirebaseUser user;
@@ -64,6 +65,7 @@ public class ProfileActivity extends AppCompatActivity {
         respondToBicker = findViewById(R.id.bickerRespond);
         pastBickers = findViewById(R.id.pastBickers);
         statisticsButton = findViewById(R.id.statistics);
+        reportedButton = findViewById(R.id.reports);
         toolbar = findViewById(R.id.toolbarBicker);
         modToggle = findViewById(R.id.mod);
         setSupportActionBar(toolbar);
@@ -103,6 +105,14 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        reportedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reports();
+            }
+        });
+
+        reportedButton.setVisibility(View.GONE);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
 
@@ -168,9 +178,11 @@ public class ProfileActivity extends AppCompatActivity {
                 String msg = "";
                 if (checked) {
                     //is checked, activate mod mode
+                    reportedButton.setVisibility(View.VISIBLE);
                     msg = "Moderator mode activated.";
                 } else {
                     //unchecked, deactivate mod mode
+                    reportedButton.setVisibility(View.GONE);
                     msg = "Moderator mode deactivated.";
                 }
                 System.out.println(msg);
@@ -236,6 +248,10 @@ public class ProfileActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void reports(){
+        Intent intent = new Intent(this, ReportedBickersActivity.class);
+        startActivity(intent);
+    }
     public void signOut(){
 
         // To Sign Out of Facebook, do this:

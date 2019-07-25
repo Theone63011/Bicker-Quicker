@@ -80,6 +80,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
     private Button leftVote;
     private Button rightVote;
     private Button noVote;
+    private Button report;
 
     private Thread timer_thread;
 
@@ -410,6 +411,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                                 (int) (long) bickerSnapshot.child("left_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("right_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("total_votes").getValue(),
+                                bickerSnapshot.child("reportCount").getValue() != null ? (int) (long) bickerSnapshot.child("reportCount").getValue() : 0,
                                 bickerSnapshot.child("code").getValue() != null ? bickerSnapshot.child("code").getValue().toString() : "No code",
                                 bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
                                 bickerSnapshot.child("senderID").getValue() != null ? bickerSnapshot.child("senderID").getValue().toString() : "No senderID",
@@ -637,15 +639,15 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
             ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(dm);
             windowWidthPixels = dm.widthPixels;
-            maximumProgressbarWidth = (int)Math.ceil((double) windowWidthPixels * 0.75);
-            progressbar1Percent = (((double)maximumProgressbarWidth - (double)minimumProgressbarWidth) / 100);
-            minimumProgressbarWidth = (int)(Math.ceil((double)windowWidthPixels / 10.0));
+            maximumProgressbarWidth = (int) Math.ceil((double) windowWidthPixels * 0.75);
+            progressbar1Percent = (((double) maximumProgressbarWidth - (double) minimumProgressbarWidth) / 100);
+            minimumProgressbarWidth = (int) (Math.ceil((double) windowWidthPixels / 10.0));
         }
 
         //called when rendering the list
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            if(getActivity() == null) {
+            if (getActivity() == null) {
                 return null;
             }
 
@@ -737,10 +739,10 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     catDraw.setColorFilter(ContextCompat.getColor(context, R.color.category_Misc), PorterDuff.Mode.MULTIPLY);
                     break;
 
-                    default:
-                        Log.d(TAG, "ERROR: Could not find a corresponding color category. See colors.xml for correct options");
-                        Toast.makeText(getActivity(), "Home_Fragment: ERROR: Could not find a corresponding color category. " +
-                                "See colors.xml for correct options" , Toast.LENGTH_LONG).show();
+                default:
+                    Log.d(TAG, "ERROR: Could not find a corresponding color category. See colors.xml for correct options");
+                    Toast.makeText(getActivity(), "Home_Fragment: ERROR: Could not find a corresponding color category. " +
+                            "See colors.xml for correct options", Toast.LENGTH_LONG).show();
 
             }
 
@@ -784,13 +786,13 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
             //remainingTime += 3000;
 
-            long seconds = (long) (remainingTime / 1000) % 60 ;
-            long minutes = (long) ((remainingTime / (1000*60)) % 60);
-            long hours   = (long) ((remainingTime / (1000*60*60)) % 24);
+            long seconds = (long) (remainingTime / 1000) % 60;
+            long minutes = (long) ((remainingTime / (1000 * 60)) % 60);
+            long hours = (long) ((remainingTime / (1000 * 60 * 60)) % 24);
 
             String clock_time = String.format("%02d:%02d:%02d", hours, minutes, seconds);
 
-            if(remainingTime < -1) {
+            if (remainingTime < -1) {
                 clock_time = "Expired";
             }
 
@@ -800,11 +802,11 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
             timer_thread = new Thread() {
                 @Override
                 public void run() {
-                    while(!isInterrupted()) {
+                    while (!isInterrupted()) {
                         try {
                             Thread.sleep(1000);
 
-                            if(getActivity() == null) {
+                            if (getActivity() == null) {
                                 return;
                             }
 
@@ -816,13 +818,13 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
                                     //remainingTime += 3000;
 
-                                    long seconds = (long) (remainingTime / 1000) % 60 ;
-                                    long minutes = (long) ((remainingTime / (1000*60)) % 60);
-                                    long hours   = (long) ((remainingTime / (1000*60*60)) % 24);
+                                    long seconds = (long) (remainingTime / 1000) % 60;
+                                    long minutes = (long) ((remainingTime / (1000 * 60)) % 60);
+                                    long hours = (long) ((remainingTime / (1000 * 60 * 60)) % 24);
 
                                     String clock_time = String.format("%02d:%02d:%02d", hours, minutes, seconds);
 
-                                    if(remainingTime < -1) {
+                                    if (remainingTime < -1) {
                                         clock_time = "Expired";
                                     }
 
@@ -968,12 +970,12 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
             });
 
 
-
             leftVote = view.findViewById(R.id.left);
             leftVote.setText(bicker.getLeft_side());
             rightVote = view.findViewById(R.id.right);
             rightVote.setText(bicker.getRight_side());
             noVote = view.findViewById(R.id.abstain);
+            report = view.findViewById(R.id.report_flag);
 
             choice_label_holder = view.findViewById(R.id.choice_label_holder);
 
@@ -998,117 +1000,130 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                 }
             });
 
-            leftVote.setOnClickListener(new View.OnClickListener(){
-                public void onClick(View v){
+            leftVote.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
                     leftLabel.setEnabled(false);
                     rightLabel.setEnabled(false);
                     leftSideClick(v, bicker, open_vote_count, closed_vote_count);
                 }
             });
 
-            rightVote.setOnClickListener(new View.OnClickListener(){
-                public void onClick(View v){
+            rightVote.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
                     rightLabel.setEnabled(false);
                     leftLabel.setEnabled(false);
                     rightSideClick(v, bicker, open_vote_count, closed_vote_count);
                 }
             });
 
-            noVote.setOnClickListener(new View.OnClickListener(){
-                public void onClick(View v){
+            noVote.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
                     rightLabel.setEnabled(false);
                     leftLabel.setEnabled(false);
                     noSideClick(v, bicker, open_vote_count, closed_vote_count);
                 }
             });
 
-            //or HomeActivity.showExpired == true
-            if(voted == true || HomeActivity.showExpiredBickers){
-                //leftVote.setText(Integer.toString(bicker.getLeft_votes()));
-                //rightVote.setText(Integer.toString(bicker.getRight_votes()));
-                //noVote.setText("Already Voted");
+            report.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ReportBickerDialog reportBicker = new ReportBickerDialog();
+                    Bundle reportBundle = new Bundle(1);
+                    reportBundle.putString("key", bicker.getKey());
+                    reportBicker.setArguments(reportBundle);
+                    reportBicker.show(getFragmentManager(), "report bicker");
+                    Log.d(TAG, "BICKER KEY: " + bicker.getKey());
 
-                leftVote.setText(bicker.getLeft_side());
-                rightVote.setText(bicker.getRight_side());
-                noVote.setText("Abstain");
-                noVote.setVisibility(View.GONE);
-                choice_label_holder.setVisibility(View.GONE);
-                percentage_holder.setVisibility(View.VISIBLE);
-
-                leftVote.setEnabled(false);
-                rightVote.setEnabled(false);
-                noVote.setEnabled(false);
-                leftLabel.setEnabled(false);
-                rightLabel.setEnabled(false);
-
-                if (voted) {
-                    String bickerCode = hiddenKey.getText().toString();
-                    String side_voted = bickers_votes.get(bickerCode);
-
-                    if (side_voted.equalsIgnoreCase("left")) {
-                        //Log.d(TAG, "Home_fragment: left vote found");
-                        leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_blue);
-                        rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
-                    } else if (side_voted.equalsIgnoreCase("right")) {
-                        //Log.d(TAG, "Home_fragment: right vote found");
-                        leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
-                        rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_purple);
-                    } else if (side_voted.equalsIgnoreCase("abstain")) {
-                        //Log.d(TAG, "Home_fragment: abstain vote found");
-                        leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
-                        rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
-                        noVote.setVisibility(View.VISIBLE);
-                        noVote.setTextColor(getResources().getColor(R.color.blue_purple_mix));
-                    } else {
-                        //Log.d(TAG, "Home_fragment: ERROR- side_voted not assigned");
-                        Toast.makeText(getActivity(), "Home_fragment: ERROR- side_voted not assigned", Toast.LENGTH_LONG).show();
-                    }
                 }
+            });
 
-                // Setup the progress bars
-                int left_vote_count = bicker.getLeft_votes();
-                int right_vote_count = bicker.getRight_votes();
+                //or HomeActivity.showExpired == true
+            if (voted == true || HomeActivity.showExpiredBickers) {
+                    //leftVote.setText(Integer.toString(bicker.getLeft_votes()));
+                    //rightVote.setText(Integer.toString(bicker.getRight_votes()));
+                    //noVote.setText("Already Voted");
 
-                int progressbar_blue_pixel_length = GetProgressBarLength_blue(progressbar1Percent, left_vote_count, right_vote_count);
-                int progressbar_purple_pixel_length = GetProgressBarLength_purple(progressbar1Percent, left_vote_count, right_vote_count);
+                    leftVote.setText(bicker.getLeft_side());
+                    rightVote.setText(bicker.getRight_side());
+                    noVote.setText("Abstain");
+                    noVote.setVisibility(View.GONE);
+                    choice_label_holder.setVisibility(View.GONE);
+                    percentage_holder.setVisibility(View.VISIBLE);
 
-                double blue_percent = GetProgressBarPercent_blue((double)left_vote_count, (double)right_vote_count);
-                double purple_percent = GetProgressBarPercent_purple((double)left_vote_count, (double)right_vote_count);
+                    leftVote.setEnabled(false);
+                    rightVote.setEnabled(false);
+                    noVote.setEnabled(false);
+                    leftLabel.setEnabled(false);
+                    rightLabel.setEnabled(false);
 
-                int blue_percent_int = GetProperPercentTotal_blue(blue_percent, purple_percent);
-                int purple_percent_int = GetProperPercentTotal_purple(blue_percent, purple_percent);
+                    if (voted) {
+                        String bickerCode = hiddenKey.getText().toString();
+                        String side_voted = bickers_votes.get(bickerCode);
 
-                String left_percentage = Integer.toString(blue_percent_int) + "%";
-                String right_percentage = Integer.toString(purple_percent_int) + "%";
+                        if (side_voted.equalsIgnoreCase("left")) {
+                            //Log.d(TAG, "Home_fragment: left vote found");
+                            leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_blue);
+                            rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
+                        } else if (side_voted.equalsIgnoreCase("right")) {
+                            //Log.d(TAG, "Home_fragment: right vote found");
+                            leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
+                            rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_purple);
+                        } else if (side_voted.equalsIgnoreCase("abstain")) {
+                            //Log.d(TAG, "Home_fragment: abstain vote found");
+                            leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
+                            rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
+                            noVote.setVisibility(View.VISIBLE);
+                            noVote.setTextColor(getResources().getColor(R.color.blue_purple_mix));
+                        } else {
+                            //Log.d(TAG, "Home_fragment: ERROR- side_voted not assigned");
+                            Toast.makeText(getActivity(), "Home_fragment: ERROR- side_voted not assigned", Toast.LENGTH_LONG).show();
+                        }
+                    }
 
-                progressbar_blue.setText(left_percentage);
-                progressbar_purple.setText(right_percentage);
+                    // Setup the progress bars
+                    int left_vote_count = bicker.getLeft_votes();
+                    int right_vote_count = bicker.getRight_votes();
 
-                String left_votes = display_votes((double)left_vote_count);
-                String right_votes = display_votes((double)right_vote_count);
-                left_votes = left_votes.substring(0, left_votes.length() - 6);
-                right_votes = right_votes.substring(0, right_votes.length() - 6);
-                votes_count_blue.setText(left_votes);
-                votes_count_purple.setText(right_votes);
+                    int progressbar_blue_pixel_length = GetProgressBarLength_blue(progressbar1Percent, left_vote_count, right_vote_count);
+                    int progressbar_purple_pixel_length = GetProgressBarLength_purple(progressbar1Percent, left_vote_count, right_vote_count);
 
-                LinearLayout.LayoutParams blue_params = new LinearLayout.LayoutParams(85, 85, 0);
-                blue_params.height = minimumProgressbarHeight;
-                blue_params.width = progressbar_blue_pixel_length;
-                progressbar_blue.setLayoutParams(blue_params);
+                    double blue_percent = GetProgressBarPercent_blue((double) left_vote_count, (double) right_vote_count);
+                    double purple_percent = GetProgressBarPercent_purple((double) left_vote_count, (double) right_vote_count);
 
-                LinearLayout.LayoutParams purple_params = new LinearLayout.LayoutParams(85, 85, 0);
-                purple_params.height = minimumProgressbarHeight;
-                purple_params.width = progressbar_purple_pixel_length;
-                progressbar_purple.setLayoutParams(purple_params);
+                    int blue_percent_int = GetProperPercentTotal_blue(blue_percent, purple_percent);
+                    int purple_percent_int = GetProperPercentTotal_purple(blue_percent, purple_percent);
 
-                //Log.d(TAG, "Home_fragment: minimumProgressbarWidth = " + minimumProgressbarWidth);
-                //Log.d(TAG, "Home_fragment: maximumProgressbarWidth = " + maximumProgressbarWidth);
-                //Log.d(TAG, "Home_fragment: onePercentage = " + progressbar1Percent);
-                //Log.d(TAG, "Home_fragment: blue_length = " + blue_length);
-                //Log.d(TAG, "Home_fragment: purple_length = " + purple_length);
+                    String left_percentage = Integer.toString(blue_percent_int) + "%";
+                    String right_percentage = Integer.toString(purple_percent_int) + "%";
+
+                    progressbar_blue.setText(left_percentage);
+                    progressbar_purple.setText(right_percentage);
+
+                    String left_votes = display_votes((double) left_vote_count);
+                    String right_votes = display_votes((double) right_vote_count);
+                    left_votes = left_votes.substring(0, left_votes.length() - 6);
+                    right_votes = right_votes.substring(0, right_votes.length() - 6);
+                    votes_count_blue.setText(left_votes);
+                    votes_count_purple.setText(right_votes);
+
+                    LinearLayout.LayoutParams blue_params = new LinearLayout.LayoutParams(85, 85, 0);
+                    blue_params.height = minimumProgressbarHeight;
+                    blue_params.width = progressbar_blue_pixel_length;
+                    progressbar_blue.setLayoutParams(blue_params);
+
+                    LinearLayout.LayoutParams purple_params = new LinearLayout.LayoutParams(85, 85, 0);
+                    purple_params.height = minimumProgressbarHeight;
+                    purple_params.width = progressbar_purple_pixel_length;
+                    progressbar_purple.setLayoutParams(purple_params);
+
+                    //Log.d(TAG, "Home_fragment: minimumProgressbarWidth = " + minimumProgressbarWidth);
+                    //Log.d(TAG, "Home_fragment: maximumProgressbarWidth = " + maximumProgressbarWidth);
+                    //Log.d(TAG, "Home_fragment: onePercentage = " + progressbar1Percent);
+                    //Log.d(TAG, "Home_fragment: blue_length = " + blue_length);
+                    //Log.d(TAG, "Home_fragment: purple_length = " + purple_length);
 
 
-                // Below reads from the database
+                    // Below reads from the database
                 /*FirebaseDatabase database = FirebaseDatabase.getInstance();
                 //String ref_path  ="User/" + userKey + "/votedBickerIds/" + bickerCode + "/Side Voted";
                 //Log.d(TAG, "Home_fragment: ref_path=" + ref_path);
@@ -1125,272 +1140,269 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
-                });*/
-            }
+                });
+                }*/
+
+                    //return view;
+                }
 
             return view;
         }
 
-        public void leftSideClick(View view, Bicker bicker, TextView open_vote_count, TextView closed_vote_count) {
-            View parentView = (View)view.getParent().getParent().getParent().getParent().getParent();
-            leftVote = parentView.findViewById(R.id.left);
-            rightVote = parentView.findViewById(R.id.right);
-            noVote = parentView.findViewById(R.id.abstain);
 
-            TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
+            public void leftSideClick (View view, Bicker bicker, TextView open_vote_count, TextView
+            closed_vote_count){
+                View parentView = (View) view.getParent().getParent().getParent().getParent().getParent();
+                leftVote = parentView.findViewById(R.id.left);
+                rightVote = parentView.findViewById(R.id.right);
+                noVote = parentView.findViewById(R.id.abstain);
 
-            TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
+                TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
 
-            TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
+                TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
 
-            //leftVote.setText(Integer.toString(Integer.parseInt(hiddenLeftVotes.getText().toString()) + 1));
-            //rightVote.setText(hiddenRightVotes.getText().toString());
-            noVote.setText("Blue Side");
+                TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
 
-            // Not needed now, but may need later
-            leftVote.setEnabled(false);
-            rightVote.setEnabled(false);
+                //leftVote.setText(Integer.toString(Integer.parseInt(hiddenLeftVotes.getText().toString()) + 1));
+                //rightVote.setText(hiddenRightVotes.getText().toString());
+                noVote.setText("Blue Side");
 
-
-            noVote.setEnabled(false);
-
-            vote(hiddenKey.getText().toString(), 1, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
-
-            double tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
-            String tot_str = display_votes(tot);
-            open_vote_count.setText(tot_str);
-            closed_vote_count.setText(tot_str);
-
-            AnimationHandler.select_blue(leftVote, rightVote, parentView, getActivity());
-        }
-
-        public void rightSideClick(View view, Bicker bicker, TextView open_vote_count, TextView closed_vote_count) {
-            View parentView = (View)view.getParent().getParent().getParent().getParent().getParent();
-            leftVote = parentView.findViewById(R.id.left);
-            rightVote = parentView.findViewById(R.id.right);
-            noVote = parentView.findViewById(R.id.abstain);
-
-            TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
-
-            TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
-
-            TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
-
-            //leftVote.setText(hiddenLeftVotes.getText().toString());
-            //rightVote.setText(Integer.toString(Integer.parseInt(hiddenRightVotes.getText().toString()) + 1));
-            noVote.setText("Purple Side");
-
-            // Not needed now, but may need later
-            leftVote.setEnabled(false);
-            rightVote.setEnabled(false);
+                // Not needed now, but may need later
+                leftVote.setEnabled(false);
+                rightVote.setEnabled(false);
 
 
-            noVote.setEnabled(false);
+                noVote.setEnabled(false);
 
-            vote(hiddenKey.getText().toString(), 2, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
+                vote(hiddenKey.getText().toString(), 1, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
 
-            double tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
-            String tot_str = display_votes(tot);
-            open_vote_count.setText(tot_str);
-            closed_vote_count.setText(tot_str);
+                double tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
+                String tot_str = display_votes(tot);
+                open_vote_count.setText(tot_str);
+                closed_vote_count.setText(tot_str);
 
-            AnimationHandler.select_purple(leftVote, rightVote, parentView, getActivity());
-        }
-
-        public void noSideClick(View view, Bicker bicker, TextView open_vote_count, TextView closed_vote_count) {
-            View parentView = (View)view.getParent().getParent().getParent().getParent().getParent();
-            leftVote = parentView.findViewById(R.id.left);
-            rightVote = parentView.findViewById(R.id.right);
-            noVote = parentView.findViewById(R.id.abstain);
-
-            TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
-
-            TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
-
-            TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
-
-            // Not needed now, but may need later
-            //leftVote.setText(hiddenLeftVotes.getText().toString());
-            //rightVote.setText(hiddenRightVotes.getText().toString());
-
-
-            noVote.setText("Abstain");
-
-            leftVote.setEnabled(false);
-            rightVote.setEnabled(false);
-            noVote.setEnabled(false);
-
-            vote(hiddenKey.getText().toString(), 0, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
-
-            AnimationHandler.select_abstain(leftVote, rightVote, parentView, getActivity());
-        }
-
-        public void onBickerClick (View view, LinearLayout closed_bicker, LinearLayout open_bicker) {
-            if(closed_bicker.isShown()){
-                open_bicker.setVisibility(View.VISIBLE);
-                AnimationHandler.slide_down(getActivity(), open_bicker);
-                closed_bicker.setVisibility(View.GONE);
-            }
-            else{
-                AnimationHandler.slide_up(getActivity(), open_bicker);
-                closed_bicker.setVisibility(View.VISIBLE);
-                open_bicker.setVisibility(View.GONE);
-            }
-        }
-
-        public String display_votes(double d) {
-            String ret = null;
-
-            double zero = 0.0;
-            double thousand = 1000.0;
-            double ten_thousand = 10000.0;
-            double hundred_thousand = 100000.0;
-            double million = 1000000.0;
-            double ten_million = 10000000.0;
-            double hundred_million = 100000000.0;
-            double billion = 1000000000.0;
-
-            df.setRoundingMode(RoundingMode.DOWN);
-            if(d < zero) {
-                Log.d(TAG, "Home_fragment ERROR: vote count is negative in display_votes");
-                Toast.makeText(getActivity(), "Home_fragment ERROR: vote count is negative in display_votes", Toast.LENGTH_LONG).show();
-            }
-            else if(d >= zero && d < thousand) {
-                ret = Integer.toString((int)d) + " Votes";
-            }
-            else if(d >= thousand && d < ten_thousand) {
-                ret = df.format(d / thousand);
-                ret += "K Votes";
-            }
-            else if(d >= ten_thousand && d < hundred_thousand) {
-                ret = df.format(d / thousand);
-                ret += "K Votes";
-            }
-            else if(d >= hundred_thousand && d < million) {
-                ret = df.format(d / thousand);
-                ret += "K Votes";
-            }
-            else if(d >= million && d < ten_million) {
-                ret = df.format(d / million);
-                ret += "M Votes";
-            }
-            else if(d >= ten_million && d < hundred_million) {
-                ret = df.format(d / million);
-                ret += "M Votes";
-            }
-            else if(d >= hundred_million && d < billion) {
-                ret = df.format(d / million);
-                ret += "M Votes";
-            }
-            else if(d >= billion) {
-                ret = df.format(d / billion);
-                ret += "B Votes";
-            }
-            else {
-                Log.d(TAG, "Home_fragment- ERROR in display_votes. d = " + d);
-                Toast.makeText(getActivity(), "Home_fragment- ERROR in display_votes", Toast.LENGTH_LONG).show();
+                AnimationHandler.select_blue(leftVote, rightVote, parentView, getActivity());
             }
 
-            return ret;
-        }
+            public void rightSideClick (View view, Bicker bicker, TextView open_vote_count, TextView
+            closed_vote_count){
+                View parentView = (View) view.getParent().getParent().getParent().getParent().getParent();
+                leftVote = parentView.findViewById(R.id.left);
+                rightVote = parentView.findViewById(R.id.right);
+                noVote = parentView.findViewById(R.id.abstain);
 
-        public boolean isActive(Long approved, int seconds_until_expired) {
+                TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
 
-            boolean ret = true;
+                TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
 
-            Date now = new Date();
+                TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
 
-            if ((now.getTime() - approved) > (seconds_until_expired * 1000)) {
-                //bicker has expired. Move it to expiredBicker section of DB
-                ret = false;
+                //leftVote.setText(hiddenLeftVotes.getText().toString());
+                //rightVote.setText(Integer.toString(Integer.parseInt(hiddenRightVotes.getText().toString()) + 1));
+                noVote.setText("Purple Side");
+
+                // Not needed now, but may need later
+                leftVote.setEnabled(false);
+                rightVote.setEnabled(false);
+
+
+                noVote.setEnabled(false);
+
+                vote(hiddenKey.getText().toString(), 2, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
+
+                double tot = bicker.getLeft_votes() + bicker.getRight_votes() + 1;
+                String tot_str = display_votes(tot);
+                open_vote_count.setText(tot_str);
+                closed_vote_count.setText(tot_str);
+
+                AnimationHandler.select_purple(leftVote, rightVote, parentView, getActivity());
             }
 
-            return ret;
-        }
+            public void noSideClick (View view, Bicker bicker, TextView open_vote_count, TextView
+            closed_vote_count){
+                View parentView = (View) view.getParent().getParent().getParent().getParent().getParent();
+                leftVote = parentView.findViewById(R.id.left);
+                rightVote = parentView.findViewById(R.id.right);
+                noVote = parentView.findViewById(R.id.abstain);
 
-        // This returns time remaining in milliseconds
-        public long getRemainingTime(Long approved, int seconds_until_expired) {
+                TextView hiddenKey = parentView.findViewById(R.id.hiddenBickerKey);
 
-            Date now = new Date();
+                TextView hiddenLeftVotes = parentView.findViewById(R.id.hiddenLeftVotes);
 
-            long time_until_expired = seconds_until_expired * 1000;
+                TextView hiddenRightVotes = parentView.findViewById(R.id.hiddenRightVotes);
 
-            long active_time = now.getTime() - approved;
+                // Not needed now, but may need later
+                //leftVote.setText(hiddenLeftVotes.getText().toString());
+                //rightVote.setText(hiddenRightVotes.getText().toString());
 
-            long ret = time_until_expired - active_time;
 
-            return ret;
-        }
+                noVote.setText("Abstain");
 
-        public int GetProgressBarLength_blue (double onePercent, int left_votes, int right_votes) {
+                leftVote.setEnabled(false);
+                rightVote.setEnabled(false);
+                noVote.setEnabled(false);
 
-            int ret = -1;
-            int total = left_votes + right_votes;
-            double left_percentage = ((double)left_votes / (double)total) * 100;
-            ret = (int)(Math.floor(onePercent * left_percentage));
+                vote(hiddenKey.getText().toString(), 0, Integer.parseInt(hiddenLeftVotes.getText().toString()), Integer.parseInt(hiddenRightVotes.getText().toString()));
 
-            if(ret < minimumProgressbarWidth) {
-                return minimumProgressbarWidth;
+                AnimationHandler.select_abstain(leftVote, rightVote, parentView, getActivity());
             }
 
-            return ret;
-        }
-
-        public int GetProgressBarLength_purple (double onePercent, int left_votes, int right_votes) {
-
-            int ret = -1;
-            int total = left_votes + right_votes;
-            double right_percentage = ((double)right_votes / (double)total) * 100;
-            ret = (int)(Math.floor(onePercent * right_percentage));
-
-            if(ret < minimumProgressbarWidth) {
-                return minimumProgressbarWidth;
+            public void onBickerClick (View view, LinearLayout closed_bicker, LinearLayout
+            open_bicker){
+                if (closed_bicker.isShown()) {
+                    open_bicker.setVisibility(View.VISIBLE);
+                    AnimationHandler.slide_down(getActivity(), open_bicker);
+                    closed_bicker.setVisibility(View.GONE);
+                } else {
+                    AnimationHandler.slide_up(getActivity(), open_bicker);
+                    closed_bicker.setVisibility(View.VISIBLE);
+                    open_bicker.setVisibility(View.GONE);
+                }
             }
 
-            return ret;
-        }
+            public String display_votes ( double d){
+                String ret = null;
 
-        public double GetProgressBarPercent_blue (double left_votes, double right_votes) {
+                double zero = 0.0;
+                double thousand = 1000.0;
+                double ten_thousand = 10000.0;
+                double hundred_thousand = 100000.0;
+                double million = 1000000.0;
+                double ten_million = 10000000.0;
+                double hundred_million = 100000000.0;
+                double billion = 1000000000.0;
 
-            double ret = -1;
-            double total = left_votes + right_votes;
-            ret = (left_votes / total) * 100;
-            return ret;
-        }
+                df.setRoundingMode(RoundingMode.DOWN);
+                if (d < zero) {
+                    Log.d(TAG, "Home_fragment ERROR: vote count is negative in display_votes");
+                    Toast.makeText(getActivity(), "Home_fragment ERROR: vote count is negative in display_votes", Toast.LENGTH_LONG).show();
+                } else if (d >= zero && d < thousand) {
+                    ret = Integer.toString((int) d) + " Votes";
+                } else if (d >= thousand && d < ten_thousand) {
+                    ret = df.format(d / thousand);
+                    ret += "K Votes";
+                } else if (d >= ten_thousand && d < hundred_thousand) {
+                    ret = df.format(d / thousand);
+                    ret += "K Votes";
+                } else if (d >= hundred_thousand && d < million) {
+                    ret = df.format(d / thousand);
+                    ret += "K Votes";
+                } else if (d >= million && d < ten_million) {
+                    ret = df.format(d / million);
+                    ret += "M Votes";
+                } else if (d >= ten_million && d < hundred_million) {
+                    ret = df.format(d / million);
+                    ret += "M Votes";
+                } else if (d >= hundred_million && d < billion) {
+                    ret = df.format(d / million);
+                    ret += "M Votes";
+                } else if (d >= billion) {
+                    ret = df.format(d / billion);
+                    ret += "B Votes";
+                } else {
+                    Log.d(TAG, "Home_fragment- ERROR in display_votes. d = " + d);
+                    Toast.makeText(getActivity(), "Home_fragment- ERROR in display_votes", Toast.LENGTH_LONG).show();
+                }
 
-        public double GetProgressBarPercent_purple (double left_votes, double right_votes) {
-            double ret = -1;
-            double total = left_votes + right_votes;
-            ret = (right_votes / total) * 100;
-            return ret;
-        }
-
-        public int GetProperPercentTotal_blue (double blue_percent, double purple_percent) {
-
-            if(blue_percent > purple_percent) {
-                return (int)(Math.floor(blue_percent));
+                return ret;
             }
-            else if(blue_percent < purple_percent) {
-                return (int)(Math.ceil(blue_percent));
-            }
-            else {
-                return (int) blue_percent;
-            }
-        }
 
-        public int GetProperPercentTotal_purple (double blue_percent, double purple_percent) {
+            public boolean isActive (Long approved,int seconds_until_expired){
 
-            if(purple_percent > blue_percent) {
-                return (int)(Math.floor(purple_percent));
+                boolean ret = true;
+
+                Date now = new Date();
+
+                if ((now.getTime() - approved) > (seconds_until_expired * 1000)) {
+                    //bicker has expired. Move it to expiredBicker section of DB
+                    ret = false;
+                }
+
+                return ret;
             }
-            else if(purple_percent < blue_percent) {
-                return(int)(Math.ceil(purple_percent));
+
+            // This returns time remaining in milliseconds
+            public long getRemainingTime (Long approved,int seconds_until_expired){
+
+                Date now = new Date();
+
+                long time_until_expired = seconds_until_expired * 1000;
+
+                long active_time = now.getTime() - approved;
+
+                long ret = time_until_expired - active_time;
+
+                return ret;
             }
-            else {
-                return (int)purple_percent;
+
+            public int GetProgressBarLength_blue ( double onePercent, int left_votes,
+            int right_votes){
+
+                int ret = -1;
+                int total = left_votes + right_votes;
+                double left_percentage = ((double) left_votes / (double) total) * 100;
+                ret = (int) (Math.floor(onePercent * left_percentage));
+
+                if (ret < minimumProgressbarWidth) {
+                    return minimumProgressbarWidth;
+                }
+
+                return ret;
             }
-        }
+
+            public int GetProgressBarLength_purple ( double onePercent, int left_votes,
+            int right_votes){
+
+                int ret = -1;
+                int total = left_votes + right_votes;
+                double right_percentage = ((double) right_votes / (double) total) * 100;
+                ret = (int) (Math.floor(onePercent * right_percentage));
+
+                if (ret < minimumProgressbarWidth) {
+                    return minimumProgressbarWidth;
+                }
+
+                return ret;
+            }
+
+            public double GetProgressBarPercent_blue ( double left_votes, double right_votes){
+
+                double ret = -1;
+                double total = left_votes + right_votes;
+                ret = (left_votes / total) * 100;
+                return ret;
+            }
+
+            public double GetProgressBarPercent_purple ( double left_votes, double right_votes){
+                double ret = -1;
+                double total = left_votes + right_votes;
+                ret = (right_votes / total) * 100;
+                return ret;
+            }
+
+            public int GetProperPercentTotal_blue ( double blue_percent, double purple_percent){
+
+                if (blue_percent > purple_percent) {
+                    return (int) (Math.floor(blue_percent));
+                } else if (blue_percent < purple_percent) {
+                    return (int) (Math.ceil(blue_percent));
+                } else {
+                    return (int) blue_percent;
+                }
+            }
+
+            public int GetProperPercentTotal_purple ( double blue_percent, double purple_percent){
+
+                if (purple_percent > blue_percent) {
+                    return (int) (Math.floor(purple_percent));
+                } else if (purple_percent < blue_percent) {
+                    return (int) (Math.ceil(purple_percent));
+                } else {
+                    return (int) purple_percent;
+                }
+            }
+
+
     }
-
-
 }
+

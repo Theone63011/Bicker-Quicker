@@ -2,6 +2,7 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -29,6 +30,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -39,13 +41,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class PastBickers_Fragment extends Fragment {
+import static com.facebook.AccessTokenManager.TAG;
 
-    private static final String TAG = PastBickersActivity.class.getSimpleName();
+public class ReportedBickers_Fragment extends Fragment {
+    //private static final String TAG = ReportedBickersActivity.class.getSimpleName();
 
-    private PastBickers_Fragment.OnBickerPressedListener mListener;
+    private ReportedBickers_Fragment.OnBickerPressedListener mListener;
 
-    PastBickers_Fragment.OnBickerPressedListener callback;
+    ReportedBickers_Fragment.OnBickerPressedListener callback;
 
     private ArrayList<Bicker> bickers;
     private List<String> votedBickerIds;
@@ -57,15 +60,17 @@ public class PastBickers_Fragment extends Fragment {
     private Button leftVote;
     private Button rightVote;
     private Button noVote;
+    private Button remove;
+    private Button cancel;
     FirebaseUser user;
     private FirebaseDatabase database;
     String bickerKey;
 
 
-    public PastBickers_Fragment() {}
+    public ReportedBickers_Fragment() {}
 
-    public static PastBickers_Fragment newInstance(int param1) {
-        PastBickers_Fragment fragment = new PastBickers_Fragment();
+    public static ReportedBickers_Fragment newInstance(int param1) {
+        ReportedBickers_Fragment fragment = new ReportedBickers_Fragment();
 
         //Bundle args = new Bundle();
         //args.putInt("ARG_PARAM1", param1);
@@ -83,6 +88,8 @@ public class PastBickers_Fragment extends Fragment {
 
         DatabaseReference databaseRef = database.getReference();
 
+        Query sort = database.getReference("Bicker").orderByChild("reportCount");
+
         bickers = new ArrayList<>();
         votedBickerIds = new ArrayList<String>();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -91,110 +98,15 @@ public class PastBickers_Fragment extends Fragment {
         //Query user_create_date = database.getReference("User").orderByChild("create_date");
         //Query bicker_create_date = database.getReference("Bicker").orderByChild("create_date"); //create_date
 
-        databaseRef.addListenerForSingleValueEvent( new ValueEventListener() {
+        sort.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String id = user.getUid();
-                String voted_id;
-                String side;
-                String code;
-                String bicker_id;
-                String userKey = "";
 
-                //Get user key
-                for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
-                    if (userSnapshot.child("userId").getValue().toString().equals(id)) {
-                        userKey = userSnapshot.getKey();
-                    }
-                }
-
-                // This loop gets the users' created active bickers and adds the user's voted on bickers
-                // to the votedBickerIds list and bickers_votes map
-                for (DataSnapshot bickerSnapshot : dataSnapshot.child("Bicker").getChildren()) {
-                    try {
-                        if (bickerSnapshot.child("userId") != null && bickerSnapshot.child("senderID").getValue().toString().equals(id)) {
-                            bickerKey = bickerSnapshot.getKey();
-
-                            for (DataSnapshot votedId : bickerSnapshot.child("votedBickerIds").getChildren()) {
-                                voted_id = votedId.getKey().toString();
-                                side = votedId.child("Side Voted").getValue().toString();
-                                votedBickerIds.add(voted_id);
-
-                                if (bickers_votes.isEmpty() == false) {
-                                    if (bickers_votes.containsKey(voted_id) == false) {
-                                        bickers_votes.put(voted_id, side);
-                                    }
-                                } else {
-                                    bickers_votes.put(voted_id, side);
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        Log.w(TAG, "Home_Fragment detected a null user in the database.   " + e);
-                    }
-                }
-
-                // This loop get the users' created expired bickers and adds the user's voted on
-                // bickers to the votedBickerIds list and bickers_votes map
-                for (DataSnapshot bickerSnapshot : dataSnapshot.child("ExpiredBicker").getChildren()) {
-                    try {
-                        if (bickerSnapshot.child("userId") != null && bickerSnapshot.child("senderID").getValue().toString().equals(id)) {
-                            bickerKey = bickerSnapshot.getKey();
-
-                            for (DataSnapshot votedId : bickerSnapshot.child("votedBickerIds").getChildren()) {
-                                voted_id = votedId.getKey().toString();
-                                side = votedId.child("Side Voted").getValue().toString();
-                                votedBickerIds.add(voted_id);
-                                if (bickers_votes.isEmpty() == false) {
-                                    if (bickers_votes.containsKey(voted_id) == false) {
-                                        bickers_votes.put(voted_id, side);
-                                    }
-                                } else {
-                                    bickers_votes.put(voted_id, side);
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        Log.w(TAG, "Home_Fragment detected a null user in the database.   " + e);
-                    }
-                }
-
-                // This loop adds all created active bickers to the bickers array
-                for (DataSnapshot bickerSnapshot : dataSnapshot.child("Bicker").getChildren()) {
-
-                    if(bickerSnapshot.child("senderID").getValue().toString().equals(id)) {
-
-                        Bicker newBicker = new Bicker(
-                                bickerSnapshot.child("title").getValue() != null ? bickerSnapshot.child("title").getValue().toString() : "No title",
-                                bickerSnapshot.child("left_side").getValue() != null ? bickerSnapshot.child("left_side").getValue().toString() : "No left side",
-                                bickerSnapshot.child("right_side").getValue() != null ? bickerSnapshot.child("right_side").getValue().toString() : "No right side",
-                                (int) (long) bickerSnapshot.child("left_votes").getValue(),
-                                (int) (long) bickerSnapshot.child("right_votes").getValue(),
-                                (int) (long) bickerSnapshot.child("total_votes").getValue(),
-                                bickerSnapshot.child("reportCount").getValue() != null ? (int) (long) bickerSnapshot.child("reportCount").getValue() : 0,
-                                bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
-                                bickerSnapshot.getKey(),
-                                (double) (long) bickerSnapshot.child("seconds_until_expired").getValue()
-                        );
-
-                        if(dataSnapshot.child("User/" + userKey + "/receivedDeletionRequests/" + bickerSnapshot.getKey()).exists() ||
-                                dataSnapshot.child("User/" + userKey + "/sentDeletionRequests/" + bickerSnapshot.getKey()).exists()){
-                            newBicker.setDeletionPending(true);
-                        }
-                        else{
-                            newBicker.setDeletionPending(false);
-                        }
-
-                        bickers.add(newBicker);
-
-                    }
-                }
 
 
                 // This loop adds all created expired bickers to the bickers array
-                for (DataSnapshot bickerSnapshot : dataSnapshot.child("ExpiredBicker").getChildren()) {
-
-                    if(bickerSnapshot.child("senderID").getValue().toString().equals(id)) {
-
+                for (DataSnapshot bickerSnapshot : dataSnapshot.getChildren()) {
+                    if (bickerSnapshot.child("reported").getValue() != null && bickerSnapshot.child("reported").getValue().toString().equals("true")){
                         Bicker newBicker = new Bicker(
                                 bickerSnapshot.child("title").getValue() != null ? bickerSnapshot.child("title").getValue().toString() : "No title",
                                 bickerSnapshot.child("left_side").getValue() != null ? bickerSnapshot.child("left_side").getValue().toString() : "No left side",
@@ -208,22 +120,14 @@ public class PastBickers_Fragment extends Fragment {
                                 (double) (long) bickerSnapshot.child("seconds_until_expired").getValue()
                         );
 
-                        if(dataSnapshot.child("User/" + userKey + "/receivedDeletionRequests/" + bickerSnapshot.getKey()).exists() ||
-                                dataSnapshot.child("User/" + userKey + "/sentDeletionRequests/" + bickerSnapshot.getKey()).exists()){
-                            newBicker.setDeletionPending(true);
-                        }
-                        else{
-                            newBicker.setDeletionPending(false);
-                        }
 
-                        bickers.add(newBicker);
-
+                         bickers.add(newBicker);
                     }
                 }
 
                 Collections.reverse(bickers);
 
-                ArrayAdapter<Bicker> adapter = new PastBickers_Fragment.bickerArrayAdapter(getActivity(), 0, bickers);
+                ArrayAdapter<Bicker> adapter = new ReportedBickers_Fragment.bickerArrayAdapter(getActivity(), 0, bickers);
 
                 ListView listView = getView().findViewById(R.id.bickerListView);
                 listView.setAdapter(adapter);
@@ -249,14 +153,14 @@ public class PastBickers_Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_past_bickers, container, false);
+        return inflater.inflate(R.layout.activity_expired_bickers__fragment, container, false);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof PastBickers_Fragment.OnBickerPressedListener) {
-            mListener = (PastBickers_Fragment.OnBickerPressedListener) context;
+        if (context instanceof ReportedBickers_Fragment.OnBickerPressedListener) {
+            mListener = (ReportedBickers_Fragment.OnBickerPressedListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -269,7 +173,7 @@ public class PastBickers_Fragment extends Fragment {
         mListener = null;
     }
 
-    public void setOnBickerPressedListener(PastBickers_Fragment.OnBickerPressedListener callback) {
+    public void setOnBickerPressedListener(ReportedBickers_Fragment.OnBickerPressedListener callback) {
         this.callback = callback;
     }
 
@@ -278,7 +182,6 @@ public class PastBickers_Fragment extends Fragment {
         void onBickerPressed(int position);
     }
 
-    //custom ArrayAdapter for filling the listView
     class bickerArrayAdapter extends ArrayAdapter<Bicker> {
 
         private Context context;
@@ -300,14 +203,14 @@ public class PastBickers_Fragment extends Fragment {
             //get the property we are displaying
             Bicker bicker = bickers.get(position);
 
-            expired = false;
+            //expired = false;
 
             int total = bicker.getLeft_votes() + bicker.getRight_votes();
             String total_votes = display_votes(Double.valueOf(total));
 
             //get the inflater and inflate the XML layout for each item
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.layout_past_bicker, null);
+            View view = inflater.inflate(R.layout.layout_reported_bickers, null);
 
             final ViewGroup sideContainer = (ViewGroup) view.findViewById(R.id.side_holder);
 
@@ -417,10 +320,11 @@ public class PastBickers_Fragment extends Fragment {
             ImageView closed_timer = view.findViewById(R.id.closed_timer);
             ImageView open_timer = view.findViewById(R.id.open_timer);
 
-            closed_clock.setVisibility(View.GONE);
+            /*closed_clock.setVisibility(View.GONE);
             open_clock.setVisibility(View.GONE);
             closed_timer.setVisibility(View.GONE);
-            open_timer.setVisibility(View.GONE);
+            open_timer.setVisibility(View.GONE);*/
+
 
             LinearLayout closed_header = view.findViewById(R.id.closed_header);
             LinearLayout open_header = view.findViewById(R.id.open_header);
@@ -429,9 +333,10 @@ public class PastBickers_Fragment extends Fragment {
             LinearLayout open_voteCountHolder = view.findViewById(R.id.open_voteCount_holder);
 
             TextView closed_vote_count = view.findViewById(R.id.closed_vote_count_text);
-            TextView open_vote_count = view.findViewById(R.id.open_vote_count_text);
-            closed_vote_count.setText(total_votes);
-            open_vote_count.setText(total_votes);
+            //TextView open_vote_count = view.findViewById(R.id.open_vote_count_text);
+            closed_vote_count.setText(Integer.toString(bicker.getReportCount()) + " Reports");
+            Log.d(TAG, "Report count: " + bicker.getReportCount());
+            //open_vote_count.setText(total_votes);
 
             open_bicker_holder.setVisibility(View.GONE);
 
@@ -490,12 +395,64 @@ public class PastBickers_Fragment extends Fragment {
             leftVote.setBackgroundResource(R.drawable.side_prechoice_blue);
             rightVote.setBackgroundResource(R.drawable.side_prechoice_purple);
 
+            remove = view.findViewById(R.id.removedBicker);
+            cancel = view.findViewById(R.id.cancelReport);
+
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference ref = database.getReference();
+
+            remove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ref.child("Bicker/" + bicker.getKey()).setValue(null);
+
+                   ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                       @Override
+                       public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                           for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
+                               userSnapshot.child("votedBickerIds").child(bicker.getKey()).getRef().setValue(null);
+                               userSnapshot.child("sentDeletionRequests").child(bicker.getKey()).getRef().setValue(null);
+                               userSnapshot.child("receivedDeletionRequests").child(bicker.getKey()).getRef().setValue(null);
+
+                           }
+
+                       }
+
+                       @Override
+                       public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                       }
+                   });
+                }
+            });
+
+            cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ref.child("Bicker/" + bicker.getKey() + "/reported").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.getValue().toString().equals("true")){
+                                ref.child("Bicker/" + bicker.getKey() + "/reported").setValue(false);
+                                ref.child("Bicker/" + bicker.getKey() + "/reportCount").setValue(0);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+            });
+
             boolean voted = false;
 
             if(votedBickerIds.contains(bicker.getCode())) {
                 voted = true;
             }
-
+            /*
             DatabaseReference databaseRef = database.getReference();
 
             databaseRef.addListenerForSingleValueEvent( new ValueEventListener() {
@@ -534,7 +491,7 @@ public class PastBickers_Fragment extends Fragment {
             else {
                 choice_label_holder.setVisibility(View.GONE);
             }
-
+            */
 
             if(voted == true){
                 //leftVote.setText(Integer.toString(bicker.getLeft_votes()));
@@ -578,25 +535,6 @@ public class PastBickers_Fragment extends Fragment {
                 }
             }
 
-            final Button deleteButton = view.findViewById(R.id.deleteButton);
-
-            if(bicker.isDeletionPending()){
-                deleteButton.setEnabled(false);
-                deleteButton.setText("Deletion Request Sent");
-                deleteButton.setBackgroundColor(Color.parseColor("#A9A9A9"));
-            }
-            else {
-
-                deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        requestDelete(bicker.getKey());
-                        deleteButton.setEnabled(false);
-                        deleteButton.setText("Deletion Request Sent");
-                        deleteButton.setBackgroundColor(Color.parseColor("#A9A9A9"));
-                    }
-                });
-            }
 
 
             return view;
@@ -728,4 +666,5 @@ public class PastBickers_Fragment extends Fragment {
             return ret;
         }
     }
+
 }
