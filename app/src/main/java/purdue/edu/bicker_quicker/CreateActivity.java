@@ -765,7 +765,13 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setTags(tags);
         bicker.setSeconds_until_expired(seconds_until_expired);
         bicker.setKeywords(skeys);
+
+        bicker.setReported(false);
+        bicker.setReportCount(0);
         bicker.setMatureContent(mature_content);
+
+
+
         DatabaseReference keyReference = ref.push();
         keyReference.setValue(bicker);
 
@@ -786,6 +792,7 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
 
             }
         });
+
 
         // Subscribe creator to messaging
         ref.orderByChild("code").equalTo(c).addListenerForSingleValueEvent(new ValueEventListener() {

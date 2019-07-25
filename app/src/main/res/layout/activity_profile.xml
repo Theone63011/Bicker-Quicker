@@ -87,6 +87,17 @@
             android:text="Statistics"
             android:textColor="@color/white" />
 
+        <Button
+            android:id="@+id/reports"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/standard_button"
+            android:minHeight="20dp"
+            android:text="Reported Bickers"
+            android:textColor="@color/white" />
+
         <Switch
             android:id="@+id/mod"
             android:layout_width="wrap_content"

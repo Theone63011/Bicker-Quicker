@@ -2,7 +2,6 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -10,8 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -80,6 +77,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
     private Button leftVote;
     private Button rightVote;
     private Button noVote;
+    private Button report;
 
     private Thread timer_thread;
 
@@ -398,6 +396,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                                 (int) (long) bickerSnapshot.child("left_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("right_votes").getValue(),
                                 (int) (long) bickerSnapshot.child("total_votes").getValue(),
+                                bickerSnapshot.child("reportCount").getValue() != null ? (int) (long) bickerSnapshot.child("reportCount").getValue() : 0,
                                 bickerSnapshot.child("code").getValue() != null ? bickerSnapshot.child("code").getValue().toString() : "No code",
                                 bickerSnapshot.child("category").getValue() != null ? bickerSnapshot.child("category").getValue().toString() : "No category",
                                 bickerSnapshot.child("senderID").getValue() != null ? bickerSnapshot.child("senderID").getValue().toString() : "No senderID",
@@ -956,6 +955,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
             rightVote = view.findViewById(R.id.right);
             rightVote.setText(bicker.getRight_side());
             noVote = view.findViewById(R.id.abstain);
+            report = view.findViewById(R.id.report_flag);
 
             choice_label_holder = view.findViewById(R.id.choice_label_holder);
 
@@ -1001,6 +1001,19 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     rightLabel.setEnabled(false);
                     leftLabel.setEnabled(false);
                     noSideClick(v, bicker, open_vote_count, closed_vote_count);
+                }
+            });
+
+            report.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ReportBickerDialog reportBicker = new ReportBickerDialog();
+                    Bundle reportBundle = new Bundle(1);
+                    reportBundle.putString("key", bicker.getKey());
+                    reportBicker.setArguments(reportBundle);
+                    reportBicker.show(getFragmentManager(), "report bicker");
+                    Log.d(TAG, "BICKER KEY: " + bicker.getKey());
+
                 }
             });
 

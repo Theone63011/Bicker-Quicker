@@ -24,20 +24,23 @@ public class Bicker {
     private ArrayList<String> keywords = new ArrayList<String>();
     private double seconds_until_expired;
     private boolean deletionPending;
+    private boolean reported;
+    private int reportCount;
     private boolean matureContent;
+
 
     public Bicker (){
 
     }
 
     public Bicker(String title, String left_Side, String right_side,
-                  int left_votes, int right_votes, int total, String category, String key, double seconds) {
-        this(title, null,  left_Side, right_side, null, null, left_votes, right_votes, total, null, category, null, null, key , null, null, null, seconds);
+                  int left_votes, int right_votes, int total, int reportCount, String category, String key, double seconds) {
+        this(title, null,  left_Side, right_side, null, null, left_votes, right_votes, total, reportCount, null, category, null, null, key , null, null, null, seconds);
 
     }
 
     public Bicker (String title, String description, String left_side, String right_side, Date create_date, Date appr_date, int left_votes,
-                   int right_votes, int total, String code, String category, String senderID, String receiverID, String key, ArrayList<String> tags, ArrayList<String> keywords, ArrayList<String> votedUsers, double seconds){
+                   int right_votes, int total, int reportCount, String code, String category, String senderID, String receiverID, String key, ArrayList<String> tags, ArrayList<String> keywords, ArrayList<String> votedUsers, double seconds){
 
         this.title = title;
         this.description = description;
@@ -59,6 +62,7 @@ public class Bicker {
         if (votedUsers != null)
             this.votedUsers = votedUsers;
         seconds_until_expired = seconds;
+        this.reportCount = reportCount;
     }
 
     public ArrayList<String> getKeywords() {
@@ -195,9 +199,19 @@ public class Bicker {
 
     public void setDeletionPending(boolean deletionPending) { this.deletionPending = deletionPending; }
 
+
+    public boolean isReported(){return reported;}
+
+    public void setReported(boolean bool){reported = bool;}
+
+    public int getReportCount(){return reportCount;}
+
+    public void setReportCount(int count){reportCount = count;}
+
     public boolean isMatureContent() { return matureContent; }
 
     public void setMatureContent(boolean matureContent) { this.matureContent = matureContent; }
+
 
 
 

@@ -12,10 +12,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <!--<activity android:name=".ExpiredBickers_Fragment"></activity>-->
+
         <activity
             android:name=".ExpiredBickersActivity"
             android:label="@string/title_activity_expired_bickers"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ReportedBickersActivity"
+            android:label="ReportedBickersActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".BasicBickerView"

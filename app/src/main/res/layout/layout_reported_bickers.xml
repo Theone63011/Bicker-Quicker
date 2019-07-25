@@ -68,7 +68,6 @@
             android:orientation="horizontal"
             android:visibility="visible">
 
-
             <ImageView
                 android:id="@+id/closed_vote_count_icon"
                 android:layout_width="37dp"
@@ -91,25 +90,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.3" />
 
-            <ImageView
-                android:id="@+id/closed_timer"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="3dp"
-                app:srcCompat="@drawable/stopwatch" />
-
-            <TextView
-                android:id="@+id/closed_clock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center_vertical"
-                android:layout_marginRight="5dp"
-                android:layout_marginBottom="2dp"
-                android:text="00:00:00"
-                android:textColor="@color/timer"
-                android:textSize="12sp"
-                android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>
@@ -164,111 +144,6 @@
 
             </LinearLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/percentage_holder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <LinearLayout
-                android:id="@+id/blue_percentage_holder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/progressbar_blue"
-                    android:layout_width="85px"
-                    android:layout_height="85px"
-                    android:layout_gravity="center"
-                    android:background="@drawable/progressbar_shape_blue"
-                    android:gravity="center|left"
-                    android:paddingStart="5dp"
-                    android:paddingBottom="2dp"
-                    android:shadowColor="#878787"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="4"
-                    android:text="0%"
-                    android:textColor="@color/white" />
-
-                <ImageView
-                    android:id="@+id/votes_icon_blue"
-                    android:layout_width="21dp"
-                    android:layout_height="21dp"
-                    android:layout_gravity="center"
-                    app:srcCompat="@drawable/profile_icon_blue" />
-
-                <TextView
-                    android:id="@+id/votes_count_blue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="votes"
-                    android:textColor="@color/blueAccent3"
-                    android:textStyle="bold" />
-
-                <Space
-                    android:id="@+id/progressbar_space_blue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_weight="1" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/purple_percentage_holder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/progressbar_purple"
-                    android:layout_width="85px"
-                    android:layout_height="85px"
-                    android:layout_gravity="center"
-                    android:background="@drawable/progressbar_shape_purple"
-                    android:gravity="center|left"
-                    android:paddingStart="5dp"
-                    android:paddingBottom="2dp"
-                    android:shadowColor="#878787"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="4"
-                    android:text="0%"
-                    android:textColor="@color/white" />
-
-                <ImageView
-                    android:id="@+id/votes_icon_purple"
-                    android:layout_width="21dp"
-                    android:layout_height="21dp"
-                    android:layout_gravity="center"
-                    app:srcCompat="@drawable/profile_icon_purple" />
-
-                <TextView
-                    android:id="@+id/votes_count_purple"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="votes"
-                    android:textColor="@color/purpleAccent1"
-                    android:textStyle="bold" />
-
-                <Space
-                    android:id="@+id/progressbar_space_purple"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_weight="1" />
-
-
-            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -385,20 +260,26 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/abstain_holder"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="1.0" >
 
                     <Button
-                        android:id="@+id/abstain"
-                        android:layout_width="200dp"
+                        android:id="@+id/removedBicker"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:clickable="true"
-                        android:gravity="center"
-                        android:text="abstain" />
+                        android:layout_weight=".50"
+                        android:text="Remove Bicker" />
+
+
+                    <Button
+                        android:id="@+id/cancelReport"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".50"
+                        android:text="Cancel Report" />
                 </LinearLayout>
+
 
             </LinearLayout>
 
@@ -411,57 +292,12 @@
                 android:orientation="horizontal"
                 android:visibility="visible">
 
-                <Button
-                    android:id="@+id/report_flag"
-                    android:layout_width="25dp"
-                    android:background="@drawable/red_flag_icon"
-                    android:layout_height="25dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="2dp"
-                    app:srcCompat="@drawable/red_flag_icon" />
-                <ImageView
-                    android:id="@+id/open_vote_count_icon"
-                    android:layout_width="37dp"
-                    android:layout_height="35dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="2dp"
-                    app:srcCompat="@drawable/vote_count_icon" />
-
-                <TextView
-                    android:id="@+id/open_vote_count_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical"
-                    android:text="Placeholder"
-                    android:textColor="@color/purpleAccent1" />
-
                 <Space
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="0.3" />
 
 
-                <ImageView
-                    android:id="@+id/open_timer"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="bottom"
-                    android:layout_marginBottom="3dp"
-                    app:srcCompat="@drawable/stopwatch" />
-
-                <TextView
-                    android:id="@+id/open_clock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_vertical"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginBottom="2dp"
-                    android:text="00:00:00"
-                    android:textColor="@color/timer"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
             </LinearLayout>
 
         </LinearLayout>
