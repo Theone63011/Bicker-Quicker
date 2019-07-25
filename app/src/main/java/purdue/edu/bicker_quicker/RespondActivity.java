@@ -579,7 +579,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
                     //Log.d(TAG, "Create_activity: ref3 dataSnapshot exists");
                     int count = Integer.parseInt(dataSnapshot.child("count").getValue().toString());
                     count++;
-                    categoryRef2.child("IDs").child(Integer.toString(count)).setValue(bicker.getKey());
+                    categoryRef2.child("Active_IDs").child(Integer.toString(count)).setValue(bicker.getKey());
                     categoryRef2.child("count").setValue(count);
                 }
             }
