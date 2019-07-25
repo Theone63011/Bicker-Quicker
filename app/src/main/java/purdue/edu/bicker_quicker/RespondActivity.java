@@ -62,6 +62,7 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
     ArrayList<String> recvTags;
     ArrayList<String> recvKeys;
     private TextView bicker_tag_censor;
+    TextView side_censor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +84,8 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         send_side = findViewById(R.id.submitResponse);
         cancelBicker = findViewById(R.id.cancelbutton);
         toolbar = findViewById(R.id.toolbarRespond);
+        side_censor = findViewById(R.id.bicker_side_censor);
+        side_censor.setVisibility(View.GONE);
 
         tag = findViewById(R.id.tagFieldR);
         addTag = findViewById(R.id.fabAddTagR);
@@ -95,6 +98,8 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         tag_string3 = null;
         bicker_tag_censor = findViewById(R.id.bicker_tag_censorR);
         bicker_tag_censor.setVisibility(View.GONE);
+
+        side.addTextChangedListener(sideWatcher);
 
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("User/" + userId);
@@ -286,6 +291,48 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         return true;
     }
 
+    private final TextWatcher sideWatcher = new TextWatcher() {
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            int valid = 0;
+            if(censor.check_chars(s.toString()) == false) valid = 1;
+            if(censor.check_words(s.toString()) == false) valid = 2;
+            if(valid > 0) {
+                side_censor.setVisibility(View.VISIBLE);
+                if(valid == 1) {
+                    side_censor.setText("Invalid Character");
+                }
+                if(valid == 2) {
+                    side_censor.setText("Inappropriate Input");
+                }
+            }
+            else {
+                side_censor.setVisibility(View.GONE);
+            }
+        }
+
+        public void afterTextChanged(Editable s) {
+            int valid = 0;
+            if(censor.check_chars(s.toString()) == false) valid = 1;
+            if(censor.check_words(s.toString()) == false) valid = 2;
+            if(valid > 0) {
+                side_censor.setVisibility(View.VISIBLE);
+                if(valid == 1) {
+                    side_censor.setText("Invalid Character");
+                }
+                if(valid == 2) {
+                    side_censor.setText("Inappropriate Input");
+                }
+            }
+            else {
+                side_censor.setVisibility(View.GONE);
+            }
+        }
+    };
+
     private final TextWatcher tagWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -361,6 +408,8 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
     }
 
 
+
+
     public void failEntry() {
         title_side.setTextColor(Color.parseColor("#FF758C"));
     }
@@ -373,6 +422,14 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
         DatabaseReference ref = db.getReference("Bicker/"+bickerID);
         bicker.setCode("code_used");
 
+        Boolean censor_passed = true;
+        if(censor.check_chars(bicker.getRight_side()) == false) censor_passed = false;
+        if(censor.check_words(bicker.getRight_side()) == false) censor_passed = false;
+        if(censor_passed == false) {
+            //Log.d(TAG, "Censor not passed");
+            Toast.makeText(RespondActivity.this, "Invalid Input.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if(censor.getUseMatureWordList()){
             Censor nonMatureCensor = new Censor(false);
 

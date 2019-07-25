@@ -96,12 +96,19 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
         final String code = bickerCode;
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference();
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         ref.orderByChild("code").equalTo(bickerCode);
         bick.setCode(null);
-        ref.child("Bicker").addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Iterable<DataSnapshot> children = dataSnapshot.getChildren();  // Get bickers
+
+                Boolean matureContentAllowed = false;
+                if(dataSnapshot.child("User/" + uid + "/matureContent").exists()){
+                    matureContentAllowed = Boolean.parseBoolean(dataSnapshot.child("User/" + uid + "/matureContent").getValue().toString());
+                }
+
+                Iterable<DataSnapshot> children = dataSnapshot.child("Bicker").getChildren();  // Get bickers
 
                 // USE THIS BICKER.CLASS FOR FUTURE USE!!!!
                 for (DataSnapshot bicker : children) {
@@ -124,7 +131,7 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
                     }
                 }
 
-                callback(); // Done iterating, data found, initiate callback
+                callback(matureContentAllowed); // Done iterating, data found, initiate callback
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -141,7 +148,7 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
         return "";
     }
 
-    public void callback() {
+    public void callback(Boolean matureContentAllowed) {
         enterBelow.setTextColor(Color.parseColor("#00FF00"));
 
         if (bick.getCode() == null) {    // Bicker with given code not found
@@ -153,6 +160,11 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
 
         else if (allowTalkingToSelf == false && bick.getSenderID().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // Check if the person is talking with themselves
             enterBelow.setText("Stop Talking to Yourself");
+            enterBelow.setTextColor(Color.parseColor("#FF758C"));
+            submitButton.setText("Get Bicker");
+        }
+        else if(bick.isMatureContent() && !matureContentAllowed){
+            enterBelow.setText("This bicker contains mature content. Enable mature content in the settings menu to continue.");
             enterBelow.setTextColor(Color.parseColor("#FF758C"));
             submitButton.setText("Get Bicker");
         }
