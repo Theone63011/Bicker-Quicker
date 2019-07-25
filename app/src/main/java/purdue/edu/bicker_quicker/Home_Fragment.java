@@ -1041,31 +1041,29 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                 leftLabel.setEnabled(false);
                 rightLabel.setEnabled(false);
 
-                String bickerCode = hiddenKey.getText().toString();
-                String side_voted = bickers_votes.get(bickerCode);
+                if (voted) {
+                    String bickerCode = hiddenKey.getText().toString();
+                    String side_voted = bickers_votes.get(bickerCode);
 
-                if(side_voted.equalsIgnoreCase("left")){
-                    //Log.d(TAG, "Home_fragment: left vote found");
-                    leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_blue);
-                    rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
+                    if (side_voted.equalsIgnoreCase("left")) {
+                        //Log.d(TAG, "Home_fragment: left vote found");
+                        leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_blue);
+                        rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
+                    } else if (side_voted.equalsIgnoreCase("right")) {
+                        //Log.d(TAG, "Home_fragment: right vote found");
+                        leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
+                        rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_purple);
+                    } else if (side_voted.equalsIgnoreCase("abstain")) {
+                        //Log.d(TAG, "Home_fragment: abstain vote found");
+                        leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
+                        rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
+                        noVote.setVisibility(View.VISIBLE);
+                        noVote.setTextColor(getResources().getColor(R.color.blue_purple_mix));
+                    } else {
+                        //Log.d(TAG, "Home_fragment: ERROR- side_voted not assigned");
+                        Toast.makeText(getActivity(), "Home_fragment: ERROR- side_voted not assigned", Toast.LENGTH_LONG).show();
+                    }
                 }
-                else if(side_voted.equalsIgnoreCase("right")) {
-                    //Log.d(TAG, "Home_fragment: right vote found");
-                    leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
-                    rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_purple);
-                }
-                else if(side_voted.equalsIgnoreCase("abstain")) {
-                    //Log.d(TAG, "Home_fragment: abstain vote found");
-                    leftVote.setBackgroundResource(R.drawable.side_postchoice_blue_select_purple);
-                    rightVote.setBackgroundResource(R.drawable.side_postchoice_purple_select_blue);
-                    noVote.setVisibility(View.VISIBLE);
-                    noVote.setTextColor(getResources().getColor(R.color.blue_purple_mix));
-                }
-                else {
-                    //Log.d(TAG, "Home_fragment: ERROR- side_voted not assigned");
-                    Toast.makeText(getActivity(), "Home_fragment: ERROR- side_voted not assigned", Toast.LENGTH_LONG).show();
-                }
-
 
                 // Setup the progress bars
                 int left_vote_count = bicker.getLeft_votes();
