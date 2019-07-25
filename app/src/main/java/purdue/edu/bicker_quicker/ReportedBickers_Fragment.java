@@ -2,7 +2,6 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -410,7 +409,7 @@ public class ReportedBickers_Fragment extends Fragment {
                        @Override
                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                            for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
-                               userSnapshot.child("votedBickerIds").child(bicker.getKey()).getRef().setValue(null);
+                               userSnapshot.child("votedOnBickers").child(bicker.getKey()).getRef().setValue(null);
                                userSnapshot.child("sentDeletionRequests").child(bicker.getKey()).getRef().setValue(null);
                                userSnapshot.child("receivedDeletionRequests").child(bicker.getKey()).getRef().setValue(null);
 
