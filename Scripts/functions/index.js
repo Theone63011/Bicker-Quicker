@@ -61,6 +61,9 @@ exports.deleteNotification = functions.database.ref('/Bicker/{pushId}').onDelete
 
 
 exports.deleteCategory = functions.database.ref('/Bicker/{pushId}').onDelete(async (snapshot, context) => {
+  
+
+
   console.log("INSIDE deleteCategory");
   var id = context.params.pushId;
   console.log("Delete pushid: " + id);
