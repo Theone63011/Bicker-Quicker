@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener, FilterDialog.FilterDialogListener {
+public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener, ExpiredBickers_Fragment.OnBickerPressedListener, FilterDialog.FilterDialogListener {
 
     //private FirebaseDatabase database;
     //private ArrayList<Bicker> bickers;
@@ -70,6 +70,9 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
     Home_Fragment homefrag1 = null;
     Home_Fragment homefrag2 = null;
+
+    ExpiredBickers_Fragment expHomeFrag1 = null;
+    ExpiredBickers_Fragment expHomeFrag2 = null;
 
     // FILTER VARIABLES
     public static boolean showActiveBickers;
@@ -126,6 +129,9 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
         noFilteredResultsFound = findViewById(R.id.nofilteredresultsfound);
         noFilteredResultsFound.setAlpha(0.0f);
+        showActiveBickers = true;
+        showExpiredBickers = false;
+
         toolbar = findViewById(R.id.toolbarHome);
         setSupportActionBar(toolbar);
         toolbar.setTitle("");
@@ -193,8 +199,13 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
             @Override
             public void onClick(View view) {
                 sortBy = "popular";
-                homefrag1.sortByPopularity();
-                homefrag2.sortByPopularity();
+                if (showActiveBickers) {
+                    homefrag1.sortByPopularity();
+                    homefrag2.sortByPopularity();
+                } else {
+                    expHomeFrag1.sortByPopularity();
+                    expHomeFrag2.sortByPopularity();
+                }
             }
         });
 
@@ -203,8 +214,13 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
             @Override
             public void onClick(View view) {
                 sortBy = "recent";
-                homefrag1.sortByRecent();
-                homefrag2.sortByRecent();
+                if (showActiveBickers) {
+                    homefrag1.sortByRecent();
+                    homefrag2.sortByRecent();
+                } else {
+                    expHomeFrag1.sortByRecent();
+                    expHomeFrag2.sortByRecent();
+                }
             }
         });
 
@@ -215,6 +231,7 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 openFilterDialog();
             }
         });
+
     }
 
 
@@ -251,10 +268,9 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
             homeFragment.set_home_fragment(fragment, tag);
 
             homeFragment.setOnBickerPressedListener(this);
-
+            System.out.println("Fragment is instanceof home_fragment");
             if (initializeHomeFrag1 == false) {
                 //Log.d(TAG, "Home_activity: initializeHomeFrag1 == false");
-
                 homefrag1 = homeFragment;
                 this.homefrag1.setReferenceToHomeActivity(this);
                 initializeHomeFrag1 = true;
@@ -263,6 +279,24 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
                 homefrag2 = homeFragment;
                 this.homefrag2.setReferenceToHomeActivity(this);
+                initializeHomeFrag1 = false;
+            }
+        } else if (fragment instanceof ExpiredBickers_Fragment) {
+            ExpiredBickers_Fragment f = (ExpiredBickers_Fragment) fragment;
+
+            String tag = f.getTag();
+
+            f.set_home_fragment(fragment, tag);
+
+            f.setOnBickerPressedListener(this);
+            System.out.println("Fragment is instanceof expBick_fragment");
+            if (initializeHomeFrag1 == false) {
+                expHomeFrag1 = f;
+                this.expHomeFrag1.setReferenceToHomeActivity(this);
+                initializeHomeFrag1 = true;
+            } else {
+                expHomeFrag2 = f;
+                this.expHomeFrag2.setReferenceToHomeActivity(this);
                 initializeHomeFrag1 = false;
             }
         }
@@ -290,7 +324,13 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
 
             Log.d("HomeActivity", "Inside getItem");
 
-            Home_Fragment homeFragment = new Home_Fragment();
+            Home_Fragment homeFragment = null; //new Home_Fragment();
+            ExpiredBickers_Fragment expFragment = null;
+            if (showActiveBickers) {
+                homeFragment = new Home_Fragment();
+            } else {
+                expFragment = new ExpiredBickers_Fragment();
+            }
             Bundle args = new Bundle();
             if(position == 0){
                 args.putBoolean("voted", false);
@@ -298,8 +338,13 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
             else{
                 args.putBoolean("voted", true);
             }
-            homeFragment.setArguments(args);
-            return homeFragment;
+            if (showActiveBickers) {
+                homeFragment.setArguments(args);
+                return homeFragment;
+            } else {
+                expFragment.setArguments(args);
+                return expFragment;
+            }
         }
 
         @Override
@@ -459,87 +504,158 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
             return;
         }
 
-        //*********************filter bickersHomeFrag1 by category***************************************
-        //set reference to this so homefrag1 can call applyFilter after it has fetched the latest list of bickers
-        this.homefrag1.setReferenceToHomeActivity(this);
-        ArrayList<Bicker> bickersHomeFrag1 = this.homefrag1.returnBickerArrayList();
+        if (showActiveBickers) {
+            //*********************filter bickersHomeFrag1 by category***************************************
+            //set reference to this so homefrag1 can call applyFilter after it has fetched the latest list of bickers
+            this.homefrag1.setReferenceToHomeActivity(this);
+            ArrayList<Bicker> bickersHomeFrag1 = this.homefrag1.returnBickerArrayList();
 
-        //filter by category
-        for (int i = 0; i < bickersHomeFrag1.size(); i++) {
-            if (this.categoryFilter.contains(bickersHomeFrag1.get(i).getCategory())) {
-                bickersHomeFrag1.remove(i);
-                i--;
-            }
-        }
-        //*********************end***************************************
-
-        //*********************filter bickersHomeFrag1 by keywords***************************************
-        ArrayList<Bicker> filteredKeywordList = new ArrayList<>();
-        Map<Bicker, Double> filteredKeywordMap = new HashMap<>();
-
-        if (this.keys != "") {
+            //filter by category
             for (int i = 0; i < bickersHomeFrag1.size(); i++) {
-                double similarityNumber = KeywordTokenizer.similarity(this.keys, bickersHomeFrag1.get(i).getKeywords(), bickersHomeFrag1.get(i).getTags());
-
-                if (similarityNumber != 0.0) {
-                    filteredKeywordMap.put(bickersHomeFrag1.get(i), similarityNumber);
+                if (this.categoryFilter.contains(bickersHomeFrag1.get(i).getCategory())) {
+                    bickersHomeFrag1.remove(i);
+                    i--;
                 }
             }
-        }
+            //*********************end***************************************
 
-        filteredKeywordList = new ArrayList<Bicker>(filteredKeywordMap.keySet());
+            //*********************filter bickersHomeFrag1 by keywords***************************************
+            ArrayList<Bicker> filteredKeywordList = new ArrayList<>();
+            Map<Bicker, Double> filteredKeywordMap = new HashMap<>();
 
-        Collections.reverse(filteredKeywordList);
+            if (this.keys != "") {
+                for (int i = 0; i < bickersHomeFrag1.size(); i++) {
+                    double similarityNumber = KeywordTokenizer.similarity(this.keys, bickersHomeFrag1.get(i).getKeywords(), bickersHomeFrag1.get(i).getTags());
 
-        if (this.keys.equals("")) {
-            this.homefrag1.updateBickerList(bickersHomeFrag1); //update bicker list with filtered bickers
-        } else {
-            this.homefrag1.updateBickerList(filteredKeywordList); //update bicker list with filtered bickers
-        }
-        //*********************end***************************************
-
-        //*********************filter bickersHomeFrag2 by category***************************************
-        //set reference to this so homefrag2 can call applyFilter after it has fetched the latest list of bickers
-        this.homefrag2.setReferenceToHomeActivity(this);
-        ArrayList<Bicker> bickersHomeFrag2 = this.homefrag2.returnBickerArrayList();
-        for (int i = 0; i < bickersHomeFrag2.size(); i++) {
-            if (this.categoryFilter.contains(bickersHomeFrag2.get(i).getCategory())) {
-                bickersHomeFrag2.remove(i);
-                i--;
+                    if (similarityNumber != 0.0) {
+                        filteredKeywordMap.put(bickersHomeFrag1.get(i), similarityNumber);
+                    }
+                }
             }
-        }
-        //*********************end***************************************
 
-        //*********************filter bickersHomeFrag2 by keywords***************************************
-        ArrayList<Bicker> filteredKeywordList2 = new ArrayList<>();
-        Map<Bicker, Double> filteredKeywordMap2 = new HashMap<>();
+            filteredKeywordList = new ArrayList<Bicker>(filteredKeywordMap.keySet());
 
-        if (this.keys != "") {
+            Collections.reverse(filteredKeywordList);
+
+            if (this.keys.equals("")) {
+                this.homefrag1.updateBickerList(bickersHomeFrag1); //update bicker list with filtered bickers
+            } else {
+                this.homefrag1.updateBickerList(filteredKeywordList); //update bicker list with filtered bickers
+            }
+            //*********************end***************************************
+
+            //*********************filter bickersHomeFrag2 by category***************************************
+            //set reference to this so homefrag2 can call applyFilter after it has fetched the latest list of bickers
+            this.homefrag2.setReferenceToHomeActivity(this);
+            ArrayList<Bicker> bickersHomeFrag2 = this.homefrag2.returnBickerArrayList();
             for (int i = 0; i < bickersHomeFrag2.size(); i++) {
-                double similarityNumber = KeywordTokenizer.similarity(this.keys, bickersHomeFrag2.get(i).getKeywords(), bickersHomeFrag2.get(i).getTags());
-
-                if (similarityNumber != 0.0) {
-                    filteredKeywordMap2.put(bickersHomeFrag2.get(i), similarityNumber);
+                if (this.categoryFilter.contains(bickersHomeFrag2.get(i).getCategory())) {
+                    bickersHomeFrag2.remove(i);
+                    i--;
                 }
             }
-        }
+            //*********************end***************************************
 
-        filteredKeywordList2 = new ArrayList<Bicker>(filteredKeywordMap2.keySet());
+            //*********************filter bickersHomeFrag2 by keywords***************************************
+            ArrayList<Bicker> filteredKeywordList2 = new ArrayList<>();
+            Map<Bicker, Double> filteredKeywordMap2 = new HashMap<>();
 
-        Collections.reverse(filteredKeywordList2);
+            if (this.keys != "") {
+                for (int i = 0; i < bickersHomeFrag2.size(); i++) {
+                    double similarityNumber = KeywordTokenizer.similarity(this.keys, bickersHomeFrag2.get(i).getKeywords(), bickersHomeFrag2.get(i).getTags());
 
-        if (this.keys.equals("")) {
-            this.homefrag2.updateBickerList(bickersHomeFrag2); //update bicker list with filtered bickers
+                    if (similarityNumber != 0.0) {
+                        filteredKeywordMap2.put(bickersHomeFrag2.get(i), similarityNumber);
+                    }
+                }
+            }
+
+            filteredKeywordList2 = new ArrayList<Bicker>(filteredKeywordMap2.keySet());
+
+            Collections.reverse(filteredKeywordList2);
+
+            if (this.keys.equals("")) {
+                this.homefrag2.updateBickerList(bickersHomeFrag2); //update bicker list with filtered bickers
+            } else {
+                this.homefrag2.updateBickerList(filteredKeywordList2); //update bicker list with filtered bickers
+            }
+            //*********************end***************************************
         } else {
-            this.homefrag2.updateBickerList(filteredKeywordList2); //update bicker list with filtered bickers
-        }
-        //*********************end***************************************
+            //*********************filter bickersHomeFrag1 by category***************************************
+            //set reference to this so homefrag1 can call applyFilter after it has fetched the latest list of bickers
+            this.expHomeFrag1.setReferenceToHomeActivity(this);
+            ArrayList<Bicker> expBickersHomeFrag1 = this.expHomeFrag1.returnBickerArrayList();
 
-        //set noFilteredResultsFound to visible or not depending on if we found any filtered results
-        if (filteredKeywordList2.size() == 0 && filteredKeywordList.size() == 0 && !this.keys.equals("")) {
-            this.noFilteredResultsFound.setAlpha(1.0f);
-        } else {
-            this.noFilteredResultsFound.setAlpha(0.0f);
+            //filter by category
+            for (int i = 0; i < expBickersHomeFrag1.size(); i++) {
+                if (this.categoryFilter.contains(expBickersHomeFrag1.get(i).getCategory())) {
+                    expBickersHomeFrag1.remove(i);
+                    i--;
+                }
+            }
+            //*********************end***************************************
+
+            //*********************filter bickersHomeFrag1 by keywords***************************************
+            ArrayList<Bicker> filteredKeywordList = new ArrayList<>();
+            Map<Bicker, Double> filteredKeywordMap = new HashMap<>();
+
+            if (this.keys != "") {
+                for (int i = 0; i < expBickersHomeFrag1.size(); i++) {
+                    double similarityNumber = KeywordTokenizer.similarity(this.keys, expBickersHomeFrag1.get(i).getKeywords(), expBickersHomeFrag1.get(i).getTags());
+
+                    if (similarityNumber != 0.0) {
+                        filteredKeywordMap.put(expBickersHomeFrag1.get(i), similarityNumber);
+                    }
+                }
+            }
+
+            filteredKeywordList = new ArrayList<Bicker>(filteredKeywordMap.keySet());
+
+            Collections.reverse(filteredKeywordList);
+
+            if (this.keys.equals("")) {
+                this.expHomeFrag1.updateBickerList(expBickersHomeFrag1); //update bicker list with filtered bickers
+            } else {
+                this.expHomeFrag1.updateBickerList(filteredKeywordList); //update bicker list with filtered bickers
+            }
+            //*********************end***************************************
+
+            //*********************filter bickersHomeFrag2 by category***************************************
+            //set reference to this so homefrag2 can call applyFilter after it has fetched the latest list of bickers
+            this.expHomeFrag2.setReferenceToHomeActivity(this);
+            ArrayList<Bicker> expBickersHomeFrag2 = this.expHomeFrag2.returnBickerArrayList();
+            for (int i = 0; i < expBickersHomeFrag2.size(); i++) {
+                if (this.categoryFilter.contains(expBickersHomeFrag2.get(i).getCategory())) {
+                    expBickersHomeFrag2.remove(i);
+                    i--;
+                }
+            }
+            //*********************end***************************************
+
+            //*********************filter bickersHomeFrag2 by keywords***************************************
+            ArrayList<Bicker> filteredKeywordList2 = new ArrayList<>();
+            Map<Bicker, Double> filteredKeywordMap2 = new HashMap<>();
+
+            if (this.keys != "") {
+                for (int i = 0; i < expBickersHomeFrag2.size(); i++) {
+                    double similarityNumber = KeywordTokenizer.similarity(this.keys, expBickersHomeFrag2.get(i).getKeywords(), expBickersHomeFrag2.get(i).getTags());
+
+                    if (similarityNumber != 0.0) {
+                        filteredKeywordMap2.put(expBickersHomeFrag2.get(i), similarityNumber);
+                    }
+                }
+            }
+
+            filteredKeywordList2 = new ArrayList<Bicker>(filteredKeywordMap2.keySet());
+
+            Collections.reverse(filteredKeywordList2);
+
+            if (this.keys.equals("")) {
+                this.expHomeFrag2.updateBickerList(expBickersHomeFrag2); //update bicker list with filtered bickers
+            } else {
+                this.expHomeFrag2.updateBickerList(filteredKeywordList2); //update bicker list with filtered bickers
+            }
+            //*********************end***************************************
         }
     }
 

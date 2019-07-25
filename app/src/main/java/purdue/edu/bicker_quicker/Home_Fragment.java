@@ -308,6 +308,9 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
         Query user_create_date = database.getReference("User").orderByChild("create_date");
         Query bicker_create_date = database.getReference("Bicker").orderByChild("create_date"); //create_date
 
+            //bicker_create_date = database.getReference("ExpiredBicker").orderByChild("create_date"); //create_date
+
+
         initialize_view(user_create_date, bicker_create_date);
     }
 
@@ -315,8 +318,8 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
         sortBy = "popularity";
 
         Query user_category = database.getReference("User").orderByChild("total_votes");//total_votes
-        Query bicker_category = database.getReference("Bicker").orderByChild("total_votes"); //create_date
-
+        Query bicker_category = database.getReference("Bicker").orderByChild("total_votes"); //total votes
+        //bicker_category = database.getReference("ExpiredBicker").orderByChild("total_votes"); //total votes
         initialize_view(user_category, bicker_category);
     }
 
@@ -638,7 +641,8 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
             //get the inflater and inflate the XML layout for each item
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.layout_unvoted_bicker, null);
+            //View view = inflater.inflate(R.layout.layout_unvoted_bicker, null);
+            View view = inflater.inflate(R.layout.layout_unvoted_bicker, swipeRefreshLayout, false);
 
             final ViewGroup sideContainer = (ViewGroup) view.findViewById(R.id.side_holder);
 
