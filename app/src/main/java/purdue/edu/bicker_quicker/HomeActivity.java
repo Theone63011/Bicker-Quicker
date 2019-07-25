@@ -22,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +34,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,6 +65,8 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
     Button recentButton;
     Button popularButton;
     Button filterButton;
+
+    TextView noFilteredResultsFound;
 
     Home_Fragment homefrag1 = null;
     Home_Fragment homefrag2 = null;
@@ -115,7 +121,8 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         });
 
 
-
+        noFilteredResultsFound = findViewById(R.id.nofilteredresultsfound);
+        noFilteredResultsFound.setAlpha(0.0f);
         toolbar = findViewById(R.id.toolbarHome);
         setSupportActionBar(toolbar);
         toolbar.setTitle("");
@@ -524,6 +531,13 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
             this.homefrag2.updateBickerList(filteredKeywordList2); //update bicker list with filtered bickers
         }
         //*********************end***************************************
+
+        //set noFilteredResultsFound to visible or not depending on if we found any filtered results
+        if (filteredKeywordList2.size() == 0 && filteredKeywordList.size() == 0 && !this.keys.equals("")) {
+            this.noFilteredResultsFound.setAlpha(1.0f);
+        } else {
+            this.noFilteredResultsFound.setAlpha(0.0f);
+        }
     }
 
     public void refresh_fragment() {
