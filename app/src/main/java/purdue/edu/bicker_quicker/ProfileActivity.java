@@ -215,7 +215,8 @@ public class ProfileActivity extends AppCompatActivity {
         intent.putExtras(b);
         startActivity(intent);
         */
-        Intent intent = new Intent(this, PastBickersActivity.class);
+        //Intent intent = new Intent(this, PastBickersActivity.class);
+        Intent intent = new Intent(this, ReportedBickersActivity.class);
         startActivity(intent);
     }
 

@@ -68,7 +68,6 @@
             android:orientation="horizontal"
             android:visibility="visible">
 
-
             <ImageView
                 android:id="@+id/closed_vote_count_icon"
                 android:layout_width="37dp"
@@ -91,25 +90,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.3" />
 
-            <ImageView
-                android:id="@+id/closed_timer"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="3dp"
-                app:srcCompat="@drawable/stopwatch" />
-
-            <TextView
-                android:id="@+id/closed_clock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center_vertical"
-                android:layout_marginRight="5dp"
-                android:layout_marginBottom="2dp"
-                android:text="00:00:00"
-                android:textColor="@color/timer"
-                android:textSize="12sp"
-                android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>
@@ -280,20 +260,43 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/abstain_holder"
+                    android:id="@+id/delete_holder"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:orientation="horizontal"
+                    android:weightSum="4.0">
 
                     <Button
-                        android:id="@+id/abstain"
-                        android:layout_width="200dp"
+                        android:id="@+id/removeButton"
+                        android:layout_width="150dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:layout_gravity="left"
+                        android:background="#d11a2a"
                         android:clickable="true"
                         android:gravity="center"
-                        android:text="abstain" />
+                        android:text="Remove bicker"
+                        android:textColor="#FFFFFF"
+                        android:layout_weight="1.0"
+                        android:layout_marginLeft="10dp"
+                        />
+
+                    <Button
+                        android:id="@+id/cancelButton"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:background="#d11a2a"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:text="Cancel report"
+                        android:textColor="#FFFFFF"
+                        android:layout_weight="1.0"
+                        android:layout_marginLeft="60dp"
+                        />
+
+
                 </LinearLayout>
+
 
             </LinearLayout>
 
@@ -306,57 +309,12 @@
                 android:orientation="horizontal"
                 android:visibility="visible">
 
-                <Button
-                    android:id="@+id/report_flag"
-                    android:layout_width="25dp"
-                    android:background="@drawable/red_flag_icon"
-                    android:layout_height="25dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="2dp"
-                    app:srcCompat="@drawable/red_flag_icon" />
-                <ImageView
-                    android:id="@+id/open_vote_count_icon"
-                    android:layout_width="37dp"
-                    android:layout_height="35dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="2dp"
-                    app:srcCompat="@drawable/vote_count_icon" />
-
-                <TextView
-                    android:id="@+id/open_vote_count_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left|center_vertical"
-                    android:text="Placeholder"
-                    android:textColor="@color/purpleAccent1" />
-
                 <Space
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="0.3" />
 
 
-                <ImageView
-                    android:id="@+id/open_timer"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="bottom"
-                    android:layout_marginBottom="3dp"
-                    app:srcCompat="@drawable/stopwatch" />
-
-                <TextView
-                    android:id="@+id/open_clock"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_vertical"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginBottom="2dp"
-                    android:text="00:00:00"
-                    android:textColor="@color/timer"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
             </LinearLayout>
 
         </LinearLayout>

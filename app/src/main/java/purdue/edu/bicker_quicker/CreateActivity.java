@@ -705,6 +705,8 @@ public class CreateActivity extends AppCompatActivity implements AdapterView.OnI
         bicker.setTags(tags);
         bicker.setSeconds_until_expired(seconds_until_expired);
         bicker.setKeywords(skeys);
+        bicker.setReported(false);
+        bicker.setReportCount(0);
         ref.push().setValue(bicker);
 
         // Subscribe creator to messaging

@@ -24,6 +24,8 @@ public class Bicker {
     private ArrayList<String> keywords = new ArrayList<String>();
     private double seconds_until_expired;
     private boolean deletionPending;
+    private boolean reported;
+    private int reportCount;
 
     public Bicker (){
 
@@ -191,6 +193,14 @@ public class Bicker {
     public boolean isDeletionPending() { return deletionPending; }
 
     public void setDeletionPending(boolean deletionPending) { this.deletionPending = deletionPending; }
+
+    public boolean isReported(){return reported;}
+
+    public void setReported(boolean bool){reported = bool;}
+
+    public int getReportCount(){return reportCount;}
+
+    public void setReportCount(int count){reportCount = count;}
 
 
     public String toString() {

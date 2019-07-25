@@ -69,6 +69,7 @@ public class Home_Fragment extends Fragment {
     private Button leftVote;
     private Button rightVote;
     private Button noVote;
+    private Button report;
 
     private LinearLayout choice_label_holder;
 
@@ -706,6 +707,7 @@ public class Home_Fragment extends Fragment {
             rightVote = view.findViewById(R.id.right);
             rightVote.setText(bicker.getRight_side());
             noVote = view.findViewById(R.id.abstain);
+            report = view.findViewById(R.id.report_flag);
 
             choice_label_holder = view.findViewById(R.id.choice_label_holder);
 
@@ -751,6 +753,19 @@ public class Home_Fragment extends Fragment {
                     rightLabel.setEnabled(false);
                     leftLabel.setEnabled(false);
                     noSideClick(v, bicker, open_vote_count, closed_vote_count);
+                }
+            });
+
+            report.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ReportBickerFragment reportBicker = new ReportBickerFragment();
+                    Bundle reportBundle = new Bundle(1);
+                    reportBundle.putString("key", bicker.getKey());
+                    reportBicker.setArguments(reportBundle);
+                    reportBicker.show(getFragmentManager(), "report bicker");
+                    Log.d(TAG, "BICKER KEY: " + bicker.getKey());
+
                 }
             });
 
