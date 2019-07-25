@@ -246,4 +246,8 @@ public class ReportedBickersActivity extends AppCompatActivity implements Report
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
+
+    public void refresh_fragment() {
+        mPager.getAdapter().notifyDataSetChanged();
+    }
 }

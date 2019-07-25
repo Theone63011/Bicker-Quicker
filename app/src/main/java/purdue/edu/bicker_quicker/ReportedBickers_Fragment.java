@@ -2,14 +2,19 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +48,7 @@ import java.util.List;
 
 import static com.facebook.AccessTokenManager.TAG;
 
-public class ReportedBickers_Fragment extends Fragment {
+public class ReportedBickers_Fragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     //private static final String TAG = ReportedBickersActivity.class.getSimpleName();
 
     private ReportedBickers_Fragment.OnBickerPressedListener mListener;
@@ -65,7 +70,9 @@ public class ReportedBickers_Fragment extends Fragment {
     FirebaseUser user;
     private FirebaseDatabase database;
     String bickerKey;
-
+    private static SwipeRefreshLayout swipeRefreshLayout;
+    private static Fragment repBickers_Fragment = null;
+    private ReportedBickersActivity repBickersActivityRef = null;
 
     public ReportedBickers_Fragment() {}
 
@@ -97,6 +104,8 @@ public class ReportedBickers_Fragment extends Fragment {
 
         //Query user_create_date = database.getReference("User").orderByChild("create_date");
         //Query bicker_create_date = database.getReference("Bicker").orderByChild("create_date"); //create_date
+
+        setReferenceToRepBickersActivity();
 
         sort.addListenerForSingleValueEvent( new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -175,6 +184,66 @@ public class ReportedBickers_Fragment extends Fragment {
 
     public void setOnBickerPressedListener(ReportedBickers_Fragment.OnBickerPressedListener callback) {
         this.callback = callback;
+    }
+
+    @Override
+    public void onRefresh() {
+        Log.d(TAG, "Home_fragment: Inside onRefresh");
+
+        //timerThread.interrupt();
+
+        swipeRefreshLayout.setEnabled(false);
+        swipeRefreshLayout.setRefreshing(true);
+
+        refreshContent();
+    }
+
+    private void refreshContent() {
+        Log.d(TAG, "Home_fragment: Inside refreshContent");
+
+        Handler h = new Handler();
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "Home_fragment: Inside Run");
+
+                //updateBickerList();
+                swipeRefreshLayout.setEnabled(true);
+                swipeRefreshLayout.setRefreshing(false);
+
+                //Fragment currentFragment = getActivity().getSupportFragmentManager().findFragmentByTag("home_fragment");
+
+                Fragment currentFragment = repBickers_Fragment;
+
+                if(currentFragment == null) {
+                    Log.d(TAG, "Home_fragment: ERROR- currentFragment is NULL");
+                    return;
+                }
+
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.setReorderingAllowed(false);
+                fragmentTransaction.detach(currentFragment);
+                fragmentTransaction.attach(currentFragment);
+                fragmentTransaction.commitNow();
+
+                //fragmentTransaction.hide(currentFragment);
+                //fragmentTransaction.hide(getActivity().getSupportFragmentManager().getPrimaryNavigationFragment());
+                repBickersActivityRef.refresh_fragment();
+
+
+                /*Intent intent = new Intent(getActivity(), Home_Fragment.class);
+                getActivity().finish();
+                getActivity().overridePendingTransition(0, 0);
+                startActivity(intent);
+                getActivity().overridePendingTransition(0, 0);*/
+
+                Log.d(TAG, "Home_fragment: end of run()");
+            }
+        }, 500);
+    }
+
+    public void setReferenceToRepBickersActivity() {
+        repBickersActivityRef = (ReportedBickersActivity) getActivity(); //ref;
     }
 
     public interface OnBickerPressedListener {
@@ -404,6 +473,21 @@ public class ReportedBickers_Fragment extends Fragment {
             remove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    AlertDialog.Builder bob = new AlertDialog.Builder(getActivity());
+                    bob.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            removeBicker(bicker);
+                        }
+                    });
+                    bob.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //hide dialog
+                        }
+                    });
+                    bob.setMessage("Are you sure you want to delete this bicker?");
+                    bob.create();
+                    bob.show();
+                    /*
                     ref.child("Bicker/" + bicker.getKey()).setValue(null);
 
                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -423,6 +507,7 @@ public class ReportedBickers_Fragment extends Fragment {
 
                        }
                    });
+                   */
                 }
             });
 
@@ -538,6 +623,31 @@ public class ReportedBickers_Fragment extends Fragment {
 
 
             return view;
+        }
+
+        public void removeBicker(Bicker bicker) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference ref = database.getReference();
+
+            ref.child("Bicker/" + bicker.getKey()).setValue(null);
+
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
+                        userSnapshot.child("votedBickerIds").child(bicker.getKey()).getRef().setValue(null);
+                        userSnapshot.child("sentDeletionRequests").child(bicker.getKey()).getRef().setValue(null);
+                        userSnapshot.child("receivedDeletionRequests").child(bicker.getKey()).getRef().setValue(null);
+
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
 
         public void requestDelete(final String bickerKey){
