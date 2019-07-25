@@ -102,6 +102,9 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 if(dataSnapshot.exists() == false) {
                     //This means that the Database_Settings section IS NOT in the database
                     databaseReference.child("Database_Settings").child("allowTalkingToSelf").setValue(false);
+                    databaseReference.child("Database_Settings").child("Timer_option_1").setValue("30 seconds");
+                    databaseReference.child("Database_Settings").child("Timer_option_2").setValue("24 hours");
+                    databaseReference.child("Database_Settings").child("Timer_option_3").setValue("48 hours");
                 }
                 else {
                     //This means that the Database_Settings section IS in the database
