@@ -153,14 +153,17 @@ public class FilterDialog extends AppCompatDialogFragment {
 
         showActive.setChecked(active);//sharedPreferences.getBoolean(ACTIVE_PREF, true));
         showExpired.setChecked(expired);//sharedPreferences.getBoolean(EXPIRED_PREF, false));
-
+        //active and expired switches cannot both be checked
         showActive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences pref = getContext().getSharedPreferences(FILTER_PREFS, Context.MODE_PRIVATE);
                 SharedPreferences.Editor edit = pref.edit();
                 edit.putBoolean(ACTIVE_PREF, isChecked);
+                edit.putBoolean(EXPIRED_PREF, !isChecked);
                 edit.commit();
+                //update toggle of expired switch
+                showExpired.setChecked(!isChecked);
             }
         });
         showExpired.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -169,7 +172,10 @@ public class FilterDialog extends AppCompatDialogFragment {
                 SharedPreferences pref = getContext().getSharedPreferences(FILTER_PREFS, Context.MODE_PRIVATE);
                 SharedPreferences.Editor edit = pref.edit();
                 edit.putBoolean(EXPIRED_PREF, isChecked);
+                edit.putBoolean(ACTIVE_PREF, !isChecked);
                 edit.commit();
+                //update toggle of active switch
+                showActive.setChecked(!isChecked);
             }
         });
 
