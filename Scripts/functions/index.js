@@ -8,6 +8,7 @@ admin.initializeApp();
 const CUT_OFF_TIME = 5 * 60 * 1000; // 5 min Hours in milliseconds.
 
 exports.deleteOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(async (change) => {
+  console.log("INSIDE deleteOldItems");
   const ref = change.after.ref.parent; // reference to the parent
   const now = Date.now();
   const cutoff = now - CUT_OFF_TIME;
@@ -16,7 +17,7 @@ exports.deleteOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(asyn
   // create a map with all children that need to be removed
   const updates = {};
   
-  snapshot.forEach(function (childSnapshot) {
+  snapshot.forEach((childSnapshot) => {
       var value = childSnapshot.val();
       if (value.receiverID === 'Unknown') {
           updates[childSnapshot.key] = null;
@@ -27,61 +28,94 @@ exports.deleteOldItems = functions.database.ref('/Bicker/{pushId}').onWrite(asyn
   return ref.update(updates);
 });
 
-/*exports.moveOldItems = functions.database.ref('/Bicker/{pushId}').onUpdate(async (change) => {
-  const ref = change.after.ref.parent; // reference to the parent
-  const expBickRef =  ref.parent.child('ExpiredBicker');
-  //const expBickRef = ref.child('ExpiredBicker'); //reference to parent then expired bicker document
-  const now = Date.now();
+exports.deleteNotification = functions.database.ref('/Bicker/{pushId}').onDelete(async (snapshot, context) => {
+  console.log("INSIDE deleteNotification");
+  var id = context.params.pushId;
+  console.log("Delete pushid: " + id);
+  console.log("Title: " + snapshot.val().title);
+  var message = {
+    data: {
+      title: 'Bicker deleted: ',
+      body: snapshot.val().title,
+      type: 'delete'
+    },
+    topic: id + 'delete'
+  };
 
-  const oldItemsQuery = ref.orderByChild('create_date/time');
-  const snapshot = await oldItemsQuery.once('value');
+  try {
+    var promise1 = await admin.messaging().send(message);
+    console.log("Message sent! Response: " + promise1);
+    return promise1;
+  }
+  catch (err){
+    console.log("Error in sending message: " + err);
+    return "Error: " + err;
+  }
+});
 
-  // create a map with all children that need to be removed
+
+exports.deleteCategory = functions.database.ref('/Bicker/{pushId}').onDelete(async (snapshot, context) => {
+  console.log("INSIDE deleteCategory");
+  var id = context.params.pushId;
+  console.log("Delete pushid: " + id);
+  console.log("Title: " + snapshot.val().title);
+  var category = snapshot.val().category;
+  var category_to_delete = null;
+  console.log("Category: " + category);
+
+  var count = null;
+  var category_number = null;
   const updates = {};
-  const exp_updates = {};
+  const updates2 = {};
+  const updates2_toRemove = {};
+  const updates3 = {};
 
-  snapshot.forEach(function (childSnapshot) {
-      var value = childSnapshot.val();
-      //value.create_date.time gives time bicker was created
-      //now is the current time
-      //value.expiry is the total time, in seconds, the bicker was set to expire after
-      var receiver = "Unknown";
-      if (((now - value.create_date.time) > (value.seconds_until_expired * 1000))
-            && (receiver.localeCompare(value.receiverID) !== 0)) {
-          //bicker has expired. Move it to expiredBicker section of DB
-          exp_updates[childSnapshot.key] = value;
-          updates[childSnapshot.key] = null;
-          console.log('Bicker has expired:' + value.title);
+  var ref = admin.database().ref('/Bicker');
+  var ref2 = admin.database().ref("/Category");
+  var ref3 = admin.database().ref("Category/" + category);
+  var ref4 = admin.database().ref("/Category/" + category + "/count");
+  var ref5 = admin.database().ref("/Category/" + category + "/IDs");
+
+  try {
+    var snapshot4 = await ref4.once('value');
+    var snapshot5 = await ref5.once('value');
+
+    count = snapshot4.val();
+    count--;
+    updates3['count'] = count;
+    console.log("new count: " + count);
+
+    snapshot5.forEach((child) => {
+      var key = child.key;
+      var new_key = key - 1;
+      var data = child.val();
+
+      if(id === data) {
+        console.log("match to delete found: " + data);
+        category_number = key;
+        updates[category_number] = null;
+
+        // Remove the bicker Id from the Category
+        ref5.update(updates)
+      }
+      else {
+        updates2_toRemove[key] = null;
+        updates2[new_key] = data;
       }
     });
 
-  // execute all updates in one go and return the result to end the function
-  expBickRef.set(exp_updates);
-  return ref.update(updates);
-  //return expBickRef.set(exp_updates);
-  // return expBickRef.update(exp_updates);
-});*/
-exports.deleteNotification = functions.database.ref('/Bicker/{pushId}').onDelete((snapshot, context) => {
-    var id = context.params.pushId;
-    console.log("Delete pushid: " + id);
-    console.log("Title: " + snapshot.val().title);
-     var message = {
-          data: {
-            title: 'Bicker deleted: ',
-            body: snapshot.val().title,
-            type: 'delete'
-          },
-          topic: id + 'delete'
-        };
-         admin.messaging().send(message)
-            .then((response) => {
-               // Response is a message ID string.
-               console.log('Successfully sent message:', response);
-               return;
-             })
-             .catch((error) => {
-               console.log('Error sending message:', error);
-             });
+    // Remove all bicker IDs to be added again with correct number
+    ref5.update(updates2_toRemove);
+
+    // Decrement all bicker ID numbers by 1 and add back
+    ref5.update(updates2);
+
+    return ref3.update(updates3);
+  }
+  catch (err) {
+    console.log("ERROR: deleteCategory caught an error: " + err);
+    return "ERROR: " + err;
+  }
 });
 
 exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (change, context) => {
@@ -153,7 +187,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
 
         var ref2 = admin.database().ref("Bicker/" + id);
         ref2.once("value")
-          .then(function(snapshot) {
+          .then((snapshot) => {
             var left = snapshot.val().left_votes;
             var value = snapshot.val();
             console.log("LEFT VOTES: " + left);
@@ -182,7 +216,26 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
           }).catch((error) => {
                     console.log(TAG + 'Error sending message:', error);
           });
-      /*const ref2 = admin.database.ref();
+      
+    }, deadline);
+    }
+
+    return;
+});
+
+
+
+
+
+
+
+
+
+
+// BELOW IS OLD CODE THAT WE MAY WANT TO KEEP FOR REFERENCE:
+
+
+/*const ref2 = admin.database.ref();
       ref2.child("Bickers/" + id).once("value",snapshot => {
 
        if(snapshot.exists()){
@@ -217,11 +270,40 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
 
 
 
-    }, deadline);
-    }
+/*exports.moveOldItems = functions.database.ref('/Bicker/{pushId}').onUpdate(async (change) => {
+  const ref = change.after.ref.parent; // reference to the parent
+  const expBickRef =  ref.parent.child('ExpiredBicker');
+  //const expBickRef = ref.child('ExpiredBicker'); //reference to parent then expired bicker document
+  const now = Date.now();
 
-    return;
-});
+  const oldItemsQuery = ref.orderByChild('create_date/time');
+  const snapshot = await oldItemsQuery.once('value');
+
+  // create a map with all children that need to be removed
+  const updates = {};
+  const exp_updates = {};
+
+  snapshot.forEach(function (childSnapshot) {
+      var value = childSnapshot.val();
+      //value.create_date.time gives time bicker was created
+      //now is the current time
+      //value.expiry is the total time, in seconds, the bicker was set to expire after
+      var receiver = "Unknown";
+      if (((now - value.create_date.time) > (value.seconds_until_expired * 1000))
+            && (receiver.localeCompare(value.receiverID) !== 0)) {
+          //bicker has expired. Move it to expiredBicker section of DB
+          exp_updates[childSnapshot.key] = value;
+          updates[childSnapshot.key] = null;
+          console.log('Bicker has expired:' + value.title);
+      }
+    });
+
+  // execute all updates in one go and return the result to end the function
+  expBickRef.set(exp_updates);
+  return ref.update(updates);
+  //return expBickRef.set(exp_updates);
+  // return expBickRef.update(exp_updates);
+});*/
 
 
 /*exports.notifyCreatorsOnExpire = functions.database.ref('/Bicker/{pushId}/approved_date').onUpdate((snapshot, context) => {

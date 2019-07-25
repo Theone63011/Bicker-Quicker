@@ -179,7 +179,9 @@ public class Bicker {
 
     public String getKey() { return key; }
 
-    public void setKey(String key) { this.key = key; }
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public boolean isVoted() { return voted; }
 

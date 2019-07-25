@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatDialogFragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -151,27 +152,48 @@ public class EnterCodeDialog extends AppCompatDialogFragment {
     public void callback(Boolean matureContentAllowed) {
         enterBelow.setTextColor(Color.parseColor("#00FF00"));
 
-        if (bick.getCode() == null) {    // Bicker with given code not found
-            enterBelow.setText("That Code Didn't Work, Try Again");
-            enterBelow.setTextColor(Color.parseColor("#FF758C"));
-            submitButton.setText("Get Bicker");
-            return;
-        }
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference();
+        DatabaseReference databaseReference2 = database.getReference("Database_Settings");
 
-        else if (allowTalkingToSelf == false && bick.getSenderID().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // Check if the person is talking with themselves
-            enterBelow.setText("Stop Talking to Yourself");
-            enterBelow.setTextColor(Color.parseColor("#FF758C"));
-            submitButton.setText("Get Bicker");
-        }
-        else if(bick.isMatureContent() && !matureContentAllowed){
-            enterBelow.setText("This bicker contains mature content. Enable mature content in the settings menu to continue.");
-            enterBelow.setTextColor(Color.parseColor("#FF758C"));
-            submitButton.setText("Get Bicker");
-        }
-        else {
-            listener.receiveCode(bick);
-            dismiss();
-        }
+        // This is used to find the boolean value of allowTalkingToSelf in database and set variable
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists() == false) {
+                    //This means that the Database_Settings section IS NOT in the database
+                    Log.d("EnterCodeDialog.java", "Enter_code_dialog: databaseReference2 does not exist.");
+                }
+                else {
+                    //This means that the Database_Settings section IS in the database
+                    String data = dataSnapshot.child("allowTalkingToSelf").getValue().toString();
+                    allowTalkingToSelf = Boolean.parseBoolean(data);
+                }
+
+                // Continue EnterCodeDiaglog operations
+                if (bick.getCode() == null) {    // Bicker with given code not found
+                    enterBelow.setText("That Code Didn't Work, Try Again");
+                    enterBelow.setTextColor(Color.parseColor("#FF758C"));
+                    submitButton.setText("Get Bicker");
+                    return;
+                }
+
+                else if (allowTalkingToSelf == false && bick.getSenderID().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) { // Check if the person is talking with themselves
+                    enterBelow.setText("Stop Talking to Yourself");
+                    enterBelow.setTextColor(Color.parseColor("#FF758C"));
+                    submitButton.setText("Get Bicker");
+                }
+                else {
+                    listener.receiveCode(bick);
+                    dismiss();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public interface EnterCodeDialogListener {

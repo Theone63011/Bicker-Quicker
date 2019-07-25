@@ -27,13 +27,16 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 
 public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnBickerPressedListener, FilterDialog.FilterDialogListener {
@@ -77,6 +80,41 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+
+
+        /*************************************************************************************
+         * Below are a list of general settings added (or updated) to the database at the start
+         * of the app.
+         *
+         * Some of these settings include:
+         *  allowTalkingToSelf- default value is false. Can be changed by moderator.
+         *
+         *************************************************************************************/
+        // Add bicker Category to the Category section of database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference();
+        DatabaseReference databaseReference2 = database.getReference("Database_Settings");
+
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists() == false) {
+                    //This means that the Database_Settings section IS NOT in the database
+                    databaseReference.child("Database_Settings").child("allowTalkingToSelf").setValue(false);
+                }
+                else {
+                    //This means that the Database_Settings section IS in the database
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
 
         toolbar = findViewById(R.id.toolbarHome);
         setSupportActionBar(toolbar);
