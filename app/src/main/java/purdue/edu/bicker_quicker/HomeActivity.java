@@ -372,7 +372,8 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
                 break;
 
             case R.id.settings:
-                //TODO: settings page
+                Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
+                startActivity(settingsIntent);
 
                 break;
 
