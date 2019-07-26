@@ -35,35 +35,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="2dp"
             android:background="@drawable/custom_border"
             android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/nav_home"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/house_not_selected" />
 
             <ImageView
                 android:id="@+id/nav_vote"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/vote_not_selected" />
 
             <ImageView
                 android:id="@+id/nav_create"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/create_not_selected" />
 
             <ImageView
                 android:id="@+id/nav_graph"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/graph_selected" />
         </LinearLayout>

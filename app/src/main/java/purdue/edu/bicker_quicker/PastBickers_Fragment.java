@@ -329,7 +329,7 @@ public class PastBickers_Fragment extends Fragment {
             TextView open_title = view.findViewById(R.id.open_title);
             open_title.setText(bicker.getTitle());
 
-            TextView closed_category = view.findViewById(R.id.closed_category);
+            TextView closed_category = view.findViewById(R.id.art_category);
             TextView open_category = view.findViewById(R.id.open_category);
             String catName = bicker.getCategory();
             closed_category.setText(catName);
