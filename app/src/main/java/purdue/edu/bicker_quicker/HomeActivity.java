@@ -562,7 +562,12 @@ public class HomeActivity extends AppCompatActivity implements Home_Fragment.OnB
             }
             //*********************end***************************************
 
-
+            //set noFilteredResultsFound to visible or not depending on if we found any filtered results
+            if (filteredKeywordList2.size() == 0 && filteredKeywordList.size() == 0 && !this.keys.equals("")) {
+                this.noFilteredResultsFound.setAlpha(1.0f);
+            } else {
+                this.noFilteredResultsFound.setAlpha(0.0f);
+            }
     }
 
     public void refresh_fragment() {
