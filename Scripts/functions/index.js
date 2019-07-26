@@ -276,7 +276,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
     var delay = setTimeout((deadline) => {
 
 
-      try {
+      /* try {
         var promise1 = await admin.messaging().send(message);
         var promise2 = await admin.messaging().send(message2);
         console.log("Message sent! Response: " + promise1);
@@ -285,7 +285,17 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
       catch (err) {
         console.log("Error in sending message: " + err);
         return "Error: " + err;
-      }
+      } */
+
+      admin.messaging().send(message)
+      .then((response) => {
+        // Response is a message ID string.
+        console.log('Successfully sent message:', response);
+        return;
+      })
+      .catch((error) => {
+        console.log('Error sending message:', error);
+      });
 
 
       var ref2 = admin.database().ref("Bicker/" + id);
