@@ -510,7 +510,7 @@ public class ReportedBickers_Fragment extends Fragment implements SwipeRefreshLa
                        @Override
                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                            for (DataSnapshot userSnapshot : dataSnapshot.child("User").getChildren()) {
-                               userSnapshot.child("votedBickerIds").child(bicker.getKey()).getRef().setValue(null);
+                               userSnapshot.child("votedOnBickers").child(bicker.getKey()).getRef().setValue(null);
                                userSnapshot.child("sentDeletionRequests").child(bicker.getKey()).getRef().setValue(null);
                                userSnapshot.child("receivedDeletionRequests").child(bicker.getKey()).getRef().setValue(null);
 

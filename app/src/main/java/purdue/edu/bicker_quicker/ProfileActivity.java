@@ -273,7 +273,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void statistics() {
-        Intent intent = new Intent(this, StatisticsActivity.class);
+        Intent intent = new Intent(this, StatisticsActivity_home.class);
         startActivity(intent);
     }
 
