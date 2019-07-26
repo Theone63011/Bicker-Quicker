@@ -855,6 +855,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
             if (remainingTime < -1) {
                 clock_time = "Expired";
+
             }
 
             closed_clock.setText(clock_time);
@@ -1037,6 +1038,11 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
             rightVote.setText(bicker.getRight_side());
             noVote = view.findViewById(R.id.abstain);
             report = view.findViewById(R.id.report_flag);
+
+            if (remainingTime < -1) {
+                report.setVisibility(View.GONE);
+
+            }
 
             choice_label_holder = view.findViewById(R.id.choice_label_holder);
 
