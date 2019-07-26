@@ -33,7 +33,7 @@
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/statistics_create_pieChart"
                 android:layout_width="match_parent"
-                android:layout_height="460dp"
+                android:layout_height="472dp"
                 android:padding="3dp"
                 android:paddingStart="3dp"
                 android:paddingLeft="3dp"

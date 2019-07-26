@@ -4,18 +4,23 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -57,6 +62,22 @@ public class StatisticsActivity_vote extends AppCompatActivity {
     PieDataSet dataSet;
     PieData data;
     Map<String, Double> categories;
+
+    private TextView Art_voted;
+    private TextView Board_voted;
+    private TextView Books_voted;
+    private TextView Comedy_voted;
+    private TextView Food_voted;
+    private TextView Movies_voted;
+    private TextView Music_voted;
+    private TextView Philosophy_voted;
+    private TextView Politics_voted;
+    private TextView Relationships_voted;
+    private TextView Science_voted;
+    private TextView Sports_voted;
+    private TextView TV_voted;
+    private TextView Video_voted;
+    private TextView Miscellaneous_voted;
 
     private static DecimalFormat df;
 
@@ -151,6 +172,54 @@ public class StatisticsActivity_vote extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Art_voted = findViewById(R.id.Art_category_voted);
+        Board_voted = findViewById(R.id.Board_category_voted);
+        Books_voted = findViewById(R.id.Books_category_voted);
+        Comedy_voted = findViewById(R.id.Comedy_category_voted);
+        Food_voted = findViewById(R.id.Food_category_voted);
+        Movies_voted = findViewById(R.id.Movies_category_voted);
+        Music_voted = findViewById(R.id.Music_category_voted);
+        Philosophy_voted = findViewById(R.id.Philosophy_category_voted);
+        Politics_voted = findViewById(R.id.Politics_category_voted);
+        Relationships_voted = findViewById(R.id.Relationships_category_voted);
+        Science_voted = findViewById(R.id.Science_category_voted);
+        Sports_voted = findViewById(R.id.Sports_category_voted);
+        TV_voted = findViewById(R.id.TV_category_voted);
+        Video_voted = findViewById(R.id.Video_category_voted);
+        Miscellaneous_voted = findViewById(R.id.Miscellaneous_category_voted);
+
+        Art_voted.setVisibility(View.GONE);
+        Board_voted.setVisibility(View.GONE);
+        Books_voted.setVisibility(View.GONE);
+        Comedy_voted.setVisibility(View.GONE);
+        Food_voted.setVisibility(View.GONE);
+        Movies_voted.setVisibility(View.GONE);
+        Music_voted.setVisibility(View.GONE);
+        Philosophy_voted.setVisibility(View.GONE);
+        Politics_voted.setVisibility(View.GONE);
+        Relationships_voted.setVisibility(View.GONE);
+        Science_voted.setVisibility(View.GONE);
+        Sports_voted.setVisibility(View.GONE);
+        TV_voted.setVisibility(View.GONE);
+        Video_voted.setVisibility(View.GONE);
+        Miscellaneous_voted.setVisibility(View.GONE);
+
+        initializeVotedCategories("Art");
+        initializeVotedCategories("Board Games");
+        initializeVotedCategories("Books");
+        initializeVotedCategories("Comedy");
+        initializeVotedCategories("Food");
+        initializeVotedCategories("Movies");
+        initializeVotedCategories("Music");
+        initializeVotedCategories("Philosophy");
+        initializeVotedCategories("Politics");
+        initializeVotedCategories("Relationships");
+        initializeVotedCategories("Science");
+        initializeVotedCategories("Sports");
+        initializeVotedCategories("TV Shows");
+        initializeVotedCategories("Video Games");
+        initializeVotedCategories("Miscellaneous");
 
         // Get user voted categories and add them to the 'categories' arraylist
         userRef.child("votedOnBickers").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -255,11 +324,13 @@ public class StatisticsActivity_vote extends AppCompatActivity {
                 description.setText("Voting win percentage: " + win_perct);
                 description.setTextSize(30);
                 description.setTextAlign(Paint.Align.RIGHT);
-                description.setXOffset(50);
-                description.setYOffset(30);
+                description.setXOffset(40);
+                description.setYOffset(10);
                 chart.setDescription(description);
                 chart.setDrawEntryLabels(false);
                 chart.animateY(1000);
+                Legend legend = chart.getLegend();
+                legend.setEnabled(false);
                 chart.invalidate();
             }
 
@@ -335,5 +406,146 @@ public class StatisticsActivity_vote extends AppCompatActivity {
     public void leave() {
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
+    }
+
+    public void initializeVotedCategories (String cat) {
+        String catName = cat;
+        String tokens [] = catName.split(" ", 2);
+        String firsWord = tokens[0];
+
+        Log.d(TAG, "firstWord: " + firsWord);
+
+        Drawable catDraw = ContextCompat.getDrawable(StatisticsActivity_vote.this, R.drawable.shape_category);
+        //Below sets the correct color of the category icon
+        switch (firsWord) {
+            case "Art":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_Art), PorterDuff.Mode.MULTIPLY);
+                Art_voted.setText(catName);
+                Art_voted.setTextColor(Color.WHITE);
+                Art_voted.setBackground(catDraw);
+                Art_voted.setPadding(8, 8, 8, 8);
+                Art_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Board":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_BoardGames), PorterDuff.Mode.MULTIPLY);
+                Board_voted.setText(catName);
+                Board_voted.setTextColor(Color.WHITE);
+                Board_voted.setBackground(catDraw);
+                Board_voted.setPadding(8, 8, 8, 8);
+                Board_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Books":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_Books), PorterDuff.Mode.MULTIPLY);
+                Books_voted.setText(catName);
+                Books_voted.setTextColor(Color.WHITE);
+                Books_voted.setBackground(catDraw);
+                Books_voted.setPadding(8, 8, 8, 8);
+                Books_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Comedy":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_Comedy), PorterDuff.Mode.MULTIPLY);
+                Comedy_voted.setText(catName);
+                Comedy_voted.setTextColor(Color.WHITE);
+                Comedy_voted.setBackground(catDraw);
+                Comedy_voted.setPadding(8, 8, 8, 8);
+                Comedy_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Food":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_Food), PorterDuff.Mode.MULTIPLY);
+                Food_voted.setText(catName);
+                Food_voted.setTextColor(Color.WHITE);
+                Food_voted.setBackground(catDraw);
+                Food_voted.setPadding(8, 8, 8, 8);
+                Food_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Movies":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_Movies), PorterDuff.Mode.MULTIPLY);
+                Movies_voted.setText(catName);
+                Movies_voted.setTextColor(Color.WHITE);
+                Movies_voted.setBackground(catDraw);
+                Movies_voted.setPadding(8, 8, 8, 8);
+                Movies_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Music":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_Music), PorterDuff.Mode.MULTIPLY);
+                Music_voted.setText(catName);
+                Music_voted.setTextColor(Color.WHITE);
+                Music_voted.setBackground(catDraw);
+                Music_voted.setPadding(8, 8, 8, 8);
+                Music_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Philosophy":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_Philosophy), PorterDuff.Mode.MULTIPLY);
+                Philosophy_voted.setText(catName);
+                Philosophy_voted.setTextColor(Color.WHITE);
+                Philosophy_voted.setBackground(catDraw);
+                Philosophy_voted.setPadding(8, 8, 8, 8);
+                Philosophy_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Politics":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_Politics), PorterDuff.Mode.MULTIPLY);
+                Politics_voted.setText(catName);
+                Politics_voted.setTextColor(Color.WHITE);
+                Politics_voted.setBackground(catDraw);
+                Politics_voted.setPadding(8, 8, 8, 8);
+                Politics_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Relationships":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_Relationships), PorterDuff.Mode.MULTIPLY);
+                Relationships_voted.setText(catName);
+                Relationships_voted.setTextColor(Color.WHITE);
+                Relationships_voted.setBackground(catDraw);
+                Relationships_voted.setPadding(8, 8, 8, 8);
+                Relationships_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Science":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_Science), PorterDuff.Mode.MULTIPLY);
+                Science_voted.setText(catName);
+                Science_voted.setTextColor(Color.WHITE);
+                Science_voted.setBackground(catDraw);
+                Science_voted.setPadding(8, 8, 8, 8);
+                Science_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Sports":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_Sports), PorterDuff.Mode.MULTIPLY);
+                Sports_voted.setText(catName);
+                Sports_voted.setTextColor(Color.WHITE);
+                Sports_voted.setBackground(catDraw);
+                Sports_voted.setPadding(8, 8, 8, 8);
+                Sports_voted.setVisibility(View.VISIBLE);
+                break;
+            case "TV":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_TvShows), PorterDuff.Mode.MULTIPLY);
+                TV_voted.setText(catName);
+                TV_voted.setTextColor(Color.WHITE);
+                TV_voted.setBackground(catDraw);
+                TV_voted.setPadding(8, 8, 8, 8);
+                TV_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Video":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_VideoGames), PorterDuff.Mode.MULTIPLY);
+                Video_voted.setText(catName);
+                Video_voted.setTextColor(Color.WHITE);
+                Video_voted.setBackground(catDraw);
+                Video_voted.setPadding(8, 8, 8, 8);
+                Video_voted.setVisibility(View.VISIBLE);
+                break;
+            case "Miscellaneous":
+                catDraw.setColorFilter(ContextCompat.getColor(StatisticsActivity_vote.this, R.color.category_Misc), PorterDuff.Mode.MULTIPLY);
+                Miscellaneous_voted.setText(catName);
+                Miscellaneous_voted.setTextColor(Color.WHITE);
+                Miscellaneous_voted.setBackground(catDraw);
+                Miscellaneous_voted.setPadding(8, 8, 8, 8);
+                Miscellaneous_voted.setVisibility(View.VISIBLE);
+                break;
+
+            default:
+                Log.d(TAG, "ERROR: Could not find a corresponding color category. See colors.xml for correct options");
+                Toast.makeText(StatisticsActivity_vote.this, "Home_Fragment: ERROR: Could not find a corresponding color category. " +
+                        "See colors.xml for correct options", Toast.LENGTH_LONG).show();
+
+        }
+
+
     }
 }

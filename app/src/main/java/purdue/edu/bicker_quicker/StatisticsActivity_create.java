@@ -145,7 +145,7 @@ public class StatisticsActivity_create extends AppCompatActivity {
         home.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(StatisticsActivity_create.this, StatisticsActivity_create.class);
+                Intent intent = new Intent(StatisticsActivity_create.this, StatisticsActivity_home.class);
                 startActivity(intent);
             }
         });
@@ -330,9 +330,6 @@ public class StatisticsActivity_create extends AppCompatActivity {
                 chart.setDrawEntryLabels(false);
                 chart.animateY(1000);
                 Legend legend = chart.getLegend();
-                legend.setTextSize(20);
-                legend.setWordWrapEnabled(true);
-                legend.setYOffset(50);
                 legend.setEnabled(false);
                 chart.invalidate();
             }
