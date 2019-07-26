@@ -61,6 +61,20 @@ exports.deleteNotification = functions.database.ref('/Bicker/{pushId}').onDelete
 
 
 exports.deleteCategory = functions.database.ref('/Bicker/{pushId}').onDelete(async (snapshot, context) => {
+  var userRef = admin.database().ref("User/");
+
+  userRef.once("value").then((snapshot) => {
+    snapshot.forEach((child) => {
+      console.log(child.key, child.val());
+    });
+
+    return;
+
+  }).catch((error) => {
+    console.log(TAG + 'Error sending message:', error);
+  });
+
+
   console.log("INSIDE deleteCategory");
   var id = context.params.pushId;
   console.log("Delete pushid: " + id);
@@ -242,106 +256,82 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
   const expBickRef = ref.parent.child('ExpiredBicker/');
   const bickerRef = admin.database().ref("Bicker/" + id);
   const userRef = admin.database().ref('User/');
-
-  // create a map with all children that need to be removed
   const updates = {};
   const exp_updates = {};
 
-  //const original = change.after.val();
-  var id = context.params.pushId
+  const original = change.after.val();
+  var id = context.params.pushId;
+  var ref2 = admin.database().ref("/Bicker/" + id);
 
-  var time = change.after.val().seconds_until_expired;
+  console.log("before code: " + change.before.val().code);
+  console.log("ID: " + id);
+  console.log("BICKER UPDATE " + original);
+
+  var time = original.seconds_until_expired;
 
   var message = {
     data: {
       title: 'Voting ended for: ',
-      body: change.after.val().title,
+      body: original.title,
       type: 'voter'
     },
     topic: id
   };
 
-
   var message2 = {
     data: {
       title: 'Voting ended for your bicker: ',
-      body: change.after.val().title,
+      body: original.title,
       type: 'creator'
     },
     topic: id + 'creatorNotification'
   };
 
+
   if (!(change.before.val().code === "code_used")) {
     var deadline = time * 1000;
     var delay = setTimeout((deadline) => {
 
-
-      /* try {
-        var promise1 = await admin.messaging().send(message);
-        var promise2 = await admin.messaging().send(message2);
-        console.log("Message sent! Response: " + promise1);
-        console.log("Message sent! Response: " + promise2);
-      }
-      catch (err) {
-        console.log("Error in sending message: " + err);
-        return "Error: " + err;
-      } */
-
       admin.messaging().send(message)
-      .then((response) => {
+        .then((response) => {
+          // Response is a message ID string.
+          console.log('Successfully sent message:', response);
+          return;
+        })
+        .catch((error) => {
+          console.log('Error sending message:', error);
+        });
+
+
+
+      admin.messaging().send(message2).then((response) => {
         // Response is a message ID string.
         console.log('Successfully sent message:', response);
         return;
-      })
-      .catch((error) => {
+      }).catch((error) => {
         console.log('Error sending message:', error);
       });
 
+      var senderID = null;
+      var receiverID = null;
+      var senderRef = null;
+      var receiverRef = null;
+      var senderVotedRef = null;
+      var senderCreatedRef = null;
+      var receiverVotedRef = null;
+      var receiverCreatedRef = null;
+      var senderSnapshot = null;
+      var receiverSnapshot = null;
+      var senderVotedSnapshot = null;
+      var senderCreatedSnapshot = null;
+      var receiverVotedSnapshot = null;
+      var receiverCreatedSnapshot = null;
+      var userSnapshot = null;
 
-      var ref2 = admin.database().ref("Bicker/" + id);
 
-      try {
-        var snapshot = await ref2.once('value');
-        var snapshot2 = await userRef.once('value');
-        var snapshot3 = await bickerRef.once('value');
-        var senderID = snapshot3.child("senderID").val();
-        var receiverID = snapshot3.child("receiverID").val();
-        var senderRef = null;
-        var receiverRef = null;
-        var senderVotedRef = null;
-        var senderCreatedRef = null;
-        var receiverVotedRef = null;
-        var receiverCreatedRef = null;
-        var senderSnapshot = null;
-        var receiverSnapshot = null;
-        var senderVotedSnapshot = null;
-        var senderCreatedSnapshot = null;
-        var receiverVotedSnapshot = null;
-        var receiverCreatedSnapshot = null;
-        var userSnapshot = null;
-
-        userSnapshot = await userRef.once('value');
-
-        if (senderID === null || receiverID === null) {
-          console.log("senderID or receiverID is null");
-        }
-        else {
-          senderRef = admin.database().ref("User/" + senderID);
-          receiverRef = admin.database().ref("User/" + receiverID);
-          senderVotedRef = admin.database().ref("User/" + senderID + "/votedOnBickers/");
-          senderCreatedRef = admin.database().ref("User/" + senderID + "/CreatedBickers/");
-          receiverVotedRef = admin.database().ref("User/" + receiverID + "/votedOnBickers/");
-          receiverCreatedRef = admin.database().ref("User/" + receiverID + "/CreatedBickers/");
-          senderSnapshot = await senderRef.once('value');
-          receiverSnapshot = await receiverRef.once('value');
-          senderVotedSnapshot = await senderVotedRef.once('value');
-          senderCreatedSnapshot = await senderCreatedRef.once('value');
-          receiverVotedSnapshot = await receiverVotedRef.once('value');
-          receiverCreatedSnapshot = await receiverCreatedRef.once('value');
-        }
-
-        var left = snapshot.val().left_votes;
-        var right = snapshot.val().right_votes;
+      bickerRef.once('value').then((response) => {
+        var left = response.val().left_votes;
+        var right = response.val().right_votes;
         var winner = null;
 
         if (left < 0 || right < 0) {
@@ -358,9 +348,8 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
             winner = "tie";
           }
         }
-
-        var value = snapshot.val();
-        //console.log("LEFT VOTES: " + left);
+        var value = response.val();
+        console.log("LEFT VOTES: " + left);
 
         const now = Date.now();
         if ((now - value.create_date.time) > (value.seconds_until_expired * 1000)) {
@@ -373,11 +362,33 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
           console.log("Error: " + (now - value.create_date.time) + " " + (value.seconds_until_expired * 1000));
         }
 
-        // Set sender's 'CreatedBickers' winning side
-        if (senderCreatedSnapshot === null) {
-          console.log("ERROR: senderCreatedSnapshot === null");
+
+
+        // NEW CHANGES BELOW THIS LINE
+
+
+
+        senderID = response.child("senderID").val();
+        receiverID = response.child("receiverID").val();
+        if (senderID === null || receiverID === null) {
+          var errmsg = "ERROR: senderID or receiverID is null"
+          console.log(errmsg);
+          return errmsg;
         }
-        else {
+
+        senderVotedRef = admin.database().ref("User/" + senderID + "/votedOnBickers/");
+        senderCreatedRef = admin.database().ref("User/" + senderID + "/CreatedBickers/");
+        receiverVotedRef = admin.database().ref("User/" + receiverID + "/votedOnBickers/");
+        receiverCreatedRef = admin.database().ref("User/" + receiverID + "/CreatedBickers/");
+        //senderSnapshot = await senderRef.once('value');
+        //receiverSnapshot = await receiverRef.once('value');
+        //senderVotedSnapshot = await senderVotedRef.once('value');
+        //senderCreatedSnapshot = await senderCreatedRef.once('value');
+        //receiverVotedSnapshot = await receiverVotedRef.once('value');
+        //receiverCreatedSnapshot = await receiverCreatedRef.once('value');
+
+        // Set sender's 'CreatedBickers' winning side
+        senderCreatedRef.once('value').then((senderCreatedSnapshot) => {
           var createdIDFound = false;
           senderCreatedSnapshot.forEach((child) => {
             var createdID = child.key;
@@ -392,13 +403,13 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
           if (createdIDFound === false) {
             console.log("ERROR: could not find ID in user's CreatedBickers");
           }
-        }
+          return;
+        }).catch((error) => {
+          console.log("ERROR: " + error);
+        });
 
         // Set receiver's 'CreatedBickers' winning side
-        if (receiverCreatedSnapshot === null) {
-          console.log("ERROR: receiverCreatedSnapshot === null");
-        }
-        else {
+        receiverCreatedRef.once('value').then((receiverCreatedSnapshot) => {
           var createdIDFound = false;
           receiverCreatedSnapshot.forEach((child) => {
             var createdID = child.key;
@@ -413,35 +424,46 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
           if (createdIDFound === false) {
             console.log("ERROR: could not find ID in user's CreatedBickers");
           }
-        }
+          return;
+        }).catch((error) => {
+          console.log("ERROR: " + error);
+        });
 
         // Loop through all users' 'votedOnBickers' and udpate the 'Status' and 'Winning Side'
-        userSnapshot.forEach((child) => {
-          var userID = child.key;
-          var voted_ref = child.ref().child("votedOnBickers");
-          if (voted_ref === null) {
-            console.log("voted_ref is null");
-          }
-          else {
-            var voted_snapshot = await voted_ref.once('value');
-            voted_snapshot.forEach((child2) => {
-              if (child2.key === id) {
-                child2.val().Winning_Side.set(winner);
-                child2.val().Status.set("Expired");
-
-                console.log("Updated user [" + userID + "] 'Winning_Side' and 'Status' attributes");
-              }
-            });
-          }
+        userRef.once('value').then((userSnapshot) => {
+          userSnapshot.forEach((child) => {
+            var userID = child.key;
+            var voted_ref = child.ref().child("votedOnBickers");
+            if (voted_ref === null) {
+              console.log("voted_ref is null");
+            }
+            else {
+              voted_ref.once('value').then((voted_snapshot) => {
+                voted_snapshot.forEach((child2) => {
+                  if (child2.key === id) {
+                    child2.val().Winning_Side.set(winner);
+                    child2.val().Status.set("Expired");
+  
+                    console.log("Updated user [" + userID + "] 'Winning_Side' and 'Status' attributes");
+                  }
+                });
+                return;
+              }).catch((error) => {
+                console.log("ERROR: " + error);
+              });
+            }
+          });
+          return;
+        }).catch((error) => {
+          console.log("ERROR: " + error);
         });
 
         ref.update(updates);
         return expBickRef.update(exp_updates);
-      }
-      catch (err) {
-        console.log("newBicker ERROR: " + err);
-        return "newBicker ERROR: " + err;
-      }
+      }).catch((error) => {
+        console.log("ERROR: " + error);
+      });
+
     }, deadline);
   }
 
