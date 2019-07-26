@@ -61,7 +61,18 @@ exports.deleteNotification = functions.database.ref('/Bicker/{pushId}').onDelete
 
 
 exports.deleteCategory = functions.database.ref('/Bicker/{pushId}').onDelete(async (snapshot, context) => {
-  
+  var userRef = admin.database().ref("User/");
+
+  userRef.once("value").then((snapshot) => {
+     snapshot.forEach((child) => {
+        console.log(child.key, child.val());
+      });
+
+      return;
+
+  }).catch((error) => {
+    console.log(TAG + 'Error sending message:', error);
+  });
 
 
   console.log("INSIDE deleteCategory");
