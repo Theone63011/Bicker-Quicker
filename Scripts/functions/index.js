@@ -247,19 +247,15 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
   const updates = {};
   const exp_updates = {};
 
-  const original = change.after.val();
-  var id = context.params.pushId;
+  //const original = change.after.val();
+  var id = context.params.pushId
 
-  console.log("before code: ", change.before.val().code);
-  console.log('ID: ', id);
-  console.log('BICKER UPDATE: ', original);
-
-  var time = original.seconds_until_expired;
+  var time = change.after.val().seconds_until_expired;
 
   var message = {
     data: {
       title: 'Voting ended for: ',
-      body: original.title,
+      body: change.after.val().title,
       type: 'voter'
     },
     topic: id
@@ -269,7 +265,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
   var message2 = {
     data: {
       title: 'Voting ended for your bicker: ',
-      body: original.title,
+      body: change.after.val().title,
       type: 'creator'
     },
     topic: id + 'creatorNotification'
@@ -278,6 +274,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
   if (!(change.before.val().code === "code_used")) {
     var deadline = time * 1000;
     var delay = setTimeout((deadline) => {
+
 
       try {
         var promise1 = await admin.messaging().send(message);
@@ -289,6 +286,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
         console.log("Error in sending message: " + err);
         return "Error: " + err;
       }
+
 
       var ref2 = admin.database().ref("Bicker/" + id);
 
@@ -366,14 +364,14 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
         }
 
         // Set sender's 'CreatedBickers' winning side
-        if(senderCreatedSnapshot === null) {
+        if (senderCreatedSnapshot === null) {
           console.log("ERROR: senderCreatedSnapshot === null");
         }
         else {
           var createdIDFound = false;
           senderCreatedSnapshot.forEach((child) => {
             var createdID = child.key;
-            if(createdID === id) {
+            if (createdID === id) {
               child.val().child("Winning_Side").set(winner);
               createdIDFound = true;
 
@@ -381,20 +379,20 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
             }
           });
 
-          if(createdIDFound === false) {
+          if (createdIDFound === false) {
             console.log("ERROR: could not find ID in user's CreatedBickers");
           }
         }
 
         // Set receiver's 'CreatedBickers' winning side
-        if(receiverCreatedSnapshot === null) {
+        if (receiverCreatedSnapshot === null) {
           console.log("ERROR: receiverCreatedSnapshot === null");
         }
         else {
           var createdIDFound = false;
           receiverCreatedSnapshot.forEach((child) => {
             var createdID = child.key;
-            if(createdID === id) {
+            if (createdID === id) {
               child.val().child("Winning_Side").set(winner);
               createdIDFound = true;
 
@@ -402,7 +400,7 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
             }
           });
 
-          if(createdIDFound === false) {
+          if (createdIDFound === false) {
             console.log("ERROR: could not find ID in user's CreatedBickers");
           }
         }
@@ -411,13 +409,13 @@ exports.newBicker = functions.database.ref('/Bicker/{pushId}').onUpdate(async (c
         userSnapshot.forEach((child) => {
           var userID = child.key;
           var voted_ref = child.ref().child("votedOnBickers");
-          if(voted_ref === null) {
+          if (voted_ref === null) {
             console.log("voted_ref is null");
           }
           else {
             var voted_snapshot = await voted_ref.once('value');
             voted_snapshot.forEach((child2) => {
-              if(child2.key === id) {
+              if (child2.key === id) {
                 child2.val().Winning_Side.set(winner);
                 child2.val().Status.set("Expired");
 
