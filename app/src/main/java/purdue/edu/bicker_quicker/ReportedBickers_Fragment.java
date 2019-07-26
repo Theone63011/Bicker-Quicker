@@ -3,7 +3,6 @@ package purdue.edu.bicker_quicker;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -162,7 +161,20 @@ public class ReportedBickers_Fragment extends Fragment implements SwipeRefreshLa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.activity_expired_bickers__fragment, container, false);
+
+        View rootView = inflater.inflate(R.layout.activity_reported_bickers__fragment, container, false);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.fragment_home_swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.green),
+                getResources().getColor(R.color.red),
+                getResources().getColor(R.color.blue),
+                getResources().getColor(R.color.orange));
+
+
+
+        return rootView;
+        //return inflater.inflate(R.layout.activity_reported_bickers__fragment, container, false);
     }
 
     @Override

@@ -244,7 +244,7 @@ public class ExpiredBickers_Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.activity_expired_bickers__fragment, container, false);
+        return inflater.inflate(R.layout.activity_reported_bickers__fragment, container, false);
     }
 
     @Override
