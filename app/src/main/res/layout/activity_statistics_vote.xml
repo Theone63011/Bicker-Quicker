@@ -28,7 +28,24 @@
             android:layout_below="@id/toolbar_statistics"
             android:foregroundGravity="center"
             android:gravity="center"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical">
+
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/statistics_vote_pieChart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="3dp"
+                android:paddingStart="3dp"
+                android:paddingLeft="3dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="3dp"
+                android:paddingRight="3dp"
+                android:paddingBottom="3dp"
+                android:scrollbarSize="20dp" />
+
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/statistics_pages_holder"
