@@ -21,14 +21,241 @@
             app:title="Statistics" />
 
         <LinearLayout
-            android:id="@+id/statistics_vote_holder"
+            android:id="@+id/statistics_create_holder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@id/statistics_pages_holder"
             android:layout_below="@id/toolbar_statistics"
             android:foregroundGravity="center"
             android:gravity="center"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical">
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/statistics_create_pieChart"
+                android:layout_width="match_parent"
+                android:layout_height="460dp"
+                android:padding="3dp"
+                android:paddingStart="3dp"
+                android:paddingLeft="3dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="3dp"
+                android:paddingRight="3dp"
+                android:paddingBottom="3dp"
+                android:scrollbarSize="20dp" />
+
+            <LinearLayout
+                android:id="@+id/categories_holder_created"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/group1_holder_created"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/Art_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/Board_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/Books_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/Comedy_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/Food_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/group2_holder_created"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/Movies_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/Music_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/Philosophy_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/Politics_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/Relationships_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/group3_holder_created"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/Science_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/Sports_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/TV_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/Video_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/Miscellaneous_category_voted_created"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="3dp"
+                        android:background="@drawable/shape_category"
+                        android:padding="5sp"
+                        android:text="placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/statistics_pages_holder"
