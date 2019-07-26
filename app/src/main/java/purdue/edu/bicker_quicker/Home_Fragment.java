@@ -2,7 +2,6 @@ package purdue.edu.bicker_quicker;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -10,8 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -127,21 +124,19 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
     }
 
     public static void set_home_fragment (Fragment f, String tag) {
-        Log.d(TAG, "Home_fragment: Inside set_home_Fragment");
+        //Log.d(TAG, "Home_fragment: Inside set_home_Fragment");
 
         home_Fragment = f;
         int id = home_Fragment.getId();
         home_Fragment_tag = tag;
 
-        Log.d(TAG, "Home_fragment: home_fragment_tag: " + home_Fragment_tag);
-        Log.d(TAG, "Home_fragment: home_fragment id: " + id);
+        //Log.d(TAG, "Home_fragment: home_fragment_tag: " + home_Fragment_tag);
+        //Log.d(TAG, "Home_fragment: home_fragment id: " + id);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "Home_fragment: Inside onCreate");
-
-        Log.d(TAG, "Home_fragment: Inside onCreate");
+        //Log.d(TAG, "Home_fragment: Inside onCreate");
 
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
@@ -210,7 +205,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
     @Override
     public void onRefresh() {
-        Log.d(TAG, "Home_fragment: Inside onRefresh");
+        //Log.d(TAG, "Home_fragment: Inside onRefresh");
 
         //timerThread.interrupt();
 
@@ -221,13 +216,13 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
     }
 
     private void refreshContent() {
-        Log.d(TAG, "Home_fragment: Inside refreshContent");
+        //Log.d(TAG, "Home_fragment: Inside refreshContent");
 
         Handler h = new Handler();
         h.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "Home_fragment: Inside Run");
+                //Log.d(TAG, "Home_fragment: Inside Run");
 
                 //updateBickerList();
                 swipeRefreshLayout.setEnabled(true);
@@ -259,7 +254,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                 startActivity(intent);
                 getActivity().overridePendingTransition(0, 0);*/
 
-                Log.d(TAG, "Home_fragment: end of run()");
+                //Log.d(TAG, "Home_fragment: end of run()");
             }
         }, 500);
     }
@@ -356,7 +351,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                         if (userSnapshot.child("userId") != null && userSnapshot.child("userId").getValue().toString().equals(id)) {
                             userKey = userSnapshot.getKey();
 
-                            for (DataSnapshot votedId : userSnapshot.child("votedBickerIds").getChildren()) {
+                            for (DataSnapshot votedId : userSnapshot.child("votedOnBickers").getChildren()) {
                                 voted_id = votedId.getKey().toString();
                                 side = votedId.child("Side Voted").getValue().toString();
                                 votedBickerIds.add(voted_id);
@@ -583,15 +578,81 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
 
         if(response == 0) {
-            ref.child("User/" + userKey + "/votedBickerIds/" + key + "/Side Voted").setValue("abstain");
+            ref.child("User/" + userKey + "/votedOnBickers/" + key + "/Side Voted").setValue("abstain");
         }
         else if(response == 1) {
-            ref.child("User/" + userKey + "/votedBickerIds/" + key + "/Side Voted").setValue("left");
+            ref.child("User/" + userKey + "/votedOnBickers/" + key + "/Side Voted").setValue("left");
         }
         else if(response == 2) {
-            ref.child("User/" + userKey + "/votedBickerIds/" + key + "/Side Voted").setValue("right");
+            ref.child("User/" + userKey + "/votedOnBickers/" + key + "/Side Voted").setValue("right");
         }
 
+        Date now = new Date();
+
+        ref.child("User/" + userKey + "/votedOnBickers/" + key + "/Date Voted").setValue(now);
+
+        ref.child("User/" + userKey + "/votedOnBickers/" + key + "/Status").setValue("Active");
+
+        ref.child("User/" + userKey + "/votedOnBickers/" + key + "/Winning_Side").setValue(null);
+
+        ref.child("User/" + userKey + "/votedOnBickers/" + key + "/Winning_Side").setValue("still active");
+
+        //Increment the totalVoteCount
+        DatabaseReference voteRef = database.getReference("/User/" + userKey + "/totalVoteCount");
+        DatabaseReference categoryBickerRef = database.getReference("/Bicker/" + key + "/category");
+        DatabaseReference categoryUserRef = database.getReference("/User/" + userKey + "/votedOnBickers/" + key + "/Category");
+
+        if(voteRef == null) {
+            Log.d(TAG, "Home_fragment: voteRef is null. This could mean that " +
+                    "the 'totalVoteCount' attribute is not present in the database for this use.");
+        }
+        else {
+            voteRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()) {
+                        try {
+                            int count = Integer.parseInt(dataSnapshot.getValue().toString());
+                            count++;
+                            dataSnapshot.getRef().setValue(count);
+
+                            Log.d(TAG, "Home_fragment: incremented database totalVoteCount by 1");
+                        }
+                        catch (Exception e) {
+                            Log.e(TAG, "Home_fragment ERROR: " + e);
+                        }
+                    }
+                    else {
+                        Log.d(TAG, "Home_fragment: voteRef dataSnapshot does not exist.");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            categoryBickerRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()) {
+                        String cat = dataSnapshot.getValue().toString();
+                        categoryUserRef.setValue(cat);
+
+                        Log.d(TAG, "Home_fragment: set category of voted bicker in database");
+                    }
+                    else {
+                        Log.d(TAG, "Home_fragment: categoryBickerRef dataSnapshot does not exist");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
 
@@ -608,7 +669,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
     public void setOnBickerPressedListener(OnBickerPressedListener callback) {
         this.callback = callback;
 
-        Log.d(TAG, "Home_fragment: callback");
+        //Log.d(TAG, "Home_fragment: callback");
     }
 
     public interface OnBickerPressedListener {
@@ -1032,7 +1093,7 @@ public class Home_Fragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     reportBundle.putString("key", bicker.getKey());
                     reportBicker.setArguments(reportBundle);
                     reportBicker.show(getFragmentManager(), "report bicker");
-                    Log.d(TAG, "BICKER KEY: " + bicker.getKey());
+                    //Log.d(TAG, "BICKER KEY: " + bicker.getKey());
 
                 }
             });

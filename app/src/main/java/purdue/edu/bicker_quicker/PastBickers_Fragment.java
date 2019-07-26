@@ -114,7 +114,7 @@ public class PastBickers_Fragment extends Fragment {
                         if (bickerSnapshot.child("userId") != null && bickerSnapshot.child("senderID").getValue().toString().equals(id)) {
                             bickerKey = bickerSnapshot.getKey();
 
-                            for (DataSnapshot votedId : bickerSnapshot.child("votedBickerIds").getChildren()) {
+                            for (DataSnapshot votedId : bickerSnapshot.child("votedOnBickers").getChildren()) {
                                 voted_id = votedId.getKey().toString();
                                 side = votedId.child("Side Voted").getValue().toString();
                                 votedBickerIds.add(voted_id);
@@ -140,7 +140,7 @@ public class PastBickers_Fragment extends Fragment {
                         if (bickerSnapshot.child("userId") != null && bickerSnapshot.child("senderID").getValue().toString().equals(id)) {
                             bickerKey = bickerSnapshot.getKey();
 
-                            for (DataSnapshot votedId : bickerSnapshot.child("votedBickerIds").getChildren()) {
+                            for (DataSnapshot votedId : bickerSnapshot.child("votedOnBickers").getChildren()) {
                                 voted_id = votedId.getKey().toString();
                                 side = votedId.child("Side Voted").getValue().toString();
                                 votedBickerIds.add(voted_id);

@@ -33,8 +33,11 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class RespondActivity extends AppCompatActivity implements EnterCodeDialog.EnterCodeDialogListener, CancelBickerDialog.CancelBickerDialogListener {
+
+    private static final String TAG = RespondActivity.class.getSimpleName();
 
     TextView title_code;
     TextView title_title;
@@ -589,6 +592,89 @@ public class RespondActivity extends AppCompatActivity implements EnterCodeDialo
 
             }
         });
+
+
+        //Increment the totalCreateCount for both sender and receiver
+        String senderID = bicker.getSenderID();
+        String receiverID = bicker.getReceiverID();
+        DatabaseReference senderRef = database.getReference("/User/" + senderID + "/totalCreateCount");
+        DatabaseReference receiverRef = database.getReference("/User/" + receiverID + "/totalCreateCount");
+        DatabaseReference senderRef2 = database.getReference("/User/" + senderID + "/CreatedBickers/");
+        DatabaseReference receiverRef2 = database.getReference("/User/" + receiverID + "/CreatedBickers/");
+
+        if(senderRef == null || receiverRef == null) {
+            Log.d(TAG, "Respond_activity: senderRef/receiverRef is null. This could mean that " +
+                    "the 'totalCreateCount' attribute is not present in the database for this use.");
+        }
+        else {
+            senderRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists()) {
+                        try {
+                            int count = Integer.parseInt(dataSnapshot.getValue().toString());
+                            count++;
+                            dataSnapshot.getRef().setValue(count);
+
+                            Log.d(TAG, "Respond_activity: increment totalCreateCount in database by 1");
+
+                            Map<String, Object> updates = new HashMap<String, Object>();
+                            updates.put(bickerID + "/category", bicker.getCategory());
+                            updates.put(bickerID + "/Winning_Side", "still active");
+                            senderRef2.updateChildren(updates);
+
+                            Log.d(TAG, "Respond_activity: added bicker to CreatedBickers in database");
+                        }
+                        catch (Exception e) {
+                            Log.e(TAG, "Respond_activity ERROR: " + e);
+                        }
+                    }
+                    else {
+                        Log.d(TAG, "Respond_activity: dataSnapshot does not exist.");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            if(senderID != receiverID) {
+                receiverRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()) {
+                            try {
+                                int count = Integer.parseInt(dataSnapshot.getValue().toString());
+                                count++;
+                                dataSnapshot.getRef().setValue(count);
+                                Log.d(TAG, "Respond_activity: increment totalCreateCount in database by 1");
+
+                                Map<String, Object> updates = new HashMap<String, Object>();
+                                updates.put(bickerID + "/category", bicker.getCategory());
+                                updates.put(bickerID + "/Winning_Side", "still active");
+                                receiverRef2.updateChildren(updates);
+
+                                Log.d(TAG, "Respond_activity: added bicker to CreatedBickers in database");
+                            }
+                            catch (Exception e) {
+                                Log.e(TAG, "Respond_activity ERROR: " + e);
+                            }
+                        }
+                        else {
+                            Log.d(TAG, "Respond_activity: dataSnapshot does not exist.");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }
+
 
         Toast.makeText(this, "Response Sent", Toast.LENGTH_LONG).show();
 

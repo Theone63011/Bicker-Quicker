@@ -141,7 +141,7 @@ public class ExpiredBickers_Fragment extends Fragment {
                 for (DataSnapshot bickerSnapshot : dataSnapshot.child("ExpiredBicker").getChildren()) {
                     try {
                             bickerKey = bickerSnapshot.getKey();
-                            for (DataSnapshot votedId : bickerSnapshot.child("votedBickerIds").getChildren()) {
+                            for (DataSnapshot votedId : bickerSnapshot.child("votedOnBickers").getChildren()) {
                                 voted_id = votedId.getKey().toString();
                                 side = votedId.child("Side Voted").getValue().toString();
                                 votedBickerIds.add(voted_id);
@@ -244,7 +244,7 @@ public class ExpiredBickers_Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.activity_expired_bickers__fragment, container, false);
+        return inflater.inflate(R.layout.activity_reported_bickers__fragment, container, false);
     }
 
     @Override
